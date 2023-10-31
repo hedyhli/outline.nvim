@@ -118,6 +118,13 @@ function M._goto_location(change_focus)
   end
 end
 
+function M._toggle_fold(move_cursor, node_index)
+  local node = M.state.flattened_outline_items[node_index] or M._current_node()
+  local is_folded = folding.is_folded(node)
+
+  M._set_folded(not is_folded, move_cursor, node_index)
+end
+
 function M._set_folded(folded, move_cursor, node_index)
   local node = M.state.flattened_outline_items[node_index] or M._current_node()
   local changed = (folded ~= folding.is_folded(node))
@@ -142,6 +149,20 @@ function M._set_folded(folded, move_cursor, node_index)
       )
     end
   end
+end
+
+function M._toggle_all_fold(nodes)
+  nodes = nodes or M.state.outline_items
+  local folded = true
+
+  for _, node in ipairs(nodes) do
+    if folding.is_foldable(node) and not folding.is_folded(node) then
+      folded = false
+      break
+    end
+  end
+
+  M._set_all_folded(not folded, nodes)
 end
 
 function M._set_all_folded(folded, nodes)
@@ -256,6 +277,8 @@ local function setup_keymaps(bufnr)
   map(config.options.keymaps.close, function()
     M.view:close()
   end)
+  -- toggle fold selection
+  map(config.options.keymaps.fold_toggle, M._toggle_fold)
   -- fold selection
   map(config.options.keymaps.fold, function()
     M._set_folded(true)
@@ -264,6 +287,8 @@ local function setup_keymaps(bufnr)
   map(config.options.keymaps.unfold, function()
     M._set_folded(false)
   end)
+  -- toggle fold all
+  map(config.options.keymaps.fold_toggle_all, M._toggle_all_fold)
   -- fold all
   map(config.options.keymaps.fold_all, function()
     M._set_all_folded(true)
