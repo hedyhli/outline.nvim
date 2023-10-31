@@ -1,3 +1,49 @@
+# ⚠️  NOTE: THIS IS A FORK
+
+This is a fork of the original symbols-outline.nvim which merges some selected
+PRs from the original repo, plus some other improvements due to personal
+preferences.
+
+It does not attempt to be an up-to-date successor of the original repo, nor does
+it attempt to ensure everyone's use-cases are satisfied by providing an overall
+better experience. It is merely a fork which I maintain for my personal
+use-cases which incorporates some selected PRs.
+
+## Maintenance status
+
+This fork is NOT guaranteed to be completely bug-free, nor as stable as the
+original. However, since I use this plugin myself, it is guaranteed that
+selected issues that I encounter myself would be fixed (to the best of my
+ability).
+
+I do not merge PRs from the original repo that I don't personally need.
+
+- **DO use this fork if**:
+  - You want to use features available in this fork, which are not included
+  upstream (listed below)
+  - You MIGHT want some up-to-date fixes to problems (that I also face) but is
+  OK with some things not being looked after well (things I don't personally use)
+
+- **Do NOT use this fork if**:
+  - You want a stable plugin
+  - You don't need the extra features in this fork
+
+## Features
+
+Below is a list of features I've included in this fork which, at the time of
+writing, has not been included upstream (in the original repo). I try my best to
+keep this list up to date.
+
+- Feat: Toggling folds (and added default keymaps for it)
+(simrat39/symbols-outline.nvim#194)
+- Fix `SymbolsOutlineClose` crashing when already closed: simrat39/symbols-outline.nvim#163
+- Support Nerd fonts v3.0: simrat39/symbols-outline.nvim#225
+- Fix newlines in symbols crash: simrat39/symbols-outline.nvim#204 (simrat39/symbols-outline.nvim#184)
+- Fix `code_actions`: simrat39/symbols-outline.nvim#168 (simrat39/symbols-outline.nvim#123)
+- Fix fold all operation too slow: simrat39/symbols-outline.nvim#223 (simrat39/symbols-outline.nvim#224)
+
+---
+
 # symbols-outline.nvim
 
 **A tree like view for symbols in Neovim using the Language Server Protocol.
@@ -56,6 +102,8 @@ local opts = {
     rename_symbol = "r",
     code_actions = "a",
     fold = "h",
+    fold_toggle = '<tab>',       -- Only in this fork
+    fold_toggle_all = '<S-tab>', -- Only in this fork
     unfold = "l",
     fold_all = "W",
     unfold_all = "E",
@@ -64,6 +112,7 @@ local opts = {
   lsp_blacklist = {},
   symbol_blacklist = {},
   symbols = {
+    -- Changed in this fork
     File = { icon = "󰈔", hl = "@text.uri" },
     Module = { icon = "󰆧", hl = "@namespace" },
     Namespace = { icon = "󰅪", hl = "@namespace" },
@@ -138,8 +187,10 @@ local opts = {
 | K          | Toggles the current symbol preview                 |
 | r          | Rename symbol                                      |
 | a          | Code actions                                       |
-| h          | fold symbol                                      |
-| l          | Unfold symbol                                        |
+| h          | fold symbol                                        |
+| tab        | toggle fold under cursor                           |
+| shift+tab  | toggle all folds                                   |
+| l          | Unfold symbol                                      |
 | W          | Fold all symbols                                   |
 | E          | Unfold all symbols                                 |
 | R          | Reset all folding                                  |
