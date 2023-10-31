@@ -122,7 +122,9 @@ function M._toggle_fold(move_cursor, node_index)
   local node = M.state.flattened_outline_items[node_index] or M._current_node()
   local is_folded = folding.is_folded(node)
 
-  M._set_folded(not is_folded, move_cursor, node_index)
+  if folding.is_foldable(node) then
+    M._set_folded(not is_folded, move_cursor, node_index)
+  end
 end
 
 function M._set_folded(folded, move_cursor, node_index)
