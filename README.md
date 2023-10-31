@@ -42,6 +42,32 @@ keep this list up to date.
 - Fix `code_actions`: simrat39/symbols-outline.nvim#168 (simrat39/symbols-outline.nvim#123)
 - Fix fold all operation too slow: simrat39/symbols-outline.nvim#223 (simrat39/symbols-outline.nvim#224)
 
+### TODO
+
+KEY:
+```
+- [ ] : Planned
+- [/] : WIP
+-     : Idea
+```
+
+Items will be moved to above list when complete.
+
+- Folds
+  - [ ] Org-like <kbd>shift+tab</kbd> behavior: Open folds level-by-level
+  - [ ] Optionally not opening all child nodes when opening parent node
+  - Fold siblings and siblings of parent on startup
+- Navigation
+  - Go to parent
+  - Cycle siblings
+
+### Related plugins
+
+- nvim-navic
+- nvim-navbuddy
+- dropdown.nvim
+- treesitter (inspect/edit)
+
 ---
 
 # symbols-outline.nvim
@@ -58,15 +84,35 @@ Supports all your favourite languages.**
 
 ## Installation
 
-Using `packer.nvim`
+Use `hedyhli/symbols-outline.nvim` if you wish to use this fork.
 
+Packer:
 ```lua
 use 'simrat39/symbols-outline.nvim'
+```
+
+Lazy:
+```lua
+{
+  "simrat39/symbols-outline.nvim",
+  config = function()
+    -- Use <leader>tt to toggle the symbols-outline sidebar
+    vim.keymap.set("n", "<leader>tt", "<cmd>SymbolsOutline<CR>",
+      { desc = "SymbolsOutline" })
+
+    require("symbols-outline").setup {
+      -- Your setup opts here (optional)
+    }
+  end,
+},
 ```
 
 ## Setup
 
 Put the setup call in your init.lua or any lua file that is sourced.
+
+**NOTE**: A call to `.setup()` is *required* for this plugin to work!
+(simrat39/symbols-outline.nvim#213)
 
 ```lua
 require("symbols-outline").setup()
