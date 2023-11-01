@@ -53,7 +53,7 @@ Below is a list of features I’ve included in this fork which, at the time of
 writing, has not been included upstream (in the original repo). I try my best
 to keep this list up to date.
 
-Features:
+Features/Changes:
 
 - Feat: Toggling folds (and added default keymaps for it)
     (simrat39/symbols-outline.nvim#194)
@@ -65,8 +65,19 @@ Features:
         - simrat39/symbols-outline.nvim#174
         - simrat39/symbols-outline.nvim#207
 - Feat: when `auto_close=true` only auto close if `goto_location` is used (where
-    focus changed), and not for `focus_location` (simrat39/symbols-outline.nvim#119)
+    focus changed), and not for `focus_location`
+    (simrat39/symbols-outline.nvim#119)
 - Feat: Cursorline option for the outline window
+- MAJOR: Removed hover floating window from `toggle_preview`.
+    - Instead, you can set `open_hover_on_preview=true` (true by default) so that
+        the `hover_symbol` action can be triggered when `toggle_preview`is
+        triggered.
+    - The preview window’s size changed to half of neovim height (rather than a
+        third). This is planned to be configurable.
+    - The preview window is positioned to be vertically center-aligned (rather
+        than fixed to the top). This is planned to be configurable.
+- Feat: Added function and command to show provider and outline window status,
+    somewhat like `:LspInfo`.
 
 Fixes:
 
@@ -79,6 +90,13 @@ Fixes:
 
 
 PRS ~
+
+Key:
+
+>
+    ✅ = Either merged superseded
+    📮 = Planned for merge
+<
 
 - Open handler checks if view is not already open (#235 by eyalz800)
 - auto_jump config param (#229 by stickperson)
@@ -97,8 +115,8 @@ PRS ~
 - ✅ fix(code_actions): use the builtin code_action (#168 by zjp-CN)
 - ✅ fix: plugin crashes when SymbolOutlineClose used (#163 by beauwilliams)
 - feat: Add window_bg_highlight to config (#137 by Zane-)
-- Added preview width and relative size (#130 by Freyskeyd)
-- Improve preview, hover windows configurability and looks (#128 by toppair)
+- 📮 Added preview width and relative size (#130 by Freyskeyd)
+- 📮 Improve preview, hover windows configurability and looks (#128 by toppair)
 - ✅ Do not close outline when focus_location occurs (#119 by M1Sports20)
 - feat: instant_preview (#116 by axieax)
 - check if code_win is nill (#110 by i3Cheese)
@@ -107,7 +125,7 @@ PRS ~
 
 TODO ~
 
-KEY:
+Key:
 
 >
     - [ ] : Planned
@@ -118,16 +136,20 @@ KEY:
 Items will be moved to above list when complete.
 
 - Folds
-    - ☐ Org-like shift+tab behavior: Open folds level-by-level
-    - ☐ Optionally not opening all child nodes when opening parent node
+    - `[ ]` Org-like shift+tab behavior: Open folds level-by-level
+    - `[ ]` Optionally not opening all child nodes when opening parent node
     - Fold siblings and siblings of parent on startup
 - Navigation
     - Go to parent
     - Cycle siblings
-- ☐ simrat39/symbols-outline.nvim#75: Handling of the outline window when
+- `[ ]` simrat39/symbols-outline.nvim#75: Handling of the outline window when
     attached buffer is closed.
     Maybe it should continue working, so that pressing enter can open a split to
     the correct location, and pressing `q` can properly close the buffer.
+- Preview / Hover
+    - `[/]` Configurable winhighlight options for preview window (like nvim-cmp)
+        (simrat39/symbols-outline#128)
+    - `[/]` Configurable width and height (simrat39/symbols-outline#130)
 
 
 RELATED PLUGINS ~
@@ -213,16 +235,28 @@ Note that a call to `.setup()` is _required_ for this plugin to work
 
 CONFIGURATION             *symbols-outline-symbols-outline.nvim-configuration*
 
-Pass a table to the setup call above with your configuration options.
+
+TERMINOLOGY ~
+
+- **Provider**: Source of the items in the outline view. Could be LSP, CoC, etc.
+- **Node**: An item in the outline view
+- **Fold**: Collapse a collapsible node
+- **Location**: Where in the source file a node is from
+- **Preview**: Peek the location of a node in code using a floating window
+- **Hover**: Cursor currently on the line of a node
+- **Hover symbol**: Displaying a floating window to show symbol information
+    provided by provider.
+- **Focus**: Which window the cursor is in
+
+
+OPTIONS ~
+
+Pass a table to the setup call with your configuration options.
+
+Default values are shown:
 
 >lua
     local opts = {
-      -- Whether to highlight the currently hovered symbol (high cpu usage)
-      highlight_hovered_item = true,
-      -- Whether to show outline guides
-      show_guides = true,
-      -- Automatically open preview of code on hover
-      auto_preview = false,
       -- Where to open the split window: right/left
       position = 'right',
       -- Whether width is relative to existing windows
@@ -230,10 +264,21 @@ Pass a table to the setup call above with your configuration options.
       -- Percentage or integer of columns
       width = 25,
     
+      -- Whether to highlight the currently hovered symbol (high cpu usage)
+      highlight_hovered_item = true,
+      -- Whether to show outline guides
+      show_guides = true,
+      -- Automatically open preview of code on hover
+      auto_preview = false,
+      -- Automatically open hover_symbol when opening toggle_preview (see keymaps).
+      -- If you disable this you can still open hover_symbol using your keymap
+      -- below.
+      open_hover_on_preview = true,
       -- Behaviour changed in this fork:
       -- Auto close the outline window if goto_location is triggered and not for
       -- focus_location
       auto_close = false,
+    
       -- Vim options for the outline window
       show_numbers = false,
       show_relative_numbers = false,
@@ -348,6 +393,8 @@ COMMANDS                       *symbols-outline-symbols-outline.nvim-commands*
     Focus on symbols outline
 - **:SymbolsOutlineFocusCode**
     Focus on source window
+- **:SymbolsOutlineStatus**
+    Display current provider and outline window status in the messages area.
 
 
 LUA API ~
@@ -364,15 +411,17 @@ LUA API ~
     Open the outline window.
     If `opts.bang` is true, keep focus on previous window.
 - **close_outline()**
-    Close the outline window
+    Close the outline window.
 - **focus_toggle()**
-    Toggle cursor focus between code and outline window
+    Toggle cursor focus between code and outline window.
 - **focus_outline()**
     Focus cursor on the outline window.
 - **focus_code()**
     Focus cursor on the window which the outline is derived from.
 - **is_open()**
-    Return whether the outline window is open
+    Return whether the outline window is open.
+- **show_status()**
+    Display current provider and outline window status in the messages area.
 
 
 DEFAULT KEYMAPS         *symbols-outline-symbols-outline.nvim-default-keymaps*
