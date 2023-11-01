@@ -126,7 +126,7 @@ local function update_hover()
     end
     markdown_lines = vim.lsp.util.trim_empty_lines(markdown_lines)
     if vim.tbl_isempty(markdown_lines) then
-      markdown_lines = { '### No info available!' }
+      markdown_lines = { 'No info available' }
     end
 
     markdown_lines = vim.lsp.util.stylize_markdown(
