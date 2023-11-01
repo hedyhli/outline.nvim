@@ -38,6 +38,7 @@ keep this list up to date.
 (simrat39/symbols-outline.nvim#194)
 - Feat: when `auto_close=true` only auto close if `goto_location` is used (where
 focus changed), and not for `focus_location` (simrat39/symbols-outline.nvim#119)
+- Feat: Cursorline option for the outline window
 
 - Fix symbol preview (simrat39/symbols-outline.nvim#176)
 - Fix `SymbolsOutlineClose` crashing when already closed: simrat39/symbols-outline.nvim#163
@@ -133,6 +134,12 @@ Items will be moved to above list when complete.
   - Go to parent
   - Cycle siblings
 
+- [ ] simrat39/symbols-outline.nvim#75: Handling of the outline window when attached
+  buffer is closed.
+
+  Maybe it should continue working, so that pressing enter can open a split to
+  the correct location, and pressing `q` can properly close the buffer.
+
 ### Related plugins
 
 - nvim-navic
@@ -225,6 +232,7 @@ local opts = {
   auto_close = false,
   show_numbers = false,
   show_relative_numbers = false,
+  show_cursorline = true,
   show_symbol_details = true,
   preview_bg_highlight = 'Pmenu',
   autofold_depth = nil,

@@ -49,6 +49,10 @@ function View:setup_view()
   if config.options.show_relative_numbers then
     vim.api.nvim_win_set_option(self.winnr, 'rnu', true)
   end
+
+  if config.options.show_cursorline then
+    vim.api.nvim_win_set_option(self.winnr, 'cursorline', true)
+  end
 end
 
 function View:close()

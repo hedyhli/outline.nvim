@@ -117,6 +117,7 @@ local function update_hover()
   provider.hover_info(params.bufnr, params, function(err, result)
     if err then
       print(vim.inspect(err))
+      return
     end
     local markdown_lines = {}
     if result ~= nil then

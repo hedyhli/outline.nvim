@@ -13,6 +13,7 @@ M.defaults = {
   auto_preview = false,
   show_numbers = false,
   show_relative_numbers = false,
+  show_cursorline = true,
   show_symbol_details = true,
   preview_bg_highlight = 'Pmenu',
   winblend = 0,
