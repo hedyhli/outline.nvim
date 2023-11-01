@@ -77,40 +77,40 @@ focus changed), and not for `focus_location` (simrat39/symbols-outline.nvim#119)
   **Superseded by #163**
 
 - Distinguish between public and private function display in Elixir
-  (#187 by by scottming)
+  (#187 by scottming)
 
 - ✅ Fix some options
-  (#180 by by cljoly)
+  (#180 by cljoly)
 
 - fix: Invalid buffer id error
-  (#177 by by snowair)
+  (#177 by snowair)
 
 - ✅ fix(code_actions): use the builtin code_action
-  (#168 by by zjp-CN)
+  (#168 by zjp-CN)
 
 - ✅ fix: plugin crashes when SymbolOutlineClose used
-  (#163 by by beauwilliams)
+  (#163 by beauwilliams)
 
 - feat: Add window_bg_highlight to config
-  (#137 by by Zane-)
+  (#137 by Zane-)
 
 - Added preview width and relative size
-  (#130 by by Freyskeyd)
+  (#130 by Freyskeyd)
 
 - Improve preview, hover windows configurability and looks
-  (#128 by by toppair)
+  (#128 by toppair)
 
 - ✅ Do not close outline when focus_location occurs
-  (#119 by by M1Sports20)
+  (#119 by M1Sports20)
 
 - feat: instant_preview
-  (#116 by by axieax)
+  (#116 by axieax)
 
 - check if code_win is nill
-  (#110 by by i3Cheese)
+  (#110 by i3Cheese)
 
 - Floating window (Draft)
-  (#101 by by druskus20)
+  (#101 by druskus20)
 
 
 ### TODO
