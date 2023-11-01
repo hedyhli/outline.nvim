@@ -53,6 +53,12 @@ local function setup_buffer_autocmd()
   end
 end
 
+local function setup_commands()
+  vim.api.nvim_create_user_command('SymbolsOutline', M.toggle_outline, { nargs = 0 })
+  vim.api.nvim_create_user_command('SymbolsOutlineOpen', M.open_outline, { nargs = 0 })
+  vim.api.nvim_create_user_command('SymbolsOutlineClose', M.close_outline, { nargs = 0 })
+end
+
 -------------------------
 -- STATE
 -------------------------
@@ -357,6 +363,7 @@ function M.setup(opts)
 
   M.view = View:new()
   setup_global_autocmd()
+  setup_commands()
 end
 
 return M

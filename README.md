@@ -301,6 +301,14 @@ local opts = {
 | `:SymbolsOutlineOpen`  | Open symbols outline   |
 | `:SymbolsOutlineClose` | Close symbols outline  |
 
+### Lua
+
+```
+require'symbols-outline'.toggle_outline()
+require'symbols-outline'.open_outline()
+require'symbols-outline'.close_outline()
+```
+
 ## Default keymaps
 
 | Key        | Action                                             |
