@@ -186,7 +186,7 @@ Lazy:
 {
   "simrat39/symbols-outline.nvim",
   config = function()
-    -- Example mapping to toggle symbols-outline
+    -- Example mapping to toggle outline
     vim.keymap.set("n", "<leader>tt", "<cmd>SymbolsOutline<CR>",
       { desc = "SymbolsOutline" })
 
@@ -201,18 +201,20 @@ Lazy with lazy-loading:
 ```lua
 {
   "simrat39/symbols-outline.nvim",
-  cmd = { "SymbolsOutline", "SymbolsOutlineOpen", "SymbolsOutlineClose" },
-  keys = { "<leader>tt" },
-  config = function()
-    -- Example mapping to toggle symbols-outline
-    vim.keymap.set("n", "<leader>tt", "<cmd>SymbolsOutline<CR>",
-      { desc = "SymbolsOutline" })
-    require("symbols-outline").setup {
-      -- Your setup opts here (leave empty to use defaults)
-    }
-  end,
+  cmd = { "SymbolsOutline", "SymbolsOutlineOpen" },
+  keys = {
+    -- Example mapping to toggle outline
+    { "<leader>tt", "<cmd>SymbolsOutline<CR>", desc = "Toggle outline window" },
+  },
+  opts = {
+    -- Your setup opts here
+  },
 },
 ```
+
+This allows Lazy.nvim to lazy load the plugin on commands `SymbolsOutline`,
+`SymbolsOutlineOpen`, and your keybindings.
+
 
 ## Setup
 
@@ -245,6 +247,7 @@ local opts = {
   show_relative_numbers = false,
   show_cursorline = true,
   show_symbol_details = true,
+  -- Highlight group for the preview background
   preview_bg_highlight = 'Pmenu',
   autofold_depth = nil,
   auto_unfold_hover = true,
@@ -257,12 +260,16 @@ local opts = {
   focus_on_open = true,
   keymaps = { -- These keymaps can be a string or a table for multiple keys
     close = {"<Esc>", "q"},
+    -- Jump to symbol under cursor
     goto_location = "<Cr>",
+    -- Jump to symbol under cursor but keep focus on outline window
     focus_location = "o",
     hover_symbol = "<C-space>",
+    -- Preview symbol under cursor
     toggle_preview = "K",
     rename_symbol = "r",
     code_actions = "a",
+    -- These fold actions are collapsing tree items, not code folding
     fold = "h",
     fold_toggle = '<tab>',       -- Only in this fork
     fold_toggle_all = '<S-tab>', -- Only in this fork
@@ -347,16 +354,18 @@ local opts = {
 | `:SymbolsOutlineFocusOutline` | Focus on symbols outline         |
 | `:SymbolsOutlineFocusCode`    | Focus on source window           |
 
-### Lua
+### Lua API
 
 ```lua
-require'symbols-outline'.toggle_outline()
-require'symbols-outline'.open_outline()
-require'symbols-outline'.close_outline()
-require'symbols-outline'.focus_toggle()
-require'symbols-outline'.focus_outline()
-require'symbols-outline'.focus_code()
+require'symbols-outline'
 ```
+- setup(opts)
+- toggle_outline()
+- open_outline()
+- close_outline()
+- focus_toggle()
+- focus_outline()
+- focus_code()
 
 ## Default keymaps
 
