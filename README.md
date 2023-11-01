@@ -53,64 +53,64 @@ focus changed), and not for `focus_location` (simrat39/symbols-outline.nvim#119)
 - auto_jump config param
   #229 opened on Jun 8 by stickperson
 
-- [x] Update nerd fonts to 3.0
-  #225 opened on May 24 by anstadnik
+- ✅ Update nerd fonts to 3.0
+  (#225 by anstadnik)
 
-- [x] fix(folding): optimize fold/unfold all
-  #223 opened on May 22 by wjdwndud0114
+- ✅ fix(folding): optimize fold/unfold all
+  (#223 by wjdwndud0114)
 
-- [x] Support markdown setext-style headers
-  #222 opened on May 19 by msr1k
+- ✅ Support markdown setext-style headers
+  (#222 by msr1k)
 
-- [x] fix(icons): replace obsolete icons
-  #219 opened on May 2 by loichyan
+- ✅ fix(icons): replace obsolete icons
+  (#219 by loichyan)
   **Superseded by #225**
 
-- [x] Support ccls symbols
-  #218 opened on Apr 25 by rqdmap
+- ✅ Support ccls symbols
+  (#218 by rqdmap)
 
-- [x] fix: replace newlines with spaces in writer
-  #204 opened on Feb 15 by tbung
+- ✅ fix: replace newlines with spaces in writer
+  (#204 by tbung)
 
-- [x] Make close_outline idempotent
-  #200 opened on Feb 1 by showermat
+- ✅ Make close_outline idempotent
+  (#200 by showermat)
   **Superseded by #163**
 
 - Distinguish between public and private function display in Elixir
-  #187 opened on Oct 25, 2022 by scottming
+  (#187 by by scottming)
 
-- [x] Fix some options
-  #180 opened on Oct 7, 2022 by cljoly
+- ✅ Fix some options
+  (#180 by by cljoly)
 
 - fix: Invalid buffer id error
-  #177 opened on Sep 30, 2022 by snowair
+  (#177 by by snowair)
 
-- [x] fix(code_actions): use the builtin code_action
-  #168 opened on Sep 14, 2022 by zjp-CN
+- ✅ fix(code_actions): use the builtin code_action
+  (#168 by by zjp-CN)
 
-- [x] fix: plugin crashes when SymbolOutlineClose used
-  #163 opened on Aug 31, 2022 by beauwilliams
+- ✅ fix: plugin crashes when SymbolOutlineClose used
+  (#163 by by beauwilliams)
 
 - feat: Add window_bg_highlight to config
-  #137 opened on Jun 3, 2022 by Zane-
+  (#137 by by Zane-)
 
 - Added preview width and relative size
-  #130 opened on Apr 22, 2022 by Freyskeyd
+  (#130 by by Freyskeyd)
 
 - Improve preview, hover windows configurability and looks
-  #128 opened on Apr 22, 2022 by toppair
+  (#128 by by toppair)
 
-- [x] Do not close outline when focus_location occurs
-  #119 opened on Mar 18, 2022 by M1Sports20
+- ✅ Do not close outline when focus_location occurs
+  (#119 by by M1Sports20)
 
 - feat: instant_preview
-  #116 opened on Mar 12, 2022 by axieax
+  (#116 by by axieax)
 
 - check if code_win is nill
-  #110 opened on Feb 12, 2022 by i3Cheese
+  (#110 by by i3Cheese)
 
 - Floating window (Draft)
-  #101 opened on Jan 30, 2022 by druskus20
+  (#101 by by druskus20)
 
 
 ### TODO
