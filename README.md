@@ -39,7 +39,7 @@ keep this list up to date.
 - Feat: when `auto_close=true` only auto close if `goto_location` is used (where
 focus changed), and not for `focus_location` (simrat39/symbols-outline.nvim#119)
 
-- Fix `SymbolsOutlineClose` crashing when already closed: simrat39/symbols-outline.nvim#163 (simrat39/symbols-outline.nvim#168)
+- Fix `SymbolsOutlineClose` crashing when already closed: simrat39/symbols-outline.nvim#163
 - Support Nerd fonts v3.0: simrat39/symbols-outline.nvim#225
 - Fix newlines in symbols crash: simrat39/symbols-outline.nvim#204 (simrat39/symbols-outline.nvim#184)
 - Fix `code_actions`: simrat39/symbols-outline.nvim#168 (simrat39/symbols-outline.nvim#123)
