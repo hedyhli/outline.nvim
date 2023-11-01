@@ -233,29 +233,37 @@ Pass a table to the setup call above with your configuration options.
 
 ```lua
 local opts = {
+  -- Whether to highlight the currently hovered symbol (high cpu usage)
   highlight_hovered_item = true,
+  -- Whether to show outline guides
   show_guides = true,
+  -- Automatically open preview of code on hover
   auto_preview = false,
+  -- Where to open the split window: right/left
   position = 'right',
+  -- Whether width is relative to existing windows
   relative_width = true,
+  -- Percentage or integer of columns
   width = 25,
 
   -- Behaviour changed in this fork:
   -- Auto close the outline window if goto_location is triggered and not for
   -- focus_location
   auto_close = false,
-
   -- Vim options for the outline window
   show_numbers = false,
   show_relative_numbers = false,
   show_cursorline = true,
-
+  -- Show extra details with the symbols (lsp dependent)
   show_symbol_details = true,
   -- Highlight group for the preview background
   preview_bg_highlight = 'Pmenu',
+  -- Depth past which nodes will be folded by default
   autofold_depth = nil,
+  -- Automatically unfold hovered symbol
   auto_unfold_hover = true,
   fold_markers = { '', '' },
+  -- Whether to wrap long lines, or let them flow off the window
   wrap = false,
 
   -- Only in this fork:
@@ -263,8 +271,12 @@ local opts = {
   -- Set to false to remain focus on your previous buffer when opening
   -- symbols-outline.
   focus_on_open = true,
+  -- Pseudo-transparency of the preview window
+  winblend = 0
 
-  keymaps = { -- These keymaps can be a string or a table for multiple keys
+  -- These keymaps can be a string or a table for multiple keys
+  keymaps = { 
+    show_help = '?',
     close = {"<Esc>", "q"},
     -- Jump to symbol under cursor
     goto_location = "<Cr>",
@@ -275,17 +287,23 @@ local opts = {
     toggle_preview = "K",
     rename_symbol = "r",
     code_actions = "a",
-    -- These fold actions are collapsing tree items, not code folding
+    -- These fold actions are collapsing tree nodes, not code folding
     fold = "h",
-    fold_toggle = '<tab>',       -- Only in this fork
-    fold_toggle_all = '<S-tab>', -- Only in this fork
+    fold_toggle = '<Tab>',       -- Only in this fork
+    -- Toggle folds for all nodes.
+    -- If at least one node is folded, this action will fold all nodes.
+    -- If all nodes are folded, this action will unfold all nodes.
+    fold_toggle_all = '<S-Tab>', -- Only in this fork
     unfold = "l",
     fold_all = "W",
     unfold_all = "E",
     fold_reset = "R",
   },
 
+  -- Lsp clients to ignore
   lsp_blacklist = {},
+  -- Symbols to ignore.
+  -- Possible values: lua/symbols-outline/symbols.lua
   symbol_blacklist = {},
 
   symbols = {
@@ -327,59 +345,35 @@ local opts = {
 }
 ```
 
-| Property               | Description                                                                    | Type               | Default                  |
-| ---------------------- | ------------------------------------------------------------------------------ | ------------------ | ------------------------ |
-| highlight_hovered_item | Whether to highlight the currently hovered symbol (high cpu usage)             | boolean            | true                     |
-| show_guides            | Whether to show outline guides                                                 | boolean            | true                     |
-| position               | Where to open the split window                                                 | 'right' or 'left'  | 'right'                  |
-| relative_width         | Whether width of window is set relative to existing windows                    | boolean            | true                     |
-| width                  | Width of window (as a % or columns based on `relative_width`)                  | int                | 25                       |
-| auto_close             | Whether to automatically close the window after `goto_location`                | boolean            | false                    |
-| auto_preview           | Show a preview of the code on hover                                            | boolean            | false                    |
-| show_numbers           | Shows numbers with the outline                                                 | boolean            | false                    |
-| show_relative_numbers  | Shows relative numbers with the outline                                        | boolean            | false                    |
-| show_symbol_details    | Shows extra details with the symbols (lsp dependent)                           | boolean            | true                     |
-| preview_bg_highlight   | Background color of the preview window                                         | string             | Pmenu                    |
-| winblend               | Pseudo-transparency of the preview window                                      | int                | 0                        |
-| keymaps                | Which keys do what                                                             | table (dictionary) | [here](#default-keymaps) |
-| symbols                | Icon and highlight config for symbol icons                                     | table (dictionary) | scroll up                |
-| lsp_blacklist          | Which lsp clients to ignore                                                    | table (array)      | {}                       |
-| symbol_blacklist       | Which symbols to ignore ([possible values](./lua/symbols-outline/symbols.lua)) | table (array)      | {}                       |
-| autofold_depth         | Depth past which nodes will be folded by default                               | int                | nil                      |
-| auto_unfold_hover      | Automatically unfold hovered symbol                                            | boolean            | true                     |
-| fold_markers           | Markers to denote foldable symbol's status                                     | table (array)      | { '', '' }             |
-| wrap                   | Whether to wrap long lines, or let them flow off the window                    | boolean            | false                    |
-| focus_on_open          | Whether to focus cursor on the outline window when opening                     | boolean            | true                     |
-
 ## Commands
 
 - **:SymbolsOutline[!]**
 
-Toggle symbols outline. With bang (`!`) the cursor focus stays in your original
-window after opening the outline window. Set `focus_on_win = true` to always use
-this behaviour.
+  Toggle symbols outline. With bang (`!`) the cursor focus stays in your
+  original window after opening the outline window. Set `focus_on_win = true` to
+  always use this behaviour.
 
 - **:SymbolsOutlineOpen[!]**
 
-Open symbols outline. With bang (`!`) the cursor focus stays in your original
-window after opening the outline window. Set `focus_on_win = true` to always use
-this behaviour.
+  Open symbols outline. With bang (`!`) the cursor focus stays in your original
+  window after opening the outline window. Set `focus_on_win = true` to always
+  use this behaviour.
 
 - **:SymbolsOutlineClose**
 
-Close symbols outline
+  Close symbols outline
 
 - **:SymbolsOutlineFocus**
 
-Toggle focus on symbols outline
+  Toggle focus on symbols outline
 
 - **:SymbolsOutlineFocusOutline**
 
-Focus on symbols outline
+  Focus on symbols outline
 
 - **:SymbolsOutlineFocusCode**
 
-Focus on source window
+  Focus on source window
 
 
 ### Lua API
@@ -389,37 +383,37 @@ require'symbols-outline'
 ```
 - setup(opts)
 
-- toggle_outline(opts)
+- **toggle_outline(opts)**
 
-Toggle opening/closing of outline window.
+  Toggle opening/closing of outline window.
 
-If `opts.bang` is true, keep focus on previous window.
+  If `opts.bang` is true, keep focus on previous window.
 
-- open_outline(opts)
+- **open_outline(opts)**
 
-Open the outline window.
+  Open the outline window.
 
-If `opts.bang` is true, keep focus on previous window.
+  If `opts.bang` is true, keep focus on previous window.
 
-- close_outline()
+- **close_outline()**
 
-Close the outline window
+  Close the outline window
 
-- focus_toggle()
+- **focus_toggle()**
 
-Toggle cursor focus between code and outline window
+  Toggle cursor focus between code and outline window
 
-- focus_outline()
+- **focus_outline()**
 
-Focus cursor on the outline window.
+  Focus cursor on the outline window.
 
-- focus_code()
+- **focus_code()**
 
-Focus cursor on the window which the outline is derived from.
+  Focus cursor on the window which the outline is derived from.
 
-- is_open()
+- **is_open()**
 
-Return whether the outline window is open
+  Return whether the outline window is open
 
 
 ## Default keymaps
@@ -427,6 +421,7 @@ Return whether the outline window is open
 | Key        | Action                                             |
 | ---------- | -------------------------------------------------- |
 | Escape     | Close outline                                      |
+| ?          | Show help message                                  |
 | Enter      | Go to symbol location in code                      |
 | o          | Go to symbol location in code without losing focus |
 | Ctrl+Space | Hover current symbol                               |
@@ -440,7 +435,6 @@ Return whether the outline window is open
 | W          | Fold all symbols                                   |
 | E          | Unfold all symbols                                 |
 | R          | Reset all folding                                  |
-| ?          | Show help message                                  |
 
 ## Highlights
 
