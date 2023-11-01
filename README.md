@@ -239,13 +239,17 @@ local opts = {
   position = 'right',
   relative_width = true,
   width = 25,
+
   -- Behaviour changed in this fork:
   -- Auto close the outline window if goto_location is triggered and not for
   -- focus_location
   auto_close = false,
+
+  -- Vim options for the outline window
   show_numbers = false,
   show_relative_numbers = false,
   show_cursorline = true,
+
   show_symbol_details = true,
   -- Highlight group for the preview background
   preview_bg_highlight = 'Pmenu',
@@ -253,11 +257,13 @@ local opts = {
   auto_unfold_hover = true,
   fold_markers = { '', '' },
   wrap = false,
+
   -- Only in this fork:
   -- Whether to focus on the outline window when it is opened.
   -- Set to false to remain focus on your previous buffer when opening
   -- symbols-outline.
   focus_on_open = true,
+
   keymaps = { -- These keymaps can be a string or a table for multiple keys
     close = {"<Esc>", "q"},
     -- Jump to symbol under cursor
@@ -278,8 +284,10 @@ local opts = {
     unfold_all = "E",
     fold_reset = "R",
   },
+
   lsp_blacklist = {},
   symbol_blacklist = {},
+
   symbols = {
     -- Changed in this fork
     File = { icon = "󰈔", hl = "@text.uri" },
@@ -345,14 +353,34 @@ local opts = {
 
 ## Commands
 
-| Command                       | Description                      |
-| ----------------------------- | -------------------------------- |
-| `:SymbolsOutline`             | Toggle symbols outline           |
-| `:SymbolsOutlineOpen`         | Open symbols outline             |
-| `:SymbolsOutlineClose`        | Close symbols outline            |
-| `:SymbolsOutlineFocus`        | Toggle focus on symbols outline  |
-| `:SymbolsOutlineFocusOutline` | Focus on symbols outline         |
-| `:SymbolsOutlineFocusCode`    | Focus on source window           |
+- **:SymbolsOutline[!]**
+
+Toggle symbols outline. With bang (`!`) the cursor focus stays in your original
+window after opening the outline window. Set `focus_on_win = true` to always use
+this behaviour.
+
+- **:SymbolsOutlineOpen[!]**
+
+Open symbols outline. With bang (`!`) the cursor focus stays in your original
+window after opening the outline window. Set `focus_on_win = true` to always use
+this behaviour.
+
+- **:SymbolsOutlineClose**
+
+Close symbols outline
+
+- **:SymbolsOutlineFocus**
+
+Toggle focus on symbols outline
+
+- **:SymbolsOutlineFocusOutline**
+
+Focus on symbols outline
+
+- **:SymbolsOutlineFocusCode**
+
+Focus on source window
+
 
 ### Lua API
 
@@ -360,12 +388,39 @@ local opts = {
 require'symbols-outline'
 ```
 - setup(opts)
-- toggle_outline()
-- open_outline()
+
+- toggle_outline(opts)
+
+Toggle opening/closing of outline window.
+
+If `opts.bang` is true, keep focus on previous window.
+
+- open_outline(opts)
+
+Open the outline window.
+
+If `opts.bang` is true, keep focus on previous window.
+
 - close_outline()
+
+Close the outline window
+
 - focus_toggle()
+
+Toggle cursor focus between code and outline window
+
 - focus_outline()
+
+Focus cursor on the outline window.
+
 - focus_code()
+
+Focus cursor on the window which the outline is derived from.
+
+- is_open()
+
+Return whether the outline window is open
+
 
 ## Default keymaps
 
@@ -379,8 +434,8 @@ require'symbols-outline'
 | r          | Rename symbol                                      |
 | a          | Code actions                                       |
 | h          | fold symbol                                        |
-| tab        | toggle fold under cursor                           |
-| shift+tab  | toggle all folds                                   |
+| Tab        | toggle fold under cursor                           |
+| Shift+Tab  | toggle all folds                                   |
 | l          | Unfold symbol                                      |
 | W          | Fold all symbols                                   |
 | E          | Unfold all symbols                                 |

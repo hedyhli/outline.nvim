@@ -54,12 +54,13 @@ local function setup_buffer_autocmd()
 end
 
 local function setup_commands()
-  vim.api.nvim_create_user_command('SymbolsOutline', M.toggle_outline, { nargs = 0 })
-  vim.api.nvim_create_user_command('SymbolsOutlineOpen', M.open_outline, { nargs = 0 })
-  vim.api.nvim_create_user_command('SymbolsOutlineClose', M.close_outline, { nargs = 0 })
-  vim.api.nvim_create_user_command('SymbolsOutlineFocusOutline', M.focus_outline, { nargs = 0 })
-  vim.api.nvim_create_user_command('SymbolsOutlineFocusCode', M.focus_code, { nargs = 0 })
-  vim.api.nvim_create_user_command('SymbolsOutlineFocus', M.focus_toggle, { nargs = 0 })
+  local cmd = function(n, c, o) vim.api.nvim_create_user_command('SymbolsOutline'..n, c, o) end
+  cmd('', M.toggle_outline, { nargs = 0, bang = true })
+  cmd('Open', M.open_outline, { nargs = 0, bang = true })
+  cmd('Close', M.close_outline, { nargs = 0 })
+  cmd('FocusOutline', M.focus_outline, { nargs = 0 })
+  cmd('FocusCode', M.focus_code, { nargs = 0 })
+  cmd('Focus', M.focus_toggle, { nargs = 0 })
 end
 
 -------------------------
@@ -69,10 +70,11 @@ M.state = {
   outline_items = {},
   flattened_outline_items = {},
   code_win = 0,
+  opts = {}
 }
 
 local function wipe_state()
-  M.state = { outline_items = {}, flattened_outline_items = {}, code_win = 0 }
+  M.state = { outline_items = {}, flattened_outline_items = {}, code_win = 0, opts = {} }
 end
 
 local function _update_lines()
@@ -341,21 +343,22 @@ local function handler(response)
 
   M._highlight_current_item(M.state.code_win)
 
-  if not config.options.focus_on_open then
+  if not config.options.focus_on_open or (M.state.opts and M.state.opts.bang) then
     vim.fn.win_gotoid(M.state.code_win)
   end
 end
 
-function M.toggle_outline()
+function M.toggle_outline(opts)
   if M.view:is_open() then
     M.close_outline()
   else
-    M.open_outline()
+    M.open_outline(opts)
   end
 end
 
-function M.open_outline()
+function M.open_outline(opts)
   if not M.view:is_open() then
+    M.state.opts = opts
     providers.request_symbols(handler)
   end
 end
@@ -385,6 +388,10 @@ function M.focus_toggle()
       vim.fn.win_gotoid(M.state.code_win)
     end
   end
+end
+
+function M.is_open()
+  return M.view:is_open()
 end
 
 function M.setup(opts)
