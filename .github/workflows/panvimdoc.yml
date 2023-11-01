@@ -14,5 +14,5 @@ jobs:
           vimdoc: symbols-outline
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: "Auto generate docs"
+          commit_message: "Auto generate vim docs"
           branch: ${{ github.head_ref }}
