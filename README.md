@@ -34,11 +34,22 @@ Below is a list of features I've included in this fork which, at the time of
 writing, has not been included upstream (in the original repo). I try my best to
 keep this list up to date.
 
+Features:
+
 - Feat: Toggling folds (and added default keymaps for it)
 (simrat39/symbols-outline.nvim#194)
+- Feat: Control focus between outline and code window.
+  - New commands: SymbolsOutline`Focus,FocusOutline,FocusCode` (see
+  [commands](#commands))
+  - Fixed issues:
+    - simrat39/symbols-outline.nvim#143
+    - simrat39/symbols-outline.nvim#174
+    - simrat39/symbols-outline.nvim#207
 - Feat: when `auto_close=true` only auto close if `goto_location` is used (where
 focus changed), and not for `focus_location` (simrat39/symbols-outline.nvim#119)
 - Feat: Cursorline option for the outline window
+
+Fixes:
 
 - Fix symbol preview (simrat39/symbols-outline.nvim#176)
 - Fix `SymbolsOutlineClose` crashing when already closed: simrat39/symbols-outline.nvim#163
@@ -239,6 +250,11 @@ local opts = {
   auto_unfold_hover = true,
   fold_markers = { '', '' },
   wrap = false,
+  -- Only in this fork:
+  -- Whether to focus on the outline window when it is opened.
+  -- Set to false to remain focus on your previous buffer when opening
+  -- symbols-outline.
+  focus_on_open = true,
   keymaps = { -- These keymaps can be a string or a table for multiple keys
     close = {"<Esc>", "q"},
     goto_location = "<Cr>",
@@ -318,14 +334,18 @@ local opts = {
 | auto_unfold_hover      | Automatically unfold hovered symbol                                            | boolean            | true                     |
 | fold_markers           | Markers to denote foldable symbol's status                                     | table (array)      | { '', '' }             |
 | wrap                   | Whether to wrap long lines, or let them flow off the window                    | boolean            | false                    |
+| focus_on_open          | Whether to focus cursor on the outline window when opening                     | boolean            | true                     |
 
 ## Commands
 
-| Command                | Description            |
-| ---------------------- | ---------------------- |
-| `:SymbolsOutline`      | Toggle symbols outline |
-| `:SymbolsOutlineOpen`  | Open symbols outline   |
-| `:SymbolsOutlineClose` | Close symbols outline  |
+| Command                       | Description                      |
+| ----------------------------- | -------------------------------- |
+| `:SymbolsOutline`             | Toggle symbols outline           |
+| `:SymbolsOutlineOpen`         | Open symbols outline             |
+| `:SymbolsOutlineClose`        | Close symbols outline            |
+| `:SymbolsOutlineFocus`        | Toggle focus on symbols outline  |
+| `:SymbolsOutlineFocusOutline` | Focus on symbols outline         |
+| `:SymbolsOutlineFocusCode`    | Focus on source window           |
 
 ### Lua
 
@@ -333,6 +353,9 @@ local opts = {
 require'symbols-outline'.toggle_outline()
 require'symbols-outline'.open_outline()
 require'symbols-outline'.close_outline()
+require'symbols-outline'.focus_toggle()
+require'symbols-outline'.focus_outline()
+require'symbols-outline'.focus_code()
 ```
 
 ## Default keymaps

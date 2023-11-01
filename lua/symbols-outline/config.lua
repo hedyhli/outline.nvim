@@ -21,6 +21,7 @@ M.defaults = {
   auto_unfold_hover = true,
   fold_markers = { '', '' },
   wrap = false,
+  focus_on_open = true,
   keymaps = { -- These keymaps can be a string or a table for multiple keys
     close = { '<Esc>', 'q' },
     goto_location = '<Cr>',

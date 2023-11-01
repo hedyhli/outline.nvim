@@ -57,6 +57,9 @@ local function setup_commands()
   vim.api.nvim_create_user_command('SymbolsOutline', M.toggle_outline, { nargs = 0 })
   vim.api.nvim_create_user_command('SymbolsOutlineOpen', M.open_outline, { nargs = 0 })
   vim.api.nvim_create_user_command('SymbolsOutlineClose', M.close_outline, { nargs = 0 })
+  vim.api.nvim_create_user_command('SymbolsOutlineFocusOutline', M.focus_outline, { nargs = 0 })
+  vim.api.nvim_create_user_command('SymbolsOutlineFocusCode', M.focus_code, { nargs = 0 })
+  vim.api.nvim_create_user_command('SymbolsOutlineFocus', M.focus_toggle, { nargs = 0 })
 end
 
 -------------------------
@@ -337,6 +340,10 @@ local function handler(response)
   writer.parse_and_write(M.view.bufnr, M.state.flattened_outline_items)
 
   M._highlight_current_item(M.state.code_win)
+
+  if not config.options.focus_on_open then
+    vim.fn.win_gotoid(M.state.code_win)
+  end
 end
 
 function M.toggle_outline()
@@ -355,6 +362,29 @@ end
 
 function M.close_outline()
   M.view:close()
+end
+
+function M.focus_outline()
+  if M.view:is_open() then
+    vim.fn.win_gotoid(M.view.winnr)
+  end
+end
+
+function M.focus_code()
+  if M.state.code_win then
+    vim.fn.win_gotoid(M.state.code_win)
+  end
+end
+
+function M.focus_toggle()
+  if M.view:is_open() and M.state.code_win then
+    local winid = vim.fn.win_getid()
+    if winid == M.state.code_win then
+      vim.fn.win_gotoid(M.view.winnr)
+    else
+      vim.fn.win_gotoid(M.state.code_win)
+    end
+  end
 end
 
 function M.setup(opts)
