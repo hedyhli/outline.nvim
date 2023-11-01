@@ -53,21 +53,29 @@ Below is a list of features I’ve included in this fork which, at the time of
 writing, has not been included upstream (in the original repo). I try my best
 to keep this list up to date.
 
+Features:
+
 - Feat: Toggling folds (and added default keymaps for it)
     (simrat39/symbols-outline.nvim#194)
+- Feat: Control focus between outline and code window.
+    - New commands: SymbolsOutline`Focus,FocusOutline,FocusCode` (see
+        |symbols-outline-commands|)
+    - Fixed issues:
+        - simrat39/symbols-outline.nvim#143
+        - simrat39/symbols-outline.nvim#174
+        - simrat39/symbols-outline.nvim#207
 - Feat: when `auto_close=true` only auto close if `goto_location` is used (where
-    focus changed), and not for `focus_location`
-    (simrat39/symbols-outline.nvim#119)
+    focus changed), and not for `focus_location` (simrat39/symbols-outline.nvim#119)
+- Feat: Cursorline option for the outline window
+
+Fixes:
+
 - Fix symbol preview (simrat39/symbols-outline.nvim#176)
-- Fix `SymbolsOutlineClose` crashing when already closed:
-    simrat39/symbols-outline.nvim#163
+- Fix `SymbolsOutlineClose` crashing when already closed: simrat39/symbols-outline.nvim#163
 - Support Nerd fonts v3.0: simrat39/symbols-outline.nvim#225
-- Fix newlines in symbols crash: simrat39/symbols-outline.nvim#204
-    (simrat39/symbols-outline.nvim#184)
-- Fix `code_actions`: simrat39/symbols-outline.nvim#168
-    (simrat39/symbols-outline.nvim#123)
-- Fix fold all operation too slow: simrat39/symbols-outline.nvim#223
-    (simrat39/symbols-outline.nvim#224)
+- Fix newlines in symbols crash: simrat39/symbols-outline.nvim#204 (simrat39/symbols-outline.nvim#184)
+- Fix `code_actions`: simrat39/symbols-outline.nvim#168 (simrat39/symbols-outline.nvim#123)
+- Fix fold all operation too slow: simrat39/symbols-outline.nvim#223 (simrat39/symbols-outline.nvim#224)
 
 
 PRS ~
@@ -116,6 +124,10 @@ Items will be moved to above list when complete.
 - Navigation
     - Go to parent
     - Cycle siblings
+- ☐ simrat39/symbols-outline.nvim#75: Handling of the outline window when
+    attached buffer is closed.
+    Maybe it should continue working, so that pressing enter can open a split to
+    the correct location, and pressing `q` can properly close the buffer.
 
 
 RELATED PLUGINS ~
@@ -216,12 +228,18 @@ Pass a table to the setup call above with your configuration options.
       auto_close = false,
       show_numbers = false,
       show_relative_numbers = false,
+      show_cursorline = true,
       show_symbol_details = true,
       preview_bg_highlight = 'Pmenu',
       autofold_depth = nil,
       auto_unfold_hover = true,
       fold_markers = { '', '' },
       wrap = false,
+      -- Only in this fork:
+      -- Whether to focus on the outline window when it is opened.
+      -- Set to false to remain focus on your previous buffer when opening
+      -- symbols-outline.
+      focus_on_open = true,
       keymaps = { -- These keymaps can be a string or a table for multiple keys
         close = {"<Esc>", "q"},
         goto_location = "<Cr>",
@@ -334,15 +352,21 @@ Pass a table to the setup call above with your configuration options.
 
   wrap                     Whether to wrap long lines, or let them boolean        false
                            flow off the window                                    
+
+  focus_on_open            Whether to focus cursor on the outline  boolean        true
+                           window when opening                                    
   --------------------------------------------------------------------------------------------
 
 COMMANDS                       *symbols-outline-symbols-outline.nvim-commands*
 
-  Command                Description
-  ---------------------- ------------------------
-  :SymbolsOutline        Toggle symbols outline
-  :SymbolsOutlineOpen    Open symbols outline
-  :SymbolsOutlineClose   Close symbols outline
+  Command                       Description
+  ----------------------------- ---------------------------------
+  :SymbolsOutline               Toggle symbols outline
+  :SymbolsOutlineOpen           Open symbols outline
+  :SymbolsOutlineClose          Close symbols outline
+  :SymbolsOutlineFocus          Toggle focus on symbols outline
+  :SymbolsOutlineFocusOutline   Focus on symbols outline
+  :SymbolsOutlineFocusCode      Focus on source window
 
 LUA ~
 
@@ -350,6 +374,9 @@ LUA ~
     require'symbols-outline'.toggle_outline()
     require'symbols-outline'.open_outline()
     require'symbols-outline'.close_outline()
+    require'symbols-outline'.focus_toggle()
+    require'symbols-outline'.focus_outline()
+    require'symbols-outline'.focus_code()
 <
 
 
