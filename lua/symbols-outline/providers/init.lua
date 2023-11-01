@@ -26,6 +26,7 @@ function M.request_symbols(on_symbols)
     local provider = require(value)
     if provider.should_use_provider(0) then
       _G._symbols_outline_current_provider = provider
+      _G._symbols_outline_current_provider.name = value
       provider.request_symbols(on_symbols)
       break
     end

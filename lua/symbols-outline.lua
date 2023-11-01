@@ -61,6 +61,7 @@ local function setup_commands()
   cmd('FocusOutline', M.focus_outline, { nargs = 0 })
   cmd('FocusCode', M.focus_code, { nargs = 0 })
   cmd('Focus', M.focus_toggle, { nargs = 0 })
+  cmd('Status', M.show_status, { nargs = 0 })
 end
 
 -------------------------
@@ -392,6 +393,20 @@ end
 
 function M.is_open()
   return M.view:is_open()
+end
+
+function M.show_status()
+  if providers.has_provider() and _G._symbols_outline_current_provider then
+    print("Current provider:")
+    print(_G._symbols_outline_current_provider.name)
+    if M.view:is_open() then
+      print("Outline window is open")
+    else
+      print("Outline window is not open")
+    end
+  else
+    print("No providers")
+  end
 end
 
 function M.setup(opts)

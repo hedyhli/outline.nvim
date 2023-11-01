@@ -61,6 +61,9 @@ focus changed), and not for `focus_location` (simrat39/symbols-outline.nvim#119)
   - The preview window is positioned to be vertically center-aligned (rather
     than fixed to the top). This is planned to be configurable.
 
+- Feat: Added function and command to show provider and outline window status,
+  somewhat like `:LspInfo`.
+
 Fixes:
 
 - Fix symbol preview (simrat39/symbols-outline.nvim#176)
@@ -419,6 +422,10 @@ local opts = {
 
   Focus on source window
 
+- **:SymbolsOutlineStatus**
+
+  Display current provider and outline window status in the messages area.
+
 
 ### Lua API
 
@@ -441,11 +448,11 @@ require'symbols-outline'
 
 - **close_outline()**
 
-  Close the outline window
+  Close the outline window.
 
 - **focus_toggle()**
 
-  Toggle cursor focus between code and outline window
+  Toggle cursor focus between code and outline window.
 
 - **focus_outline()**
 
@@ -457,7 +464,11 @@ require'symbols-outline'
 
 - **is_open()**
 
-  Return whether the outline window is open
+  Return whether the outline window is open.
+
+- **show_status()**
+
+  Display current provider and outline window status in the messages area.
 
 
 ## Default keymaps
@@ -488,3 +499,4 @@ require'symbols-outline'
 | Pmenu                   | Highlight of the preview popup windows |
 | SymbolsOutlineConnector | Highlight of the table connectors      |
 | Comment                 | Highlight of the info virtual text     |
+
