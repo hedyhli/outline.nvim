@@ -34,10 +34,11 @@ Below is a list of features I've included in this fork which, at the time of
 writing, has not been included upstream (in the original repo). I try my best to
 keep this list up to date.
 
-Features:
+Features/Changes:
 
 - Feat: Toggling folds (and added default keymaps for it)
 (simrat39/symbols-outline.nvim#194)
+
 - Feat: Control focus between outline and code window.
   - New commands: SymbolsOutline`Focus,FocusOutline,FocusCode` (see
   [commands](#commands))
@@ -45,9 +46,20 @@ Features:
     - simrat39/symbols-outline.nvim#143
     - simrat39/symbols-outline.nvim#174
     - simrat39/symbols-outline.nvim#207
+
 - Feat: when `auto_close=true` only auto close if `goto_location` is used (where
 focus changed), and not for `focus_location` (simrat39/symbols-outline.nvim#119)
+
 - Feat: Cursorline option for the outline window
+
+- MAJOR: Removed hover floating window from `toggle_preview`.
+  - Instead, you can set `open_hover_on_preview=true` (true by default) so that
+    the `hover_symbol` action can be triggered when `toggle_preview`is
+    triggered.
+  - The preview window's size changed to half of neovim height (rather than a
+    third). This is planned to be configurable.
+  - The preview window is positioned to be vertically center-aligned (rather
+    than fixed to the top). This is planned to be configurable.
 
 Fixes:
 
@@ -59,6 +71,12 @@ Fixes:
 - Fix fold all operation too slow: simrat39/symbols-outline.nvim#223 (simrat39/symbols-outline.nvim#224)
 
 ### PRs
+
+Key:
+```
+✅ = Either merged superseded
+📮 = Planned for merge
+```
 
 - Open handler checks if view is not already open
   (#235 by eyalz800)
@@ -107,10 +125,10 @@ Fixes:
 - feat: Add window_bg_highlight to config
   (#137 by Zane-)
 
-- Added preview width and relative size
+- 📮 Added preview width and relative size
   (#130 by Freyskeyd)
 
-- Improve preview, hover windows configurability and looks
+- 📮 Improve preview, hover windows configurability and looks
   (#128 by toppair)
 
 - ✅ Do not close outline when focus_location occurs
@@ -128,7 +146,7 @@ Fixes:
 
 ### TODO
 
-KEY:
+Key:
 ```
 - [ ] : Planned
 - [/] : WIP
@@ -138,18 +156,23 @@ KEY:
 Items will be moved to above list when complete.
 
 - Folds
-  - [ ] Org-like <kbd>shift+tab</kbd> behavior: Open folds level-by-level
-  - [ ] Optionally not opening all child nodes when opening parent node
+  - `[ ]` Org-like <kbd>shift+tab</kbd> behavior: Open folds level-by-level
+  - `[ ]` Optionally not opening all child nodes when opening parent node
   - Fold siblings and siblings of parent on startup
 - Navigation
   - Go to parent
   - Cycle siblings
 
-- [ ] simrat39/symbols-outline.nvim#75: Handling of the outline window when attached
+- `[ ]` simrat39/symbols-outline.nvim#75: Handling of the outline window when attached
   buffer is closed.
 
   Maybe it should continue working, so that pressing enter can open a split to
   the correct location, and pressing `q` can properly close the buffer.
+
+- Preview / Hover
+  - `[/]` Configurable winhighlight options for preview window (like nvim-cmp)
+  (simrat39/symbols-outline#128)
+  - `[/]` Configurable width and height (simrat39/symbols-outline#130)
 
 ### Related plugins
 
@@ -229,16 +252,26 @@ require("symbols-outline").setup({})
 
 ## Configuration
 
-Pass a table to the setup call above with your configuration options.
+### Terminology
+
+- **Provider**: Source of the items in the outline view. Could be LSP, CoC, etc.
+- **Node**: An item in the outline view
+- **Fold**: Collapse a collapsible node
+- **Location**: Where in the source file a node is from
+- **Preview**: Peek the location of a node in code using a floating window
+- **Hover**: Cursor currently on the line of a node
+- **Hover symbol**: Displaying a floating window to show symbol information
+provided by provider.
+- **Focus**: Which window the cursor is in
+
+### Options
+
+Pass a table to the setup call with your configuration options.
+
+Default values are shown:
 
 ```lua
 local opts = {
-  -- Whether to highlight the currently hovered symbol (high cpu usage)
-  highlight_hovered_item = true,
-  -- Whether to show outline guides
-  show_guides = true,
-  -- Automatically open preview of code on hover
-  auto_preview = false,
   -- Where to open the split window: right/left
   position = 'right',
   -- Whether width is relative to existing windows
@@ -246,10 +279,21 @@ local opts = {
   -- Percentage or integer of columns
   width = 25,
 
+  -- Whether to highlight the currently hovered symbol (high cpu usage)
+  highlight_hovered_item = true,
+  -- Whether to show outline guides
+  show_guides = true,
+  -- Automatically open preview of code on hover
+  auto_preview = false,
+  -- Automatically open hover_symbol when opening toggle_preview (see keymaps).
+  -- If you disable this you can still open hover_symbol using your keymap
+  -- below.
+  open_hover_on_preview = true,
   -- Behaviour changed in this fork:
   -- Auto close the outline window if goto_location is triggered and not for
   -- focus_location
   auto_close = false,
+
   -- Vim options for the outline window
   show_numbers = false,
   show_relative_numbers = false,

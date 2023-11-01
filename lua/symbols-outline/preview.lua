@@ -1,13 +1,12 @@
 local so = require 'symbols-outline'
 local config = require 'symbols-outline.config'
+local hover = require 'symbols-outline.hover'
 
 local M = {}
 
 local state = {
   preview_buf = nil,
   preview_win = nil,
-  hover_buf = nil,
-  hover_win = nil,
 }
 
 local function is_current_win_outline()
@@ -43,8 +42,7 @@ local function get_offset()
 end
 
 local function get_height()
-  local uis = vim.api.nvim_list_uis()
-  return math.ceil(uis[1].height / 3)
+  return vim.api.nvim_list_uis()[1].height
 end
 
 local function get_hovered_node()
@@ -90,78 +88,13 @@ local function setup_preview_buf()
   update_preview(code_buf)
 end
 
-local function get_hover_params(node, winnr)
-  local bufnr = vim.api.nvim_win_get_buf(winnr)
-  local uri = vim.uri_from_bufnr(bufnr)
-
-  return {
-    textDocument = { uri = uri },
-    position = { line = node.line, character = node.character },
-    bufnr = bufnr,
-  }
-end
-
-local function update_hover()
-  if not has_code_win() then
-    return
-  end
-
-  local node = get_hovered_node()
-  if not node then
-    return
-  end
-
-  local provider = _G._symbols_outline_current_provider
-  local params = get_hover_params(node, so.state.code_win)
-
-  provider.hover_info(params.bufnr, params, function(err, result)
-    if err then
-      print(vim.inspect(err))
-      return
-    end
-    local markdown_lines = {}
-    if result ~= nil then
-      markdown_lines = vim.lsp.util.convert_input_to_markdown_lines(
-        result.contents
-      )
-    end
-    markdown_lines = vim.lsp.util.trim_empty_lines(markdown_lines)
-    if vim.tbl_isempty(markdown_lines) then
-      markdown_lines = { 'No info available' }
-    end
-
-    markdown_lines = vim.lsp.util.stylize_markdown(
-      state.hover_buf,
-      markdown_lines,
-      {}
-    )
-
-    if state.hover_buf ~= nil then
-      vim.api.nvim_buf_set_lines(state.hover_buf, 0, -1, 0, markdown_lines)
-    end
-  end)
-end
-
-local function setup_hover_buf()
-  if not has_code_win() then
-    return
-  end
-  local code_buf = vim.api.nvim_win_get_buf(so.state.code_win)
-  local ft = vim.api.nvim_buf_get_option(code_buf, 'filetype')
-  vim.api.nvim_buf_set_option(state.hover_buf, 'syntax', ft)
-  vim.api.nvim_buf_set_option(state.hover_buf, 'bufhidden', 'delete')
-  vim.api.nvim_win_set_option(state.hover_win, 'wrap', true)
-  vim.api.nvim_win_set_option(state.hover_win, 'cursorline', false)
-  update_hover()
-end
-
 local function set_bg_hl()
   local winhi = 'Normal:' .. config.options.preview_bg_highlight
   vim.api.nvim_win_set_option(state.preview_win, 'winhighlight', winhi)
-  vim.api.nvim_win_set_option(state.hover_win, 'winhighlight', winhi)
+  -- vim.api.nvim_win_set_option(state.hover_win, 'winhighlight', winhi)
   local winblend = config.options.winblend
   vim.api.nvim_win_set_option(state.preview_win, 'winblend', winblend)
-  vim.api.nvim_win_set_option(state.hover_win, 'winblend', winblend)
+  -- vim.api.nvim_win_set_option(state.hover_win, 'winblend', winblend)
 end
 
 local function show_preview()
@@ -174,44 +107,21 @@ local function show_preview()
       end,
     })
     local offsets = get_offset()
+    local height = get_height()
+    local winheight = math.ceil(height / 2)
     state.preview_win = vim.api.nvim_open_win(state.preview_buf, false, {
       relative = 'win',
       width = 50,
-      height = get_height(),
+      height = winheight,
       bufpos = { 0, 0 },
-      row = offsets[1],
       col = offsets[2],
+      -- Position preview window middle-aligned vertically
+      row = math.ceil((height - winheight) / 2),
       border = config.options.border,
     })
     setup_preview_buf()
   else
     update_preview()
-  end
-end
-
-local function show_hover()
-  if state.hover_win == nil and state.hover_buf == nil then
-    state.hover_buf = vim.api.nvim_create_buf(false, true)
-    vim.api.nvim_buf_attach(state.hover_buf, false, {
-      on_detach = function()
-        state.hover_buf = nil
-        state.hover_win = nil
-      end,
-    })
-    local offsets = get_offset()
-    local height = get_height()
-    state.hover_win = vim.api.nvim_open_win(state.hover_buf, false, {
-      relative = 'win',
-      width = 50,
-      height = height,
-      bufpos = { 0, 0 },
-      row = offsets[1] + height + 2,
-      col = offsets[2],
-      border = config.options.border,
-    })
-    setup_hover_buf()
-  else
-    update_hover()
   end
 end
 
@@ -221,8 +131,10 @@ function M.show()
   end
 
   show_preview()
-  show_hover()
   set_bg_hl()
+  if config.options.open_hover_on_preview then
+    hover.show_hover()
+  end
 end
 
 function M.close()

@@ -11,6 +11,7 @@ M.defaults = {
   width = 25,
   auto_close = false,
   auto_preview = false,
+  open_hover_on_preview = true,
   show_numbers = false,
   show_relative_numbers = false,
   show_cursorline = true,
