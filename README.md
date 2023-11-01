@@ -36,11 +36,79 @@ keep this list up to date.
 
 - Feat: Toggling folds (and added default keymaps for it)
 (simrat39/symbols-outline.nvim#194)
-- Fix `SymbolsOutlineClose` crashing when already closed: simrat39/symbols-outline.nvim#163
+- Fix `SymbolsOutlineClose` crashing when already closed: simrat39/symbols-outline.nvim#163 (simrat39/symbols-outline.nvim#168)
 - Support Nerd fonts v3.0: simrat39/symbols-outline.nvim#225
 - Fix newlines in symbols crash: simrat39/symbols-outline.nvim#204 (simrat39/symbols-outline.nvim#184)
 - Fix `code_actions`: simrat39/symbols-outline.nvim#168 (simrat39/symbols-outline.nvim#123)
 - Fix fold all operation too slow: simrat39/symbols-outline.nvim#223 (simrat39/symbols-outline.nvim#224)
+
+### PRs
+
+- Open handler checks if view is not already open
+  #235 opened on Sep 1 by eyalz800
+
+- auto_jump config param
+  #229 opened on Jun 8 by stickperson
+
+- [x] Update nerd fonts to 3.0
+  #225 opened on May 24 by anstadnik
+
+- [x] fix(folding): optimize fold/unfold all
+  #223 opened on May 22 by wjdwndud0114
+
+- [x] Support markdown setext-style headers
+  #222 opened on May 19 by msr1k
+
+- [x] fix(icons): replace obsolete icons
+  #219 opened on May 2 by loichyan
+  **Superseded by #225**
+
+- [x] Support ccls symbols
+  #218 opened on Apr 25 by rqdmap
+
+- [x] fix: replace newlines with spaces in writer
+  #204 opened on Feb 15 by tbung
+
+- [x] Make close_outline idempotent
+  #200 opened on Feb 1 by showermat
+  **Superseded by #163**
+
+- Distinguish between public and private function display in Elixir
+  #187 opened on Oct 25, 2022 by scottming
+
+- [x] Fix some options
+  #180 opened on Oct 7, 2022 by cljoly
+
+- fix: Invalid buffer id error
+  #177 opened on Sep 30, 2022 by snowair
+
+- [x] fix(code_actions): use the builtin code_action
+  #168 opened on Sep 14, 2022 by zjp-CN
+
+- [x] fix: plugin crashes when SymbolOutlineClose used
+  #163 opened on Aug 31, 2022 by beauwilliams
+
+- feat: Add window_bg_highlight to config
+  #137 opened on Jun 3, 2022 by Zane-
+
+- Added preview width and relative size
+  #130 opened on Apr 22, 2022 by Freyskeyd
+
+- Improve preview, hover windows configurability and looks
+  #128 opened on Apr 22, 2022 by toppair
+
+- [x] Do not close outline when focus_location occurs
+  #119 opened on Mar 18, 2022 by M1Sports20
+
+- feat: instant_preview
+  #116 opened on Mar 12, 2022 by axieax
+
+- check if code_win is nill
+  #110 opened on Feb 12, 2022 by i3Cheese
+
+- Floating window (Draft)
+  #101 opened on Jan 30, 2022 by druskus20
+
 
 ### TODO
 
