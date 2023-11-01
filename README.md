@@ -36,6 +36,9 @@ keep this list up to date.
 
 - Feat: Toggling folds (and added default keymaps for it)
 (simrat39/symbols-outline.nvim#194)
+- Feat: when `auto_close=true` only auto close if `goto_location` is used (where
+focus changed), and not for `focus_location` (simrat39/symbols-outline.nvim#119)
+
 - Fix `SymbolsOutlineClose` crashing when already closed: simrat39/symbols-outline.nvim#163 (simrat39/symbols-outline.nvim#168)
 - Support Nerd fonts v3.0: simrat39/symbols-outline.nvim#225
 - Fix newlines in symbols crash: simrat39/symbols-outline.nvim#204 (simrat39/symbols-outline.nvim#184)
@@ -198,6 +201,9 @@ local opts = {
   position = 'right',
   relative_width = true,
   width = 25,
+  -- Behaviour changed in this fork:
+  -- Auto close the outline window if goto_location is triggered and not for
+  -- focus_location
   auto_close = false,
   show_numbers = false,
   show_relative_numbers = false,
@@ -271,7 +277,7 @@ local opts = {
 | position               | Where to open the split window                                                 | 'right' or 'left'  | 'right'                  |
 | relative_width         | Whether width of window is set relative to existing windows                    | boolean            | true                     |
 | width                  | Width of window (as a % or columns based on `relative_width`)                  | int                | 25                       |
-| auto_close             | Whether to automatically close the window after selection                      | boolean            | false                    |
+| auto_close             | Whether to automatically close the window after `goto_location`                | boolean            | false                    |
 | auto_preview           | Show a preview of the code on hover                                            | boolean            | false                    |
 | show_numbers           | Shows numbers with the outline                                                 | boolean            | false                    |
 | show_relative_numbers  | Shows relative numbers with the outline                                        | boolean            | false                    |
