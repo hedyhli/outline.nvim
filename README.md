@@ -172,7 +172,24 @@ Lazy:
       { desc = "SymbolsOutline" })
 
     require("symbols-outline").setup {
-      -- Your setup opts here (optional)
+      -- Your setup opts here (leave empty to use defaults)
+    }
+  end,
+},
+```
+
+Lazy with lazy-loading:
+```lua
+{
+  "simrat39/symbols-outline.nvim",
+  cmd = { "SymbolsOutline", "SymbolsOutlineOpen", "SymbolsOutlineClose" },
+  keys = { "<leader>tt" },
+  config = function()
+    -- Example mapping to toggle symbols-outline
+    vim.keymap.set("n", "<leader>tt", "<cmd>SymbolsOutline<CR>",
+      { desc = "SymbolsOutline" })
+    require("symbols-outline").setup {
+      -- Your setup opts here (leave empty to use defaults)
     }
   end,
 },
@@ -180,13 +197,13 @@ Lazy:
 
 ## Setup
 
-Put the setup call in your init.lua or any lua file that is sourced.
+Call the setup function with your configuration options.
 
-**NOTE**: A call to `.setup()` is *required* for this plugin to work!
-(simrat39/symbols-outline.nvim#213)
+Note that a call to `.setup()` is *required* for this plugin to work
+(simrat39/symbols-outline.nvim#213).
 
 ```lua
-require("symbols-outline").setup()
+require("symbols-outline").setup({})
 ```
 
 ## Configuration
@@ -303,7 +320,7 @@ local opts = {
 
 ### Lua
 
-```
+```lua
 require'symbols-outline'.toggle_outline()
 require'symbols-outline'.open_outline()
 require'symbols-outline'.close_outline()
