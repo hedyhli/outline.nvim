@@ -96,7 +96,7 @@ Lazy:
 {
   "simrat39/symbols-outline.nvim",
   config = function()
-    -- Use <leader>tt to toggle the symbols-outline sidebar
+    -- Example mapping to toggle symbols-outline
     vim.keymap.set("n", "<leader>tt", "<cmd>SymbolsOutline<CR>",
       { desc = "SymbolsOutline" })
 
