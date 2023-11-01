@@ -48,10 +48,10 @@ focus changed), and not for `focus_location` (simrat39/symbols-outline.nvim#119)
 ### PRs
 
 - Open handler checks if view is not already open
-  #235 opened on Sep 1 by eyalz800
+  (#235 by eyalz800)
 
 - auto_jump config param
-  #229 opened on Jun 8 by stickperson
+  (#229 by stickperson)
 
 - ✅ Update nerd fonts to 3.0
   (#225 by anstadnik)
