@@ -41,7 +41,7 @@ end
 
 local function setup_buffer_autocmd()
   if config.options.auto_preview then
-    vim.api.nvim_create_autocmd('CursorHold', {
+    vim.api.nvim_create_autocmd('CursorMoved', {
       buffer = 0,
       callback = require('symbols-outline.preview').show,
     })

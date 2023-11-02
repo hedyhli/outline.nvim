@@ -141,8 +141,9 @@ Key:
 - ✅ Do not close outline when focus_location occurs
   (#119 by M1Sports20)
 
-- feat: instant_preview
+- ✅ feat: instant_preview
   (#116 by axieax)
+  **Superseded with an improved implementation**
 
 - check if code_win is nill
   (#110 by i3Cheese)
