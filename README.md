@@ -500,3 +500,19 @@ require'symbols-outline'
 | SymbolsOutlineConnector | Highlight of the table connectors      |
 | Comment                 | Highlight of the info virtual text     |
 
+## Recipes
+
+Behaviour you may want to achieve and the combination of configuration options
+to achieve it.
+
+**Unfold all others except currently hovered item**
+
+```lua
+autofold_depth = 1,
+auto_unfold_hover = true,
+```
+<img width="900" alt="image" src="https://github.com/hedyhli/symbols-outline.nvim/assets/50042066/2e0c5f91-a979-4e64-a100-256ad062dce3">
+
+
+Any other recipes you think others may also find useful? Feel free to open a PR.
+
