@@ -125,7 +125,7 @@ Key:
 - ✅ Fix some options
   (#180 by cljoly)
 
-- fix: Invalid buffer id error
+- ✅ fix: Invalid buffer id error
   (#177 by snowair)
 
 - ✅ fix(code_actions): use the builtin code_action

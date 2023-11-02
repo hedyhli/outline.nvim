@@ -5,9 +5,8 @@ local ui = require 'symbols-outline.ui'
 local M = {}
 
 local function is_buffer_outline(bufnr)
-  local isValid = vim.api.nvim_buf_is_valid(bufnr)
-  if not isValid then
-    return
+  if not vim.api.nvim_buf_is_valid(bufnr) then
+    return false
   end
   local name = vim.api.nvim_buf_get_name(bufnr)
   local ft = vim.api.nvim_buf_get_option(bufnr, 'filetype')
