@@ -94,6 +94,8 @@ features:
 
 FEATURES                                *symbols-outline-fork-status-features*
 
+|symbols-outline-skip-this-section|
+
 Below is a list of features I’ve included in this fork which, at the time of
 writing, has not been included upstream (in the original repo). I try my best
 to keep this list up to date.
@@ -117,6 +119,8 @@ Features/Changes:
 
 
 PRS                                          *symbols-outline-fork-status-prs*
+
+|symbols-outline-skip-this-section|
 
 Key:
 
@@ -152,6 +156,8 @@ Key:
 
 
 TODO ~
+
+|symbols-outline-skip-this-section|
 
 Key:
 
