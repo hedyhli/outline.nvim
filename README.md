@@ -182,7 +182,7 @@ Key:
 
   **Superseded before this fork was created**
 
-  (perhaps the PR ws forgotten to be closed)
+  (perhaps the PR was forgotten to be closed)
 
 - Floating window (Draft)
   (#101 by druskus20)
