@@ -1,5 +1,7 @@
 # Fork status
 
+[Skip to plugin readme](#symbols-outlinenvim)
+
 This is a fork of the original symbols-outline.nvim which fixes a lot of bugs
 from the original repo.
 
@@ -13,14 +15,15 @@ use-cases which incorporates some selected PRs.
 ## Maintenance status
 
 This fork is NOT guaranteed to be completely bug-free, nor as stable as the
-original. However, since I use this plugin myself, it is guaranteed that
-selected issues that I encounter myself would be fixed (to the best of my
+original (aside from the already broken things in the original repo). However,
+since I use this plugin myself, it is guaranteed that selected issues that I
+encounter myself would be fixed (to the best of my
 ability).
 
 I do not merge PRs from the original repo that I don't personally need.
 
 - **DO use this fork if**:
-  - You want to use to bugfixes included in this fork, including `auto_preview`,
+  - You want to use the bugfixes included in this fork, including `auto_preview`,
     and others listed in [fixes](#fixes)
   - You want to use [features](#features) available in this fork, which are not
     included upstream
