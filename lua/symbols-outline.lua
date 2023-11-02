@@ -259,9 +259,13 @@ local function setup_keymaps(bufnr)
     M._goto_location(true)
   end)
   -- goto_location of symbol but stay in outline
-  map(config.options.keymaps.focus_location, function()
+  map(config.options.keymaps.peek_location, function()
     M._goto_location(false)
   end)
+  -- -- goto_location of symbol but stay in outline
+  -- map(config.options.keymaps.down_and_goto, function()
+  --   M._move_and_goto(false)
+  -- end)
   -- hover symbol
   map(
     config.options.keymaps.hover_symbol,

@@ -30,6 +30,9 @@ I do not merge PRs from the original repo that I don't personally need.
 
 ## 🛑 Breaking changes
 
+- **Config**: `keymaps.focus_location` -> `keymaps.peek_location` to avoid
+  confusion with focus window commands.
+
 - **Behaviour**: Removed hover floating window from `toggle_preview`.
   - Instead, you can set `open_hover_on_preview=true` (true by default) so that
     the `hover_symbol` action can be triggered when `toggle_preview`is
@@ -274,7 +277,8 @@ require("symbols-outline").setup({})
 - **Node**: An item in the outline view
 - **Fold**: Collapse a collapsible node
 - **Location**: Where in the source file a node is from
-- **Preview**: Peek the location of a node in code using a floating window
+- **Preview**: Show the location of a node in code using a floating window
+- **Peek**: Go to corresponding location in code without leaving outline window
 - **Hover**: Cursor currently on the line of a node
 - **Hover symbol**: Displaying a floating window to show symbol information
 provided by provider.
@@ -320,7 +324,7 @@ local opts = {
   border = 'single',
   -- Behaviour changed in this fork:
   -- Auto close the outline window if goto_location is triggered and not for
-  -- focus_location
+  -- peek_location
   auto_close = false,
 
   -- Vim options for the outline window
@@ -355,8 +359,9 @@ local opts = {
     -- It can auto close the outline window when triggered, see
     -- 'auto_close' option above.
     goto_location = "<Cr>",
-    -- Jump to symbol under cursor but keep focus on outline window
-    focus_location = "o",
+    -- Jump to symbol under cursor but keep focus on outline window.
+    -- Renamed in this fork!
+    peek_location = "o",
     hover_symbol = "<C-space>",
     -- Preview symbol under cursor
     toggle_preview = "K",
