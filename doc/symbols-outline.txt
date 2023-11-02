@@ -53,6 +53,8 @@ I do not merge PRs from the original repo that I don’t personally need.
 
 🛑 BREAKING CHANGES*symbols-outline-⚠️-note:-this-is-a-fork-🛑-breaking-changes*
 
+- **Config**: `keymaps.focus_location` -> `keymaps.peek_location` to avoid
+    confusion with focus window commands.
 - **Behaviour**: Removed hover floating window from `toggle_preview`.
     - Instead, you can set `open_hover_on_preview=true` (true by default) so that
         the `hover_symbol` action can be triggered when `toggle_preview`is
@@ -79,7 +81,7 @@ to keep this list up to date.
 Features/Changes:
 
 - Toggling folds (and added default keymaps for it)
-    (simrat39/symbols-outline.nvim#194)
+    (simrat39/symbols-outline.nvim#194).
 - Control focus between outline and code window.
     - New commands: SymbolsOutline`Focus,FocusOutline,FocusCode` (see
         |symbols-outline-commands|)
@@ -87,9 +89,11 @@ Features/Changes:
         - simrat39/symbols-outline.nvim#143
         - simrat39/symbols-outline.nvim#174
         - simrat39/symbols-outline.nvim#207
-- Cursorline option for the outline window
+- Cursorline option for the outline window.
 - Added function and command to show provider and outline window status, somewhat
     like `:LspInfo`.
+- Move down/up by one line and peek_location immediately.
+- Flash highlight when using goto/peek location.
 
 
 FIXES                      *symbols-outline-⚠️-note:-this-is-a-fork-fixes*
@@ -259,7 +263,8 @@ TERMINOLOGY ~
 - **Node**: An item in the outline view
 - **Fold**: Collapse a collapsible node
 - **Location**: Where in the source file a node is from
-- **Preview**: Peek the location of a node in code using a floating window
+- **Preview**: Show the location of a node in code using a floating window
+- **Peek**: Go to corresponding location in code without leaving outline window
 - **Hover**: Cursor currently on the line of a node
 - **Hover symbol**: Displaying a floating window to show symbol information
     provided by provider.
@@ -306,7 +311,7 @@ Default values are shown:
       border = 'single',
       -- Behaviour changed in this fork:
       -- Auto close the outline window if goto_location is triggered and not for
-      -- focus_location
+      -- peek_location
       auto_close = false,
     
       -- Vim options for the outline window
@@ -341,8 +346,9 @@ Default values are shown:
         -- It can auto close the outline window when triggered, see
         -- 'auto_close' option above.
         goto_location = "<Cr>",
-        -- Jump to symbol under cursor but keep focus on outline window
-        focus_location = "o",
+        -- Jump to symbol under cursor but keep focus on outline window.
+        -- Renamed in this fork!
+        peek_location = "o",
         hover_symbol = "<C-space>",
         -- Preview symbol under cursor
         toggle_preview = "K",
@@ -359,6 +365,10 @@ Default values are shown:
         fold_all = "W",
         unfold_all = "E",
         fold_reset = "R",
+        -- Only in this fork:
+        -- Move down/up by one line and peek_location immediately.
+        down_and_goto = '<C-j>',
+        up_and_goto = '<C-k>',
       },
     
       -- Lsp clients to ignore
