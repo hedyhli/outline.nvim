@@ -31,9 +31,9 @@ I do not merge PRs from the original repo that I don't personally need.
     (things I don't personally use)
 
 - **Do NOT use this fork if**:
-  - You want a stable plugin
-  - You don't need the extra features in this fork
   - You do not need the bugfixes in this fork
+  - You want a stable plugin (aside from the existing bugs in original repo)
+  - You don't need the extra features in this fork
 
 ## Fixes
 
