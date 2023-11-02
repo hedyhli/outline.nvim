@@ -28,32 +28,9 @@ I do not merge PRs from the original repo that I don't personally need.
   - You want a stable plugin
   - You don't need the extra features in this fork
 
-## Features
+## 🛑 Breaking changes
 
-Below is a list of features I've included in this fork which, at the time of
-writing, has not been included upstream (in the original repo). I try my best to
-keep this list up to date.
-
-Features/Changes:
-
-- Feat: Toggling folds (and added default keymaps for it)
-(simrat39/symbols-outline.nvim#194)
-
-- Feat: Control focus between outline and code window.
-  - New commands: SymbolsOutline`Focus,FocusOutline,FocusCode` (see
-  [commands](#commands))
-  - Fixed issues:
-    - simrat39/symbols-outline.nvim#143
-    - simrat39/symbols-outline.nvim#174
-    - simrat39/symbols-outline.nvim#207
-
-- Feat: when `auto_close=true` only auto close if `goto_location` is used (where
-  focus changed), and not for `focus_location`
-  (simrat39/symbols-outline.nvim#119)
-
-- Feat: Cursorline option for the outline window
-
-- MAJOR: Removed hover floating window from `toggle_preview`.
+- **Behaviour**: Removed hover floating window from `toggle_preview`.
   - Instead, you can set `open_hover_on_preview=true` (true by default) so that
     the `hover_symbol` action can be triggered when `toggle_preview`is
     triggered.
@@ -62,22 +39,50 @@ Features/Changes:
   - The preview window is positioned to be vertically center-aligned (rather
     than fixed to the top). This is planned to be configurable.
 
-- Feat: Added function and command to show provider and outline window status,
+- **Config**: Marker icons used for guides can now be customized. `show_guides`
+  removed in favor of `guides.enabled`.
+
+- **Behaviour**: When `auto_close=true` only auto close if `goto_location` is
+  used (where focus changed), and not for `focus_location`
+  (simrat39/symbols-outline.nvim#119).
+
+- **Behaviour**: For `auto_preview=true`, previously preview is only shown after
+  some delay. Now preview is shown instantly every time the cursor moves.
+
+## Features
+
+Below is a list of features I've included in this fork which, at the time of
+writing, has not been included upstream (in the original repo). I try my best to
+keep this list up to date.
+
+Features/Changes:
+
+- Toggling folds (and added default keymaps for it)
+(simrat39/symbols-outline.nvim#194)
+
+- Control focus between outline and code window.
+  - New commands: SymbolsOutline`Focus,FocusOutline,FocusCode` (see
+  [commands](#commands))
+  - Fixed issues:
+    - simrat39/symbols-outline.nvim#143
+    - simrat39/symbols-outline.nvim#174
+    - simrat39/symbols-outline.nvim#207
+
+- Cursorline option for the outline window
+
+- Added function and command to show provider and outline window status,
   somewhat like `:LspInfo`.
 
-- BREAKING: Marker icons used for guides can now be customized. `show_guides`
-  deprecated in favor of `guides.enabled`.
+## Fixes
 
-Fixes:
+- Symbol preview (simrat39/symbols-outline.nvim#176)
+- `SymbolsOutlineClose` crashing when already closed: simrat39/symbols-outline.nvim#163
+- Symbols not showing by supporting Nerd fonts v3.0: simrat39/symbols-outline.nvim#225
+- Newlines in symbols crash: simrat39/symbols-outline.nvim#204 (simrat39/symbols-outline.nvim#184)
+- `code_actions`: simrat39/symbols-outline.nvim#168 (simrat39/symbols-outline.nvim#123)
+- Fold all operation too slow: simrat39/symbols-outline.nvim#223 (simrat39/symbols-outline.nvim#224)
 
-- Fix symbol preview (simrat39/symbols-outline.nvim#176)
-- Fix `SymbolsOutlineClose` crashing when already closed: simrat39/symbols-outline.nvim#163
-- Support Nerd fonts v3.0: simrat39/symbols-outline.nvim#225
-- Fix newlines in symbols crash: simrat39/symbols-outline.nvim#204 (simrat39/symbols-outline.nvim#184)
-- Fix `code_actions`: simrat39/symbols-outline.nvim#168 (simrat39/symbols-outline.nvim#123)
-- Fix fold all operation too slow: simrat39/symbols-outline.nvim#223 (simrat39/symbols-outline.nvim#224)
-
-### PRs
+## PRs
 
 Key:
 ```
