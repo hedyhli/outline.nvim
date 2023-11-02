@@ -292,6 +292,11 @@ local opts = {
   -- If you disable this you can still open hover_symbol using your keymap
   -- below.
   open_hover_on_preview = true,
+  -- Border option for floating preview window.
+  -- Options include: single/double/rounded/solid/shadow or an array of border
+  -- characters.
+  -- See :help nvim_open_win() and search for "border" option.
+  border = 'single',
   -- Behaviour changed in this fork:
   -- Auto close the outline window if goto_location is triggered and not for
   -- focus_location
@@ -325,7 +330,9 @@ local opts = {
   keymaps = { 
     show_help = '?',
     close = {"<Esc>", "q"},
-    -- Jump to symbol under cursor
+    -- Jump to symbol under cursor.
+    -- It can auto close the outline window when triggered, see
+    -- 'auto_close' option above.
     goto_location = "<Cr>",
     -- Jump to symbol under cursor but keep focus on outline window
     focus_location = "o",

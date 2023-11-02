@@ -24,6 +24,8 @@ local function has_code_win()
   return isBufValid
 end
 
+M.has_code_win = has_code_win
+
 local function get_offset()
   local outline_winnr = so.view.winnr
   local width = 53

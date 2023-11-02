@@ -3,12 +3,12 @@ local vim = vim
 local M = {}
 
 M.defaults = {
+  position = 'right',
+  width = 25,
   highlight_hovered_item = true,
   show_guides = true,
-  position = 'right',
   border = 'single',
   relative_width = true,
-  width = 25,
   auto_close = false,
   auto_preview = false,
   open_hover_on_preview = true,

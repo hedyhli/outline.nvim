@@ -375,13 +375,13 @@ function M.focus_outline()
 end
 
 function M.focus_code()
-  if M.state.code_win then
+  if require('symbols-outline.preview').has_code_win() then
     vim.fn.win_gotoid(M.state.code_win)
   end
 end
 
 function M.focus_toggle()
-  if M.view:is_open() and M.state.code_win then
+  if M.view:is_open() and require('symbols-outline.preview').has_code_win() then
     local winid = vim.fn.win_getid()
     if winid == M.state.code_win then
       vim.fn.win_gotoid(M.view.winnr)
