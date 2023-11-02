@@ -73,6 +73,8 @@ features:
 
 ## Features
 
+[Skip this section](#symbols-outlinenvim)
+
 Below is a list of features I've included in this fork which, at the time of
 writing, has not been included upstream (in the original repo). I try my best to
 keep this list up to date.
@@ -100,6 +102,8 @@ Features/Changes:
 - Flash highlight when using goto/peek location.
 
 ## PRs
+
+[Skip this section](#symbols-outlinenvim)
 
 Key:
 ```
@@ -175,6 +179,8 @@ Key:
 
 
 ### TODO
+
+[Skip this section](#symbols-outlinenvim)
 
 Key:
 ```
