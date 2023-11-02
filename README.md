@@ -131,6 +131,7 @@ Key:
 
 - ✅ fix(icons): replace obsolete icons
   (#219 by loichyan)
+
   **Superseded by #225**
 
 - ✅ Support ccls symbols
@@ -141,6 +142,7 @@ Key:
 
 - ✅ Make close_outline idempotent
   (#200 by showermat)
+
   **Superseded by #163**
 
 - Distinguish between public and private function display in Elixir
@@ -172,10 +174,15 @@ Key:
 
 - ✅ feat: instant_preview
   (#116 by axieax)
+
   **Superseded with an improved implementation**
 
-- check if code_win is nill
+- ✅ check if code_win is nill
   (#110 by i3Cheese)
+
+  **Superseded before this fork was created**
+
+  (perhaps the PR ws forgotten to be closed)
 
 - Floating window (Draft)
   (#101 by druskus20)
