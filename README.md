@@ -1,8 +1,9 @@
-# ⚠️  NOTE: THIS IS A FORK
+# Fork status
 
-This is a fork of the original symbols-outline.nvim which merges some selected
-PRs from the original repo, plus some other improvements due to personal
-preferences.
+This is a fork of the original symbols-outline.nvim which fixes a lot of bugs
+from the original repo.
+
+It also adds many more features listed [below](#features).
 
 It does not attempt to be an up-to-date successor of the original repo, nor does
 it attempt to ensure everyone's use-cases are satisfied by providing an overall
@@ -19,19 +20,40 @@ ability).
 I do not merge PRs from the original repo that I don't personally need.
 
 - **DO use this fork if**:
-  - You want to use features available in this fork, which are not included
-  upstream (listed below)
-  - You MIGHT want some up-to-date fixes to problems (that I also face) but is
-  OK with some things not being looked after well (things I don't personally use)
+  - You want to use to bugfixes included in this fork, including `auto_preview`,
+    and others listed in [fixes](#fixes)
+  - You want to use [features](#features) available in this fork, which are not
+    included upstream
+  - You are OK with some things not being looked after well such as CoC support
+    (things I don't personally use)
 
 - **Do NOT use this fork if**:
   - You want a stable plugin
   - You don't need the extra features in this fork
+  - You do not need the bugfixes in this fork
+
+## Fixes
+
+- Symbol preview empty (simrat39/symbols-outline.nvim#176)
+- `SymbolsOutlineClose` crashing when already closed: simrat39/symbols-outline.nvim#163
+- Symbols not showing by supporting Nerd fonts v3.0: simrat39/symbols-outline.nvim#225
+- Newlines in symbols crash: simrat39/symbols-outline.nvim#204 (simrat39/symbols-outline.nvim#184)
+- `code_actions`: simrat39/symbols-outline.nvim#168 (simrat39/symbols-outline.nvim#123)
+- Fold all operation too slow: simrat39/symbols-outline.nvim#223 (simrat39/symbols-outline.nvim#224)
+- "Invalid buffer id" error simrat39/symbols-outline.nvim#177
+- Open handler triggering multiple times ends up in messy state with errors
+simrat39/symbols-outline.nvim#235
 
 ## 🛑 Breaking changes
 
-- **Config**: `keymaps.focus_location` -> `keymaps.peek_location` to avoid
-  confusion with focus window commands.
+This section may be relevant to you if your existing config uses the mentioned
+features:
+
+- **Config**: `keymaps.focus_location` RENAMED to `keymaps.peek_location` to
+  avoid confusion with focus window commands.
+
+- **Config**: Marker icons used for guides can now be customized. `show_guides`
+  REMOVED in favor of `guides.enabled`.
 
 - **Behaviour**: Removed hover floating window from `toggle_preview`.
   - Instead, you can set `open_hover_on_preview=true` (true by default) so that
@@ -41,9 +63,6 @@ I do not merge PRs from the original repo that I don't personally need.
     third). This is planned to be configurable.
   - The preview window is positioned to be vertically center-aligned (rather
     than fixed to the top). This is planned to be configurable.
-
-- **Config**: Marker icons used for guides can now be customized. `show_guides`
-  removed in favor of `guides.enabled`.
 
 - **Behaviour**: When `auto_close=true` only auto close if `goto_location` is
   used (where focus changed), and not for `focus_location`
@@ -79,18 +98,6 @@ Features/Changes:
 - Move down/up by one line and peek_location immediately.
 
 - Flash highlight when using goto/peek location.
-
-## Fixes
-
-- Symbol preview (simrat39/symbols-outline.nvim#176)
-- `SymbolsOutlineClose` crashing when already closed: simrat39/symbols-outline.nvim#163
-- Symbols not showing by supporting Nerd fonts v3.0: simrat39/symbols-outline.nvim#225
-- Newlines in symbols crash: simrat39/symbols-outline.nvim#204 (simrat39/symbols-outline.nvim#184)
-- `code_actions`: simrat39/symbols-outline.nvim#168 (simrat39/symbols-outline.nvim#123)
-- Fold all operation too slow: simrat39/symbols-outline.nvim#223 (simrat39/symbols-outline.nvim#224)
-- "Invalid buffer id" error simrat39/symbols-outline.nvim#177
-- Open handler triggering multiple times ends up in messy state with errors
-simrat39/symbols-outline.nvim#235
 
 ## PRs
 
@@ -203,6 +210,8 @@ Items will be moved to above list when complete.
 - nvim-navbuddy
 - dropdown.nvim
 - treesitter (inspect/edit)
+- lspsaga
+- navigator.lua
 
 ---
 
