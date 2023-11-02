@@ -6,7 +6,15 @@ M.defaults = {
   position = 'right',
   width = 25,
   highlight_hovered_item = true,
-  show_guides = true,
+  guides = {
+    enabled = true,
+    markers = {
+      bottom = '└',
+      middle = '├',
+      vertical = '│',
+      horizontal = '─',
+    },
+  },
   border = 'single',
   relative_width = true,
   auto_close = false,

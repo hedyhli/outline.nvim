@@ -48,7 +48,8 @@ Features/Changes:
     - simrat39/symbols-outline.nvim#207
 
 - Feat: when `auto_close=true` only auto close if `goto_location` is used (where
-focus changed), and not for `focus_location` (simrat39/symbols-outline.nvim#119)
+  focus changed), and not for `focus_location`
+  (simrat39/symbols-outline.nvim#119)
 
 - Feat: Cursorline option for the outline window
 
@@ -63,6 +64,9 @@ focus changed), and not for `focus_location` (simrat39/symbols-outline.nvim#119)
 
 - Feat: Added function and command to show provider and outline window status,
   somewhat like `:LspInfo`.
+
+- BREAKING: Marker icons used for guides can now be customized. `show_guides`
+  deprecated in favor of `guides.enabled`.
 
 Fixes:
 
@@ -284,8 +288,16 @@ local opts = {
 
   -- Whether to highlight the currently hovered symbol (high cpu usage)
   highlight_hovered_item = true,
-  -- Whether to show outline guides
-  show_guides = true,
+  -- Options for outline guides
+  guides = {
+    enabled = true,
+    markers = {
+      bottom = '└',
+      middle = '├',
+      vertical = '│',
+      horizontal = '─',
+    },
+  },
   -- Automatically open preview of code on hover
   auto_preview = false,
   -- Automatically open hover_symbol when opening toggle_preview (see keymaps).

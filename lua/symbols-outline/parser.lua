@@ -113,19 +113,21 @@ function M.get_lines(flattened_outline_items)
 
     for index, _ in ipairs(line) do
       -- all items start with a space (or two)
-      if config.options.show_guides then
-        -- makes the guides
+      if config.options.guides.enabled then
+        -- makes the guides and add guide markers
+        local guide_markers = config.options.guides.markers
         if index == 1 then
           line[index] = ' '
-          -- i f index is last, add a bottom marker if current item is last,
+          -- if index is last, add a bottom marker if current item is last,
           -- else add a middle marker
         elseif index == #line then
           -- add fold markers
-          if config.options.fold_markers and folding.is_foldable(node) then
+          local fold_markers = config.options.fold_markers
+          if fold_markers and folding.is_foldable(node) then
             if folding.is_folded(node) then
-              line[index] = config.options.fold_markers[1]
+              line[index] = fold_markers[1]
             else
-              line[index] = config.options.fold_markers[2]
+              line[index] = fold_markers[2]
             end
 
             add_guide_hl(
@@ -136,16 +138,16 @@ function M.get_lines(flattened_outline_items)
             -- the root level has no vertical markers
           elseif depth > 1 then
             if node.isLast then
-              line[index] = ui.markers.bottom
+              line[index] = guide_markers.bottom
               add_guide_hl(
                 running_length,
-                running_length + vim.fn.strlen(ui.markers.bottom) - 1
+                running_length + vim.fn.strlen(guide_markers.bottom) - 1
               )
             else
-              line[index] = ui.markers.middle
+              line[index] = guide_markers.middle
               add_guide_hl(
                 running_length,
-                running_length + vim.fn.strlen(ui.markers.middle) - 1
+                running_length + vim.fn.strlen(guide_markers.middle) - 1
               )
             end
           end
@@ -153,11 +155,11 @@ function M.get_lines(flattened_outline_items)
           -- vertical marker because there are items under us and we need
           -- to point to those
         elseif not node.hierarchy[index] and depth > 1 then
-          line[index + marker_space] = ui.markers.vertical
+          line[index + marker_space] = guide_markers.vertical
           add_guide_hl(
             running_length - 1 + 2 * marker_space,
             running_length
-              + vim.fn.strlen(ui.markers.vertical)
+              + vim.fn.strlen(guide_markers.vertical)
               - 1
               + 2 * marker_space
           )

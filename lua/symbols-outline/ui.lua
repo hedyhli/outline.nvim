@@ -1,12 +1,5 @@
 local M = {}
 
-M.markers = {
-  bottom = '└',
-  middle = '├',
-  vertical = '│',
-  horizontal = '─',
-}
-
 M.hovered_hl_ns = vim.api.nvim_create_namespace 'hovered_item'
 
 function M.clear_hover_highlight(bufnr)
