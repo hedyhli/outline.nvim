@@ -47,6 +47,8 @@ M.defaults = {
     fold_all = 'W',
     unfold_all = 'E',
     fold_reset = 'R',
+    down_and_goto = '<C-j>',
+    up_and_goto = '<C-k>',
   },
   lsp_blacklist = {},
   symbol_blacklist = {},

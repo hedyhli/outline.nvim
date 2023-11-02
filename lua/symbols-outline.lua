@@ -116,18 +116,31 @@ function M._current_node()
   return M.state.flattened_outline_items[current_line]
 end
 
-function M._goto_location(change_focus)
+function M.__goto_location(change_focus)
   local node = M._current_node()
   vim.api.nvim_win_set_cursor(
     M.state.code_win,
     { node.line + 1, node.character }
   )
+  utils.flash_highlight(M.state.code_win, node.line + 1, true)
   if change_focus then
     vim.fn.win_gotoid(M.state.code_win)
-    if config.options.auto_close then
-      M.close_outline()
-    end
   end
+end
+
+function M._goto_location(change_focus)
+  M.__goto_location(change_focus)
+  if change_focus and config.options.auto_close then
+    M.close_outline()
+  end
+end
+
+function M._move_and_goto(direction)
+  local move = direction == 'down' and 1 or -1
+  local cur = vim.api.nvim_win_get_cursor(0)
+  cur[1] = cur[1] + move
+  pcall(vim.api.nvim_win_set_cursor, 0, cur)
+  M.__goto_location(false)
 end
 
 function M._toggle_fold(move_cursor, node_index)
@@ -262,10 +275,14 @@ local function setup_keymaps(bufnr)
   map(config.options.keymaps.peek_location, function()
     M._goto_location(false)
   end)
-  -- -- goto_location of symbol but stay in outline
-  -- map(config.options.keymaps.down_and_goto, function()
-  --   M._move_and_goto(false)
-  -- end)
+  -- Move down/up in outline and peek that location in code
+  map(config.options.keymaps.down_and_goto, function()
+    M._move_and_goto('down')
+  end)
+  -- Move down/up in outline and peek that location in code
+  map(config.options.keymaps.up_and_goto, function()
+    M._move_and_goto('up')
+  end)
   -- hover symbol
   map(
     config.options.keymaps.hover_symbol,

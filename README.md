@@ -61,7 +61,7 @@ keep this list up to date.
 Features/Changes:
 
 - Toggling folds (and added default keymaps for it)
-(simrat39/symbols-outline.nvim#194)
+(simrat39/symbols-outline.nvim#194).
 
 - Control focus between outline and code window.
   - New commands: SymbolsOutline`Focus,FocusOutline,FocusCode` (see
@@ -71,10 +71,14 @@ Features/Changes:
     - simrat39/symbols-outline.nvim#174
     - simrat39/symbols-outline.nvim#207
 
-- Cursorline option for the outline window
+- Cursorline option for the outline window.
 
 - Added function and command to show provider and outline window status,
   somewhat like `:LspInfo`.
+
+- Move down/up by one line and peek_location immediately.
+
+- Flash highlight when using goto/peek location.
 
 ## Fixes
 
@@ -378,6 +382,10 @@ local opts = {
     fold_all = "W",
     unfold_all = "E",
     fold_reset = "R",
+    -- Only in this fork:
+    -- Move down/up by one line and peek_location immediately.
+    down_and_goto = '<C-j>',
+    up_and_goto = '<C-k>',
   },
 
   -- Lsp clients to ignore
