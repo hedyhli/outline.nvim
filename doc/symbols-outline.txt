@@ -79,6 +79,8 @@ Features/Changes:
         than fixed to the top). This is planned to be configurable.
 - Feat: Added function and command to show provider and outline window status,
     somewhat like `:LspInfo`.
+- BREAKING: Marker icons used for guides can now be customized. `show_guides`
+    deprecated in favor of `guides.enabled`.
 
 Fixes:
 
@@ -267,14 +269,27 @@ Default values are shown:
     
       -- Whether to highlight the currently hovered symbol (high cpu usage)
       highlight_hovered_item = true,
-      -- Whether to show outline guides
-      show_guides = true,
+      -- Options for outline guides
+      guides = {
+        enabled = true,
+        markers = {
+          bottom = '└',
+          middle = '├',
+          vertical = '│',
+          horizontal = '─',
+        },
+      },
       -- Automatically open preview of code on hover
       auto_preview = false,
       -- Automatically open hover_symbol when opening toggle_preview (see keymaps).
       -- If you disable this you can still open hover_symbol using your keymap
       -- below.
       open_hover_on_preview = true,
+      -- Border option for floating preview window.
+      -- Options include: single/double/rounded/solid/shadow or an array of border
+      -- characters.
+      -- See :help nvim_open_win() and search for "border" option.
+      border = 'single',
       -- Behaviour changed in this fork:
       -- Auto close the outline window if goto_location is triggered and not for
       -- focus_location
@@ -308,7 +323,9 @@ Default values are shown:
       keymaps = { 
         show_help = '?',
         close = {"<Esc>", "q"},
-        -- Jump to symbol under cursor
+        -- Jump to symbol under cursor.
+        -- It can auto close the outline window when triggered, see
+        -- 'auto_close' option above.
         goto_location = "<Cr>",
         -- Jump to symbol under cursor but keep focus on outline window
         focus_location = "o",
