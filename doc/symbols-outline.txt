@@ -136,11 +136,12 @@ Key:
 - ✅ Update nerd fonts to 3.0 (#225 by anstadnik)
 - ✅ fix(folding): optimize fold/unfold all (#223 by wjdwndud0114)
 - ✅ Support markdown setext-style headers (#222 by msr1k)
-- ✅ fix(icons): replace obsolete icons (#219 by loichyan) **Superseded by
-    #225**
+- ✅ fix(icons): replace obsolete icons (#219 by loichyan)
+    **Superseded by #225**
 - ✅ Support ccls symbols (#218 by rqdmap)
 - ✅ fix: replace newlines with spaces in writer (#204 by tbung)
-- ✅ Make close_outline idempotent (#200 by showermat) **Superseded by #163**
+- ✅ Make close_outline idempotent (#200 by showermat)
+    **Superseded by #163**
 - Distinguish between public and private function display in Elixir (#187 by
     scottming)
 - ✅ Fix some options (#180 by cljoly)
@@ -151,9 +152,11 @@ Key:
 - 📮 Added preview width and relative size (#130 by Freyskeyd)
 - 📮 Improve preview, hover windows configurability and looks (#128 by toppair)
 - ✅ Do not close outline when focus_location occurs (#119 by M1Sports20)
-- ✅ feat: instant_preview (#116 by axieax) **Superseded with an improved
-    implementation**
-- check if code_win is nill (#110 by i3Cheese)
+- ✅ feat: instant_preview (#116 by axieax)
+    **Superseded with an improved implementation**
+- ✅ check if code_win is nill (#110 by i3Cheese)
+    **Superseded before this fork was created**
+    (perhaps the PR ws forgotten to be closed)
 - Floating window (Draft) (#101 by druskus20)
 
 
