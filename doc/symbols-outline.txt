@@ -5,7 +5,10 @@ Table of Contents                          *symbols-outline-table-of-contents*
 
 1. ⚠️ NOTE: THIS IS A FORK   |symbols-outline-⚠️-note:-this-is-a-fork|
   - Maintenance status|symbols-outline-⚠️-note:-this-is-a-fork-maintenance-status|
+  - 🛑 Breaking changes|symbols-outline-⚠️-note:-this-is-a-fork-🛑-breaking-changes|
   - Features            |symbols-outline-⚠️-note:-this-is-a-fork-features|
+  - Fixes                  |symbols-outline-⚠️-note:-this-is-a-fork-fixes|
+  - PRs                      |symbols-outline-⚠️-note:-this-is-a-fork-prs|
 2. symbols-outline.nvim                 |symbols-outline-symbols-outline.nvim|
   - Prerequisites         |symbols-outline-symbols-outline.nvim-prerequisites|
   - Installation           |symbols-outline-symbols-outline.nvim-installation|
@@ -48,6 +51,25 @@ I do not merge PRs from the original repo that I don’t personally need.
     - You don’t need the extra features in this fork
 
 
+🛑 BREAKING CHANGES*symbols-outline-⚠️-note:-this-is-a-fork-🛑-breaking-changes*
+
+- **Behaviour**: Removed hover floating window from `toggle_preview`.
+    - Instead, you can set `open_hover_on_preview=true` (true by default) so that
+        the `hover_symbol` action can be triggered when `toggle_preview`is
+        triggered.
+    - The preview window’s size changed to half of neovim height (rather than a
+        third). This is planned to be configurable.
+    - The preview window is positioned to be vertically center-aligned (rather
+        than fixed to the top). This is planned to be configurable.
+- **Config**: Marker icons used for guides can now be customized. `show_guides`
+    removed in favor of `guides.enabled`.
+- **Behaviour**: When `auto_close=true` only auto close if `goto_location` is
+    used (where focus changed), and not for `focus_location`
+    (simrat39/symbols-outline.nvim#119).
+- **Behaviour**: For `auto_preview=true`, previously preview is only shown after
+    some delay. Now preview is shown instantly every time the cursor moves.
+
+
 FEATURES                *symbols-outline-⚠️-note:-this-is-a-fork-features*
 
 Below is a list of features I’ve included in this fork which, at the time of
@@ -56,43 +78,34 @@ to keep this list up to date.
 
 Features/Changes:
 
-- Feat: Toggling folds (and added default keymaps for it)
+- Toggling folds (and added default keymaps for it)
     (simrat39/symbols-outline.nvim#194)
-- Feat: Control focus between outline and code window.
+- Control focus between outline and code window.
     - New commands: SymbolsOutline`Focus,FocusOutline,FocusCode` (see
         |symbols-outline-commands|)
     - Fixed issues:
         - simrat39/symbols-outline.nvim#143
         - simrat39/symbols-outline.nvim#174
         - simrat39/symbols-outline.nvim#207
-- Feat: when `auto_close=true` only auto close if `goto_location` is used (where
-    focus changed), and not for `focus_location`
-    (simrat39/symbols-outline.nvim#119)
-- Feat: Cursorline option for the outline window
-- MAJOR: Removed hover floating window from `toggle_preview`.
-    - Instead, you can set `open_hover_on_preview=true` (true by default) so that
-        the `hover_symbol` action can be triggered when `toggle_preview`is
-        triggered.
-    - The preview window’s size changed to half of neovim height (rather than a
-        third). This is planned to be configurable.
-    - The preview window is positioned to be vertically center-aligned (rather
-        than fixed to the top). This is planned to be configurable.
-- Feat: Added function and command to show provider and outline window status,
-    somewhat like `:LspInfo`.
-- BREAKING: Marker icons used for guides can now be customized. `show_guides`
-    deprecated in favor of `guides.enabled`.
-
-Fixes:
-
-- Fix symbol preview (simrat39/symbols-outline.nvim#176)
-- Fix `SymbolsOutlineClose` crashing when already closed: simrat39/symbols-outline.nvim#163
-- Support Nerd fonts v3.0: simrat39/symbols-outline.nvim#225
-- Fix newlines in symbols crash: simrat39/symbols-outline.nvim#204 (simrat39/symbols-outline.nvim#184)
-- Fix `code_actions`: simrat39/symbols-outline.nvim#168 (simrat39/symbols-outline.nvim#123)
-- Fix fold all operation too slow: simrat39/symbols-outline.nvim#223 (simrat39/symbols-outline.nvim#224)
+- Cursorline option for the outline window
+- Added function and command to show provider and outline window status, somewhat
+    like `:LspInfo`.
 
 
-PRS ~
+FIXES                      *symbols-outline-⚠️-note:-this-is-a-fork-fixes*
+
+- Symbol preview (simrat39/symbols-outline.nvim#176)
+- `SymbolsOutlineClose` crashing when already closed: simrat39/symbols-outline.nvim#163
+- Symbols not showing by supporting Nerd fonts v3.0: simrat39/symbols-outline.nvim#225
+- Newlines in symbols crash: simrat39/symbols-outline.nvim#204 (simrat39/symbols-outline.nvim#184)
+- `code_actions`: simrat39/symbols-outline.nvim#168 (simrat39/symbols-outline.nvim#123)
+- Fold all operation too slow: simrat39/symbols-outline.nvim#223 (simrat39/symbols-outline.nvim#224)
+- "Invalid buffer id" error simrat39/symbols-outline.nvim#177
+- Open handler triggering multiple times ends up in messy state with errors
+    simrat39/symbols-outline.nvim#235
+
+
+PRS                          *symbols-outline-⚠️-note:-this-is-a-fork-prs*
 
 Key:
 
@@ -101,7 +114,7 @@ Key:
     📮 = Planned for merge
 <
 
-- Open handler checks if view is not already open (#235 by eyalz800)
+- ✅ Open handler checks if view is not already open (#235 by eyalz800)
 - auto_jump config param (#229 by stickperson)
 - ✅ Update nerd fonts to 3.0 (#225 by anstadnik)
 - ✅ fix(folding): optimize fold/unfold all (#223 by wjdwndud0114)
@@ -114,14 +127,15 @@ Key:
 - Distinguish between public and private function display in Elixir (#187 by
     scottming)
 - ✅ Fix some options (#180 by cljoly)
-- fix: Invalid buffer id error (#177 by snowair)
+- ✅ fix: Invalid buffer id error (#177 by snowair)
 - ✅ fix(code_actions): use the builtin code_action (#168 by zjp-CN)
 - ✅ fix: plugin crashes when SymbolOutlineClose used (#163 by beauwilliams)
 - feat: Add window_bg_highlight to config (#137 by Zane-)
 - 📮 Added preview width and relative size (#130 by Freyskeyd)
 - 📮 Improve preview, hover windows configurability and looks (#128 by toppair)
 - ✅ Do not close outline when focus_location occurs (#119 by M1Sports20)
-- feat: instant_preview (#116 by axieax)
+- ✅ feat: instant_preview (#116 by axieax) **Superseded with an improved
+    implementation**
 - check if code_win is nill (#110 by i3Cheese)
 - Floating window (Draft) (#101 by druskus20)
 
