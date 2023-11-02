@@ -81,6 +81,9 @@ Features/Changes:
 - Newlines in symbols crash: simrat39/symbols-outline.nvim#204 (simrat39/symbols-outline.nvim#184)
 - `code_actions`: simrat39/symbols-outline.nvim#168 (simrat39/symbols-outline.nvim#123)
 - Fold all operation too slow: simrat39/symbols-outline.nvim#223 (simrat39/symbols-outline.nvim#224)
+- "Invalid buffer id" error simrat39/symbols-outline.nvim#177
+- Open handler triggering multiple times ends up in messy state with errors
+simrat39/symbols-outline.nvim#235
 
 ## PRs
 
@@ -90,7 +93,7 @@ Key:
 📮 = Planned for merge
 ```
 
-- Open handler checks if view is not already open
+- ✅ Open handler checks if view is not already open
   (#235 by eyalz800)
 
 - auto_jump config param
