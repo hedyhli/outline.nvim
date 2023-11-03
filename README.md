@@ -160,7 +160,7 @@ Key:
 - ✅ fix: plugin crashes when SymbolOutlineClose used
   (#163 by beauwilliams)
 
-- feat: Add window_bg_highlight to config
+- 📮 feat: Add window_bg_highlight to config
   (#137 by Zane-)
 
 - 📮 Added preview width and relative size
@@ -218,7 +218,9 @@ Items will be moved to above list when complete.
 - Preview / Hover
   - `[/]` Configurable winhighlight options for preview window (like nvim-cmp)
   (simrat39/symbols-outline#128)
-  - `[/]` Configurable width and height (simrat39/symbols-outline#130)
+  - `[/]` Configurable width and height of preview window (simrat39/symbols-outline#130)
+
+- `[/]` Outline window customizations (simrat39/symbols-outline#137)
 
 ### Related plugins
 
