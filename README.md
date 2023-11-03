@@ -121,7 +121,6 @@ Key:
   (#235 by eyalz800)
 
 - ✅ auto_jump config param
-
   (#229 by stickperson)
 
   **Renamed to `auto_goto` for consistency**
@@ -338,7 +337,8 @@ local opts = {
 
   -- Whether to highlight the currently hovered symbol (high cpu usage)
   highlight_hovered_item = true,
-  -- Options for outline guides
+  -- Options for outline guides.
+  -- Only in this fork
   guides = {
     enabled = true,
     markers = {
@@ -353,6 +353,7 @@ local opts = {
   -- Automatically open hover_symbol when opening toggle_preview (see keymaps).
   -- If you disable this you can still open hover_symbol using your keymap
   -- below.
+  -- Only in this fork
   open_hover_on_preview = true,
   -- Border option for floating preview window.
   -- Options include: single/double/rounded/solid/shadow or an array of border
@@ -363,13 +364,14 @@ local opts = {
   -- Auto close the outline window if goto_location is triggered and not for
   -- peek_location
   auto_close = false,
-  -- Automatically go to location in code when navigating outline window
+  -- Automatically go to location in code when navigating outline window.
+  -- Only in this fork
   auto_goto = false,
 
   -- Vim options for the outline window
   show_numbers = false,
   show_relative_numbers = false,
-  show_cursorline = true,
+  show_cursorline = true,  -- Only in this fork
   -- Show extra details with the symbols (lsp dependent)
   show_symbol_details = true,
   -- Highlight group for the preview background
