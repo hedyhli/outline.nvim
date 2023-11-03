@@ -128,6 +128,7 @@ function M.__goto_location(change_focus)
   end
 end
 
+-- Wraps __goto_location and handles auto_close
 function M._goto_location(change_focus)
   M.__goto_location(change_focus)
   if change_focus and config.options.auto_close then
@@ -149,6 +150,48 @@ function M._toggle_fold(move_cursor, node_index)
 
   if folding.is_foldable(node) then
     M._set_folded(not is_folded, move_cursor, node_index)
+  end
+end
+
+local function setup_buffer_autocmd()
+  if config.options.auto_preview then
+    vim.api.nvim_create_autocmd('CursorHold', {
+      buffer = 0,
+      callback = require('symbols-outline.preview').show,
+    })
+  else
+    vim.api.nvim_create_autocmd('CursorMoved', {
+      buffer = 0,
+      callback = function()
+        require('symbols-outline.preview').close()
+        if config.options.auto_goto then
+          M._goto_location(false)
+        end
+      end,
+    })
+  end
+end
+
+local function setup_buffer_autocmd()
+  if config.options.auto_preview then
+    vim.api.nvim_create_autocmd('CursorMoved', {
+      buffer = 0,
+      callback = require('symbols-outline.preview').show,
+    })
+  else
+    vim.api.nvim_create_autocmd('CursorMoved', {
+      buffer = 0,
+      callback = require('symbols-outline.preview').close,
+    })
+  end
+  if config.options.auto_goto then
+    vim.api.nvim_create_autocmd('CursorMoved', {
+      buffer = 0,
+      callback = function()
+        -- Don't use _goto_location because we don't want to auto-close
+        M.__goto_location(false)
+      end
+    })
   end
 end
 

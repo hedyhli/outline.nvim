@@ -117,7 +117,7 @@ Key:
 - ✅ Open handler checks if view is not already open
   (#235 by eyalz800)
 
-- auto_jump config param
+- auto_goto config param
   (#229 by stickperson)
 
 - ✅ Update nerd fonts to 3.0
@@ -357,6 +357,8 @@ local opts = {
   -- Auto close the outline window if goto_location is triggered and not for
   -- peek_location
   auto_close = false,
+  -- Automatically go to location in code when navigating outline window
+  auto_goto = false,
 
   -- Vim options for the outline window
   show_numbers = false,

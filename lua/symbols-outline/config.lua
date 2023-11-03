@@ -18,6 +18,7 @@ M.defaults = {
   border = 'single',
   relative_width = true,
   auto_close = false,
+  auto_goto = false,
   auto_preview = false,
   open_hover_on_preview = true,
   show_numbers = false,

@@ -132,7 +132,7 @@ Key:
 <
 
 - ✅ Open handler checks if view is not already open (#235 by eyalz800)
-- auto_jump config param (#229 by stickperson)
+- auto_goto config param (#229 by stickperson)
 - ✅ Update nerd fonts to 3.0 (#225 by anstadnik)
 - ✅ fix(folding): optimize fold/unfold all (#223 by wjdwndud0114)
 - ✅ Support markdown setext-style headers (#222 by msr1k)
@@ -333,7 +333,9 @@ Default values are shown:
       -- Auto close the outline window if goto_location is triggered and not for
       -- peek_location
       auto_close = false,
-    
+      -- Automatically jump to location in code when navigating outline window
+      auto_goto = false,
+
       -- Vim options for the outline window
       show_numbers = false,
       show_relative_numbers = false,
@@ -457,7 +459,6 @@ COMMANDS                       *symbols-outline-symbols-outline.nvim-commands*
     Focus on source window
 - **:SymbolsOutlineStatus**
     Display current provider and outline window status in the messages area.
-
 
 LUA API ~
 
