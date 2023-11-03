@@ -105,7 +105,7 @@ Features/Changes:
 - Flash highlight when using goto/peek location.
 
 - Auto jump config option (see config `auto_goto`)
-(simrat39/symbols-outline.nvim#225, simrat39/symbols-outline.nvim#228).
+(simrat39/symbols-outline.nvim#229, simrat39/symbols-outline.nvim#228).
 
 ## PRs
 
