@@ -104,6 +104,9 @@ Features/Changes:
 
 - Flash highlight when using goto/peek location.
 
+- Auto jump config option (see config `auto_goto`)
+(simrat39/symbols-outline.nvim#225, simrat39/symbols-outline.nvim#228).
+
 ## PRs
 
 [Skip this section](#symbols-outlinenvim)
@@ -117,8 +120,11 @@ Key:
 - ✅ Open handler checks if view is not already open
   (#235 by eyalz800)
 
-- auto_goto config param
+- ✅ auto_jump config param
+
   (#229 by stickperson)
+
+  **Renamed to `auto_goto` for consistency**
 
 - ✅ Update nerd fonts to 3.0
   (#225 by anstadnik)
