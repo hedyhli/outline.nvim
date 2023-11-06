@@ -21,13 +21,13 @@ function M.has_provider()
 end
 
 ---@param on_symbols function
-function M.request_symbols(on_symbols)
+function M.request_symbols(on_symbols, opts)
   for _, value in ipairs(providers) do
     local provider = require(value)
     if provider.should_use_provider(0) then
       _G._symbols_outline_current_provider = provider
       _G._symbols_outline_current_provider.name = value
-      provider.request_symbols(on_symbols)
+      provider.request_symbols(on_symbols, opts)
       break
     end
   end

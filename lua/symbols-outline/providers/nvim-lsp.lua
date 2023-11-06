@@ -69,13 +69,14 @@ function M.postprocess_symbols(response)
 end
 
 ---@param on_symbols function
-function M.request_symbols(on_symbols)
+function M.request_symbols(on_symbols, opts)
   vim.lsp.buf_request_all(
     0,
     'textDocument/documentSymbol',
     getParams(),
     function (response)
-      on_symbols(M.postprocess_symbols(response))
+      response = M.postprocess_symbols(response)
+      on_symbols(response, opts)
     end
   )
 end

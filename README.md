@@ -45,7 +45,8 @@ I do not merge PRs from the original repo that I don't personally need.
 - Fold all operation too slow: simrat39/symbols-outline.nvim#223 (simrat39/symbols-outline.nvim#224)
 - "Invalid buffer id" error simrat39/symbols-outline.nvim#177
 - Open handler triggering multiple times ends up in messy state with errors
-simrat39/symbols-outline.nvim#235
+  simrat39/symbols-outline.nvim#235
+- Fixed `_highlight_current_item` function checking provider on outline window
 
 ## 🛑 Breaking changes
 
@@ -73,6 +74,7 @@ features:
 
 - **Behaviour**: For `auto_preview=true`, previously preview is only shown after
   some delay. Now preview is shown instantly every time the cursor moves.
+
 
 ## Features
 
@@ -106,6 +108,11 @@ Features/Changes:
 
 - Auto jump config option (see config `auto_goto`)
 (simrat39/symbols-outline.nvim#229, simrat39/symbols-outline.nvim#228).
+
+- New Follow command, opposite of `goto_location`/`focus_location`
+
+- New restore location keymap option to go back to corresponding outline
+  location synced with code (see config `restore_location`).
 
 ## PRs
 
@@ -193,7 +200,7 @@ Key:
   (#101 by druskus20)
 
 
-### TODO
+## TODO
 
 [Skip this section](#symbols-outlinenvim)
 
@@ -225,9 +232,12 @@ Items will be moved to above list when complete.
   (simrat39/symbols-outline#128)
   - `[/]` Configurable width and height of preview window (simrat39/symbols-outline#130)
 
-- `[/]` Outline window customizations (simrat39/symbols-outline#137)
+- View
+  - `[/]` Outline window customizations (simrat39/symbols-outline#137)
+  - `[/]` Option to show line number next to symbols
 
-### Related plugins
+
+## Related plugins
 
 - nvim-navic
 - nvim-navbuddy
@@ -403,19 +413,25 @@ local opts = {
     -- Jump to symbol under cursor but keep focus on outline window.
     -- Renamed in this fork!
     peek_location = "o",
+    -- Only in this fork:
+    -- Change cursor position of outline window to the current location in code.
+    -- "Opposite" of goto/peek_location.
+    restore_location = "<C-g>",
+    -- Open LSP/provider-dependent symbol hover information
     hover_symbol = "<C-space>",
-    -- Preview symbol under cursor
+    -- Preview location code of the symbol under cursor
     toggle_preview = "K",
+    -- Symbol actions
     rename_symbol = "r",
     code_actions = "a",
     -- These fold actions are collapsing tree nodes, not code folding
     fold = "h",
+    unfold = "l",
     fold_toggle = '<Tab>',       -- Only in this fork
     -- Toggle folds for all nodes.
     -- If at least one node is folded, this action will fold all nodes.
     -- If all nodes are folded, this action will unfold all nodes.
     fold_toggle_all = '<S-Tab>', -- Only in this fork
-    unfold = "l",
     fold_all = "W",
     unfold_all = "E",
     fold_reset = "R",
@@ -504,6 +520,20 @@ local opts = {
 
   Display current provider and outline window status in the messages area.
 
+- **:SymbolsOutlineFollow[!]**
+
+  Go to corresponding node in outline based on cursor position in code, and
+  focus on the outline window.
+
+  With bang, retain focus on the code window.
+
+  This can be understood as the converse of `goto_location` (see keymaps).
+  `goto_location` sets cursor of code window to the position of outline window,
+  whereas this command sets position in outline window to the cursor position of
+  code window.
+
+  With bang, it can be understood as the converse of `focus_location`.
+
 
 ### Lua API
 
@@ -516,13 +546,13 @@ require'symbols-outline'
 
   Toggle opening/closing of outline window.
 
-  If `opts.bang` is true, keep focus on previous window.
+  If `opts.focus_outline=false`, keep focus on previous window.
 
 - **open_outline(opts)**
 
   Open the outline window.
 
-  If `opts.bang` is true, keep focus on previous window.
+  If `opts.focus_outline=false`, keep focus on previous window.
 
 - **close_outline()**
 
@@ -548,8 +578,21 @@ require'symbols-outline'
 
   Display current provider and outline window status in the messages area.
 
+- **has_provider()**
+
+  Returns whether a provider is available for current window.
+
+- **follow_cursor(opts)**
+
+  Go to corresponding node in outline based on cursor position in code, and
+  focus on the outline window.
+
+  With `opts.focus_outline=false`, cursor focus will remain on code window.
+
 
 ## Default keymaps
+
+These mappings are active for the outline window.
 
 | Key        | Action                                             |
 | ---------- | -------------------------------------------------- |
@@ -557,13 +600,14 @@ require'symbols-outline'
 | ?          | Show help message                                  |
 | Enter      | Go to symbol location in code                      |
 | o          | Go to symbol location in code without losing focus |
+| Ctrl+g     | Go to code location in outline window              |
 | Ctrl+Space | Hover current symbol                               |
 | K          | Toggles the current symbol preview                 |
 | r          | Rename symbol                                      |
 | a          | Code actions                                       |
-| h          | fold symbol                                        |
-| Tab        | toggle fold under cursor                           |
-| Shift+Tab  | toggle all folds                                   |
+| h          | Fold symbol or parent symbol                       |
+| Tab        | Toggle fold under cursor                           |
+| Shift+Tab  | Toggle all folds                                   |
 | l          | Unfold symbol                                      |
 | W          | Fold all symbols                                   |
 | E          | Unfold all symbols                                 |

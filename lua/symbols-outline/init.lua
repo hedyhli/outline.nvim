@@ -39,31 +39,6 @@ local function setup_global_autocmd()
   })
 end
 
-local function setup_buffer_autocmd()
-  if config.options.auto_preview then
-    vim.api.nvim_create_autocmd('CursorMoved', {
-      buffer = 0,
-      callback = require('symbols-outline.preview').show,
-    })
-  else
-    vim.api.nvim_create_autocmd('CursorMoved', {
-      buffer = 0,
-      callback = require('symbols-outline.preview').close,
-    })
-  end
-end
-
-local function setup_commands()
-  local cmd = function(n, c, o) vim.api.nvim_create_user_command('SymbolsOutline'..n, c, o) end
-  cmd('', M.toggle_outline, { nargs = 0, bang = true })
-  cmd('Open', M.open_outline, { nargs = 0, bang = true })
-  cmd('Close', M.close_outline, { nargs = 0 })
-  cmd('FocusOutline', M.focus_outline, { nargs = 0 })
-  cmd('FocusCode', M.focus_code, { nargs = 0 })
-  cmd('Focus', M.focus_toggle, { nargs = 0 })
-  cmd('Status', M.show_status, { nargs = 0 })
-end
-
 -------------------------
 -- STATE
 -------------------------
@@ -71,7 +46,6 @@ M.state = {
   outline_items = {},
   flattened_outline_items = {},
   code_win = 0,
-  opts = {}
 }
 
 local function wipe_state()
@@ -91,7 +65,9 @@ local function _merge_items(items)
 end
 
 local function __refresh()
-  if M.view:is_open() then
+  local current_buffer_is_outline = M.view.bufnr
+    == vim.api.nvim_get_current_buf()
+  if M.view:is_open() and current_buffer_is_outline then
     local function refresh_handler(response)
       if response == nil or type(response) ~= 'table' then
         return
@@ -150,25 +126,6 @@ function M._toggle_fold(move_cursor, node_index)
 
   if folding.is_foldable(node) then
     M._set_folded(not is_folded, move_cursor, node_index)
-  end
-end
-
-local function setup_buffer_autocmd()
-  if config.options.auto_preview then
-    vim.api.nvim_create_autocmd('CursorHold', {
-      buffer = 0,
-      callback = require('symbols-outline.preview').show,
-    })
-  else
-    vim.api.nvim_create_autocmd('CursorMoved', {
-      buffer = 0,
-      callback = function()
-        require('symbols-outline.preview').close()
-        if config.options.auto_goto then
-          M._goto_location(false)
-        end
-      end,
-    })
   end
 end
 
@@ -252,32 +209,25 @@ function M._set_all_folded(folded, nodes)
 end
 
 function M._highlight_current_item(winnr)
-  local has_provider = providers.has_provider()
-
-  local is_current_buffer_the_outline = M.view.bufnr
+  local has_provider = M.has_provider()
+  local has_outline_open = M.view:is_open()
+  local current_buffer_is_outline = M.view.bufnr
     == vim.api.nvim_get_current_buf()
 
-  local doesnt_have_outline_buf = not M.view.bufnr
-
-  local should_exit = not has_provider
-    or doesnt_have_outline_buf
-    or is_current_buffer_the_outline
-
-  -- Make a special case if we have a window number
-  -- Because we might use this to manually focus so we dont want to quit this
-  -- function
-  if winnr then
-    should_exit = false
+  if not has_provider then
+    return
   end
 
-  if should_exit then
+  if
+    not has_outline_open   -- Outline not open
+    -- Not currently on outline window, but no code window is given.
+    or (not winnr and not current_buffer_is_outline)
+  then
     return
   end
 
   local win = winnr or vim.api.nvim_get_current_win()
-
   local hovered_line = vim.api.nvim_win_get_cursor(win)[1] - 1
-
   local leaf_node = nil
 
   local cb = function(value)
@@ -317,6 +267,10 @@ local function setup_keymaps(bufnr)
   -- goto_location of symbol but stay in outline
   map(config.options.keymaps.peek_location, function()
     M._goto_location(false)
+  end)
+  -- Navigate to corresponding outline location for current code location
+  map(config.options.keymaps.restore_location, function()
+    M._map_follow_cursor()
   end)
   -- Move down/up in outline and peek that location in code
   map(config.options.keymaps.down_and_goto, function()
@@ -381,7 +335,7 @@ local function setup_keymaps(bufnr)
   end)
 end
 
-local function handler(response)
+local function handler(response, opts)
   if response == nil or type(response) ~= 'table' or M.view:is_open() then
     return
   end
@@ -408,42 +362,122 @@ local function handler(response)
 
   M._highlight_current_item(M.state.code_win)
 
-  if not config.options.focus_on_open or (M.state.opts and M.state.opts.bang) then
+  if not config.options.focus_on_open or (opts and not opts.focus_outline) then
     vim.fn.win_gotoid(M.state.code_win)
   end
 end
 
+---Set position of outline window to match cursor position in code, return
+---whether the window is just newly opened (previously not open).
+---@param opts table? Field `focus_outline` = `false` or `nil` means don't focus on outline window after following cursor. If opts is not provided, focus will be on outline window after following cursor.
+---@return boolean ok Whether it was successful. If ok=false, either the outline window is not open or the code window cannot be found.
+function M.follow_cursor(opts)
+  if not M.view:is_open() then
+    return false
+  end
+
+  if require('symbols-outline.preview').has_code_win() then
+    M._highlight_current_item(M.state.code_win)
+  else
+    return false
+  end
+
+  if not opts then
+    opts = { focus_outline = true }
+  end
+  if opts.focus_outline then
+    M.focus_outline()
+  end
+
+  return true
+end
+
+local function _cmd_follow_cursor(opts)
+  local fnopts = { focus_outline = true }
+  if opts.bang then
+    fnopts.focus_outline = false
+  end
+  M.follow_cursor(fnopts)
+end
+
+function M._map_follow_cursor()
+  if not M.follow_cursor({ focus_outline = true }) then
+    vim.notify(
+      "Code window no longer active. Try closing and reopening the outline.",
+      vim.log.levels.ERROR
+    )
+  end
+end
+
+---Toggle the outline window, and return whether the outline window is open
+---after this operation.
+---@param opts table? Table of options, @see open_outline
+---@return boolean is_open Whether outline window is open
 function M.toggle_outline(opts)
   if M.view:is_open() then
     M.close_outline()
+    return false
   else
     M.open_outline(opts)
+    return true
   end
 end
 
+-- Used for SymbolsOutline user command
+local function _cmd_toggle_outline(opts)
+  if opts.bang then
+    M.toggle_outline({ focus_outline = false })
+  else
+    M.toggle_outline({ focus_outline = true })
+  end
+end
+
+---Open the outline window.
+---@param opts table? Field focus_outline=false means don't focus on outline window after opening. If opts is not provided, focus will be on outline window after opening.
 function M.open_outline(opts)
+  if not opts then
+    opts = { focus_outline = true }
+  end
   if not M.view:is_open() then
-    M.state.opts = opts
-    providers.request_symbols(handler)
+    providers.request_symbols(handler, opts)
   end
 end
 
+local function _cmd_open_outline(opts)
+  if opts.bang then
+    M.open_outline({ focus_outline = false })
+  else
+    M.open_outline({ focus_outline = true })
+  end
+end
+
+---Close the outline window.
 function M.close_outline()
   M.view:close()
 end
 
+---Set cursor to focus on the outline window, return whether the window is currently open..
+---@return boolean is_open Whether the window is open
 function M.focus_outline()
   if M.view:is_open() then
     vim.fn.win_gotoid(M.view.winnr)
+    return true
   end
+  return false
 end
 
+---Set cursor to focus on the code window, return whether this operation was successful.
+---@return boolean ok Whether it was successful. If unsuccessful, it might mean that the attached code window has been closed or is no longer valid.
 function M.focus_code()
   if require('symbols-outline.preview').has_code_win() then
     vim.fn.win_gotoid(M.state.code_win)
+    return true
   end
+  return false
 end
 
+---Toggle focus between outline and code window, returns whether it was successful.
+---@return boolean ok Whether it was successful. If `ok=false`, either the outline window is not open or the code window is no longer valid.
 function M.focus_toggle()
   if M.view:is_open() and require('symbols-outline.preview').has_code_win() then
     local winid = vim.fn.win_getid()
@@ -452,27 +486,80 @@ function M.focus_toggle()
     else
       vim.fn.win_gotoid(M.state.code_win)
     end
+    return true
   end
+  return false
 end
 
+---Whether the outline window is currently open.
+---@return boolean is_open
 function M.is_open()
   return M.view:is_open()
 end
 
+---Display outline window status in the message area.
 function M.show_status()
-  if providers.has_provider() and _G._symbols_outline_current_provider then
+  if M.has_provider() then
     print("Current provider:")
-    print(_G._symbols_outline_current_provider.name)
+    print('  ' .. _G._symbols_outline_current_provider.name)
     if M.view:is_open() then
-      print("Outline window is open")
+      print("Outline window is open.")
     else
-      print("Outline window is not open")
+      print("Outline window is not open.")
+    end
+    if require('symbols-outline.preview').has_code_win() then
+      print("Code window is active.")
+    else
+      print("Warning: code window is either closed or invalid. Please close and reopen the outline window.")
     end
   else
     print("No providers")
   end
 end
 
+---Whether there is currently an available provider.
+---@return boolean has_provider
+function M.has_provider()
+  local winid = vim.fn.win_getid()
+  if M.view:is_open() and winid == M.view.winnr then
+    return _G._symbols_outline_current_provider ~= nil
+  end
+  return providers.has_provider() and _G._symbols_outline_current_provider
+end
+
+local function setup_commands()
+  local cmd = function(n, c, o)
+    vim.api.nvim_create_user_command('SymbolsOutline'..n, c, o)
+  end
+
+  cmd('', _cmd_toggle_outline, {
+    desc = "Toggle the outline window. \
+With bang, keep focus on initial window after opening.",
+    nargs = 0,
+    bang = true,
+  })
+  cmd('Open', _cmd_open_outline, {
+    desc = "With bang, keep focus on initial window after opening.",
+    nargs = 0,
+    bang = true,
+  })
+  cmd('Close', M.close_outline, { nargs = 0 })
+  cmd('FocusOutline', M.focus_outline, { nargs = 0 })
+  cmd('FocusCode', M.focus_code, { nargs = 0 })
+  cmd('Focus', M.focus_toggle, { nargs = 0 })
+  cmd('Status', M.show_status, {
+    desc = "Show a message about the current status of the outline window.",
+    nargs = 0,
+  })
+  cmd('Follow', _cmd_follow_cursor, {
+    desc = "Update position of outline with position of cursor. \
+With bang, don't switch cursor focus to outline window.",
+    nargs = 0,
+    bang = true,
+  })
+end
+
+---Set up configuration options for symbols-outline.
 function M.setup(opts)
   config.setup(opts)
   ui.setup_highlights()

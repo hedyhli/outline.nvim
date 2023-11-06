@@ -83,11 +83,12 @@ local function convert_symbols(result)
 end
 
 ---@param on_symbols function
-function M.request_symbols(on_symbols)
+---@param opts table
+function M.request_symbols(on_symbols, opts)
   vim.fn.call('CocActionAsync', {
     'documentSymbols',
     function(_, symbols)
-      on_symbols { [1000000] = { result = convert_symbols(symbols) } }
+      on_symbols({ [1000000] = { result = convert_symbols(symbols) } }, opts)
     end,
   })
 end

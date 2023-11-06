@@ -17,8 +17,9 @@ function M.hover_info(_, _, on_info)
 end
 
 ---@param on_symbols function
-function M.request_symbols(on_symbols)
-  on_symbols(md_parser.handle_markdown())
+---@param opts table
+function M.request_symbols(on_symbols, opts)
+  on_symbols(md_parser.handle_markdown(), opts)
 end
 
 return M
