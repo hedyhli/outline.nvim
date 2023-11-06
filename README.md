@@ -114,6 +114,8 @@ Features/Changes:
 - New restore location keymap option to go back to corresponding outline
   location synced with code (see config `restore_location`).
 
+Screen recordings of some of the features is shown at the bottom of the readme.
+
 ## PRs
 
 [Skip this section](#symbols-outlinenvim)
@@ -486,6 +488,9 @@ local opts = {
 }
 ```
 
+To find out exactly what some of the options do, check out the
+[recipes](#recipes) section of the readme at the bottom for screen-recordings.
+
 ## Commands
 
 - **:SymbolsOutline[!]**
@@ -622,6 +627,7 @@ These mappings are active for the outline window.
 | SymbolsOutlineConnector | Highlight of the table connectors      |
 | Comment                 | Highlight of the info virtual text     |
 
+
 ## Recipes
 
 Behaviour you may want to achieve and the combination of configuration options
@@ -637,4 +643,21 @@ auto_unfold_hover = true,
 
 
 Any other recipes you think others may also find useful? Feel free to open a PR.
+
+**Use outline window as a quick-jump window**
+
+```lua
+auto_preview = true,
+```
+
+https://github.com/hedyhli/symbols-outline.nvim/assets/50042066/a473d791-d1b9-48e9-917f-b816b564a645
+
+Alternatively, if you want to automatically navigate to the corresponding code
+location and not use the preview window:
+
+```lua
+auto_goto = true,
+```
+
+https://github.com/hedyhli/symbols-outline.nvim/assets/50042066/3d06e342-97ac-400c-8598-97a9235de66c
 
