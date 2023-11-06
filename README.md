@@ -659,5 +659,7 @@ location and not use the preview window:
 auto_goto = true,
 ```
 
+This feature was added by @stickperson in an upstream PR 🙌
+
 https://github.com/hedyhli/symbols-outline.nvim/assets/50042066/3d06e342-97ac-400c-8598-97a9235de66c
 
