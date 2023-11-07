@@ -47,6 +47,8 @@ I do not merge PRs from the original repo that I don't personally need.
 - Open handler triggering multiple times ends up in messy state with errors
   simrat39/symbols-outline.nvim#235
 - Fixed `_highlight_current_item` function checking provider on outline window
+- Fixed behaviour of empty markdown headings `^(#+)(%s+)$` being listed in the
+outline.
 
 ## 🛑 Breaking changes
 
