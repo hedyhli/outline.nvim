@@ -1,4 +1,4 @@
-*symbols-outline.txt*       For NVIM v0.7.0      Last change: 2023 November 03
+*symbols-outline.txt*       For NVIM v0.7.0      Last change: 2023 November 06
 
 ==============================================================================
 Table of Contents                          *symbols-outline-table-of-contents*
@@ -9,6 +9,8 @@ Table of Contents                          *symbols-outline-table-of-contents*
   - 🛑 Breaking changes  |symbols-outline-fork-status-🛑-breaking-changes|
   - Features                            |symbols-outline-fork-status-features|
   - PRs                                      |symbols-outline-fork-status-prs|
+  - TODO                                    |symbols-outline-fork-status-todo|
+  - Related plugins              |symbols-outline-fork-status-related-plugins|
 2. symbols-outline.nvim                 |symbols-outline-symbols-outline.nvim|
   - Prerequisites         |symbols-outline-symbols-outline.nvim-prerequisites|
   - Installation           |symbols-outline-symbols-outline.nvim-installation|
@@ -68,6 +70,7 @@ FIXES                                      *symbols-outline-fork-status-fixes*
 - "Invalid buffer id" error simrat39/symbols-outline.nvim#177
 - Open handler triggering multiple times ends up in messy state with errors
     simrat39/symbols-outline.nvim#235
+- Fixed `_highlight_current_item` function checking provider on outline window
 
 
 🛑 BREAKING CHANGES      *symbols-outline-fork-status-🛑-breaking-changes*
@@ -120,6 +123,11 @@ Features/Changes:
 - Flash highlight when using goto/peek location.
 - Auto jump config option (see config `auto_goto`)
     (simrat39/symbols-outline.nvim#229, simrat39/symbols-outline.nvim#228).
+- New Follow command, opposite of `goto_location`/`focus_location`
+- New restore location keymap option to go back to corresponding outline location
+    synced with code (see config `restore_location`).
+
+Screen recordings of some of the features is shown at the bottom of the readme.
 
 
 PRS                                          *symbols-outline-fork-status-prs*
@@ -163,7 +171,7 @@ Key:
 - Floating window (Draft) (#101 by druskus20)
 
 
-TODO ~
+TODO                                        *symbols-outline-fork-status-todo*
 
 |symbols-outline-skip-this-section|
 
@@ -192,10 +200,12 @@ Items will be moved to above list when complete.
     - `[/]` Configurable winhighlight options for preview window (like nvim-cmp)
         (simrat39/symbols-outline#128)
     - `[/]` Configurable width and height of preview window (simrat39/symbols-outline#130)
-- `[/]` Outline window customizations (simrat39/symbols-outline#137)
+- View
+    - `[/]` Outline window customizations (simrat39/symbols-outline#137)
+    - `[/]` Option to show line number next to symbols
 
 
-RELATED PLUGINS ~
+RELATED PLUGINS                  *symbols-outline-fork-status-related-plugins*
 
 - nvim-navic
 - nvim-navbuddy
@@ -378,19 +388,25 @@ Default values are shown:
         -- Jump to symbol under cursor but keep focus on outline window.
         -- Renamed in this fork!
         peek_location = "o",
+        -- Only in this fork:
+        -- Change cursor position of outline window to the current location in code.
+        -- "Opposite" of goto/peek_location.
+        restore_location = "<C-g>",
+        -- Open LSP/provider-dependent symbol hover information
         hover_symbol = "<C-space>",
-        -- Preview symbol under cursor
+        -- Preview location code of the symbol under cursor
         toggle_preview = "K",
+        -- Symbol actions
         rename_symbol = "r",
         code_actions = "a",
         -- These fold actions are collapsing tree nodes, not code folding
         fold = "h",
+        unfold = "l",
         fold_toggle = '<Tab>',       -- Only in this fork
         -- Toggle folds for all nodes.
         -- If at least one node is folded, this action will fold all nodes.
         -- If all nodes are folded, this action will unfold all nodes.
         fold_toggle_all = '<S-Tab>', -- Only in this fork
-        unfold = "l",
         fold_all = "W",
         unfold_all = "E",
         fold_reset = "R",
@@ -445,6 +461,10 @@ Default values are shown:
     }
 <
 
+To find out exactly what some of the options do, check out the
+|symbols-outline-recipes| section of the readme at the bottom for
+screen-recordings.
+
 
 COMMANDS                       *symbols-outline-symbols-outline.nvim-commands*
 
@@ -466,6 +486,15 @@ COMMANDS                       *symbols-outline-symbols-outline.nvim-commands*
     Focus on source window
 - **:SymbolsOutlineStatus**
     Display current provider and outline window status in the messages area.
+- **:SymbolsOutlineFollow[!]**
+    Go to corresponding node in outline based on cursor position in code, and focus
+    on the outline window.
+    With bang, retain focus on the code window.
+    This can be understood as the converse of `goto_location` (see keymaps).
+    `goto_location` sets cursor of code window to the position of outline window,
+    whereas this command sets position in outline window to the cursor position of
+    code window.
+    With bang, it can be understood as the converse of `focus_location`.
 
 
 LUA API ~
@@ -477,10 +506,10 @@ LUA API ~
 - setup(opts)
 - **toggle_outline(opts)**
     Toggle opening/closing of outline window.
-    If `opts.bang` is true, keep focus on previous window.
+    If `opts.focus_outline=false`, keep focus on previous window.
 - **open_outline(opts)**
     Open the outline window.
-    If `opts.bang` is true, keep focus on previous window.
+    If `opts.focus_outline=false`, keep focus on previous window.
 - **close_outline()**
     Close the outline window.
 - **focus_toggle()**
@@ -493,9 +522,17 @@ LUA API ~
     Return whether the outline window is open.
 - **show_status()**
     Display current provider and outline window status in the messages area.
+- **has_provider()**
+    Returns whether a provider is available for current window.
+- **follow_cursor(opts)**
+    Go to corresponding node in outline based on cursor position in code, and focus
+    on the outline window.
+    With `opts.focus_outline=false`, cursor focus will remain on code window.
 
 
 DEFAULT KEYMAPS         *symbols-outline-symbols-outline.nvim-default-keymaps*
+
+These mappings are active for the outline window.
 
   Key          Action
   ------------ ----------------------------------------------------
@@ -503,13 +540,14 @@ DEFAULT KEYMAPS         *symbols-outline-symbols-outline.nvim-default-keymaps*
   ?            Show help message
   Enter        Go to symbol location in code
   o            Go to symbol location in code without losing focus
+  Ctrl+g       Go to code location in outline window
   Ctrl+Space   Hover current symbol
   K            Toggles the current symbol preview
   r            Rename symbol
   a            Code actions
-  h            fold symbol
-  Tab          toggle fold under cursor
-  Shift+Tab    toggle all folds
+  h            Fold symbol or parent symbol
+  Tab          Toggle fold under cursor
+  Shift+Tab    Toggle all folds
   l            Unfold symbol
   W            Fold all symbols
   E            Unfold all symbols
@@ -541,10 +579,32 @@ to achieve it.
 Any other recipes you think others may also find useful? Feel free to open a
 PR.
 
+**Use outline window as a quick-jump window**
+
+>lua
+    auto_preview = true,
+<
+
+
+https://github.com/hedyhli/symbols-outline.nvim/assets/50042066/a473d791-d1b9-48e9-917f-b816b564a645
+
+Alternatively, if you want to automatically navigate to the corresponding code
+location and not use the preview window:
+
+>lua
+    auto_goto = true,
+<
+
+This feature was added by @stickperson in an upstream PR 🙌
+
+
+https://github.com/hedyhli/symbols-outline.nvim/assets/50042066/3d06e342-97ac-400c-8598-97a9235de66c
+
 ==============================================================================
 3. Links                                               *symbols-outline-links*
 
 1. *demo*: https://github.com/simrat39/rust-tools-demos/raw/master/symbols-demo.gif
+2. *@stickperson*: 
 
 Generated by panvimdoc <https://github.com/kdheepak/panvimdoc>
 
