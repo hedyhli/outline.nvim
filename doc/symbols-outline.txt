@@ -1,4 +1,4 @@
-*symbols-outline.txt*       For NVIM v0.7.0      Last change: 2023 November 06
+*symbols-outline.txt*       For NVIM v0.7.0      Last change: 2023 November 07
 
 ==============================================================================
 Table of Contents                          *symbols-outline-table-of-contents*
@@ -71,6 +71,8 @@ FIXES                                      *symbols-outline-fork-status-fixes*
 - Open handler triggering multiple times ends up in messy state with errors
     simrat39/symbols-outline.nvim#235
 - Fixed `_highlight_current_item` function checking provider on outline window
+- Fixed behaviour of empty markdown headings `^(#+)(%s+)$` being listed in the
+    outline.
 
 
 🛑 BREAKING CHANGES      *symbols-outline-fork-status-🛑-breaking-changes*
