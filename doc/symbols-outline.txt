@@ -569,8 +569,8 @@ These mappings are active for the outline window.
   ?            Show help message
   Enter        Go to symbol location in code
   o            Go to symbol location in code without losing focus
-  Ctrl+j       Go up and goto location
-  Ctrl+k       Go down and goto location
+  Ctrl+k       Go up and goto location
+  Ctrl+j       Go down and goto location
   Ctrl+g       Go to code location in outline window
   Ctrl+Space   Hover current symbol
   K            Toggles the current symbol preview
