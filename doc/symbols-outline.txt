@@ -1,4 +1,4 @@
-*symbols-outline.txt*       For NVIM v0.7.0      Last change: 2023 November 07
+*symbols-outline.txt*       For NVIM v0.7.0      Last change: 2023 November 08
 
 ==============================================================================
 Table of Contents                          *symbols-outline-table-of-contents*
@@ -101,7 +101,7 @@ features:
 
 FEATURES                                *symbols-outline-fork-status-features*
 
-|symbols-outline-skip-this-section|
+|symbols-outline-skip-to-plugin-readme|
 
 Below is a list of features I’ve included in this fork which, at the time of
 writing, has not been included upstream (in the original repo). I try my best
@@ -118,6 +118,10 @@ Features/Changes:
         - simrat39/symbols-outline.nvim#143
         - simrat39/symbols-outline.nvim#174
         - simrat39/symbols-outline.nvim#207
+- Show line number of each symbol in outline window (see
+    |symbols-outline-recipes| for a screenshot)
+    - Fixed issues:
+        - simrat39/symbols-outline.nvim#212
 - Cursorline option for the outline window.
 - Added function and command to show provider and outline window status, somewhat
     like `:LspInfo`.
@@ -134,7 +138,7 @@ Screen recordings of some of the features is shown at the bottom of the readme.
 
 PRS                                          *symbols-outline-fork-status-prs*
 
-|symbols-outline-skip-this-section|
+|symbols-outline-skip-to-plugin-readme|
 
 Key:
 
@@ -143,6 +147,7 @@ Key:
     📮 = Planned for merge
 <
 
+- 📮 center view on goto symbol (#239 by skomposzczet)
 - ✅ Open handler checks if view is not already open (#235 by eyalz800)
 - ✅ auto_jump config param (#229 by stickperson)
     **Renamed to auto_goto for consistency**
@@ -175,7 +180,7 @@ Key:
 
 TODO                                        *symbols-outline-fork-status-todo*
 
-|symbols-outline-skip-this-section|
+|symbols-outline-skip-to-plugin-readme|
 
 Key:
 
@@ -184,8 +189,6 @@ Key:
     - [/] : WIP
     -     : Idea
 <
-
-Items will be moved to above list when complete.
 
 - Folds
     - `[ ]` Org-like shift+tab behavior: Open folds level-by-level
@@ -204,7 +207,8 @@ Items will be moved to above list when complete.
     - `[/]` Configurable width and height of preview window (simrat39/symbols-outline#130)
 - View
     - `[/]` Outline window customizations (simrat39/symbols-outline#137)
-    - `[/]` Option to show line number next to symbols
+    - ✅ Option to show line number next to symbols (simrat39/symbols-outline#212)
+    - `[/]` Option to hide cursor in outline window if cursorline enabled
 
 
 RELATED PLUGINS                  *symbols-outline-fork-status-related-plugins*
@@ -223,6 +227,20 @@ RELATED PLUGINS                  *symbols-outline-fork-status-related-plugins*
 
 **A tree like view for symbols in Neovim using the Language Server Protocol.
 Supports all your favourite languages.**
+
+Table of contents
+
+- |symbols-outline-prerequisites|
+- |symbols-outline-installation|
+- |symbols-outline-setup|
+- |symbols-outline-configuration|
+    - |symbols-outline-terminology|
+    - |symbols-outline-options|
+- |symbols-outline-commands|
+    - |symbols-outline-lua-api|
+- |symbols-outline-default-keymaps|
+- |symbols-outline-highlights|
+- |symbols-outline-recipes|
 
 
 PREREQUISITES             *symbols-outline-symbols-outline.nvim-prerequisites*
@@ -361,6 +379,11 @@ Default values are shown:
       show_cursorline = true,  -- Only in this fork
       -- Show extra details with the symbols (lsp dependent)
       show_symbol_details = true,
+      -- Only in this fork.
+      -- Show line numbers of each symbol next to them.
+      -- Why? See this comment:
+      -- https://github.com/simrat39/symbols-outline.nvim/issues/212#issuecomment-1793503563
+      show_symbol_lineno = false,
       -- Highlight group for the preview background
       preview_bg_highlight = 'Pmenu',
       -- Depth past which nodes will be folded by default
@@ -601,6 +624,22 @@ This feature was added by @stickperson in an upstream PR 🙌
 
 
 https://github.com/hedyhli/symbols-outline.nvim/assets/50042066/3d06e342-97ac-400c-8598-97a9235de66c
+
+**Hide the extra details after each symbol name**
+
+>lua
+    show_symbol_details = false,
+<
+
+**Show line numbers next to each symbol to jump to that symbol quickly**
+
+>lua
+    show_symbol_lineno = true,
+<
+
+The default highlight group is `LineNr`.
+
+
 
 ==============================================================================
 3. Links                                               *symbols-outline-links*
