@@ -439,7 +439,12 @@ function M.open_outline(opts)
     opts = { focus_outline = true }
   end
   if not M.view:is_open() then
-    providers.request_symbols(handler, opts)
+    local found = providers.request_symbols(handler, opts)
+    if not found then
+      vim.notify("[symbols-outline]: No providers found for current buffer", vim.log.levels.WARN)
+    -- else
+    --   print("Using provider ".._G._symbols_outline_current_provider.name.."...")
+    end
   end
 end
 
