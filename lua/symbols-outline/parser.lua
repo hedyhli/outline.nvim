@@ -94,6 +94,8 @@ end
 function M.get_lines(flattened_outline_items)
   local lines = {}
   local hl_info = {}
+  local guide_hl_info = {}
+  local lineno_max = 0
 
   for node_line, node in ipairs(flattened_outline_items) do
     local depth = node.depth
@@ -102,8 +104,12 @@ function M.get_lines(flattened_outline_items)
     local line = t_utils.str_to_table(string.rep(' ', depth + marker_space))
     local running_length = 1
 
+    if node.range_start+1 > lineno_max then
+      lineno_max = node.range_start+1
+    end
+
     local function add_guide_hl(from, to)
-      table.insert(hl_info, {
+      table.insert(guide_hl_info, {
         node_line,
         from,
         to,
@@ -184,7 +190,46 @@ function M.get_lines(flattened_outline_items)
 
     node.prefix_length = #string_prefix + #node.icon + 1
   end
-  return lines, hl_info
+
+  local final_hl = {}
+  if config.options.show_symbol_lineno then
+    -- Width of the highest lineno value
+    local max_width = #tostring(lineno_max)
+    -- Padded prefix to the right of lineno for better readability if linenos
+    -- get more than 2 digits.
+    local prefix = string.rep(' ', math.max(2, max_width) - 1)
+    -- Offset to hl_info due to adding lineno on the left of each symbol line
+    local total_offset = #prefix
+    for i, node in ipairs(flattened_outline_items) do
+      lines[i] = prefix .. lines[i]
+      table.insert(final_hl, {
+        hl_info[i][1],                 -- node_line
+        hl_info[i][2] + total_offset,  -- start
+        hl_info[i][3] + total_offset,  -- end
+        hl_info[i][4]                  -- type
+      })
+      node.prefix_length = node.prefix_length + total_offset
+    end
+    if config.options.guides.enabled then
+      for _, hl in ipairs(guide_hl_info) do
+        table.insert(final_hl, {
+          hl[1],
+          hl[2] + total_offset,
+          hl[3] + total_offset,
+          hl[4]
+        })
+      end
+    end
+  else
+    -- Merge lists hl_info and guide_hl_info
+    final_hl = hl_info
+    if config.options.guides.enabled then
+      for _, hl in ipairs(guide_hl_info) do
+        table.insert(final_hl, hl)
+      end
+    end
+  end
+  return lines, final_hl
 end
 
 function M.get_details(flattened_outline_items)
@@ -193,6 +238,20 @@ function M.get_details(flattened_outline_items)
     table.insert(lines, value.detail or '')
   end
   return lines
+end
+
+function M.get_lineno(flattened_outline_items)
+  local lines = {}
+  local max = 0
+  for _, value in ipairs(flattened_outline_items) do
+    local line = value.range_start+1
+    if line > max then
+      max = line
+    end
+    -- Not padded here
+    table.insert(lines, tostring(line))
+  end
+  return lines, max
 end
 
 return M

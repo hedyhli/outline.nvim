@@ -65,6 +65,26 @@ function M.write_details(bufnr, lines)
   end
 end
 
+function M.write_lineno(bufnr, lines, max)
+  if not is_buffer_outline(bufnr) then
+    return
+  end
+  if not config.options.show_symbol_lineno then
+    return
+  end
+  local maxwidth = #tostring(max)
+
+  for index, value in ipairs(lines) do
+    local leftpad = string.rep(' ', maxwidth-#value)
+    vim.api.nvim_buf_set_extmark(bufnr, ns, index - 1, -1, {
+      virt_text = { {leftpad..value, 'LineNr' } },
+      virt_text_pos = 'overlay',
+      virt_text_win_col = 0,
+      hl_mode = 'combine',
+    })
+  end
+end
+
 local function clear_virt_text(bufnr)
   vim.api.nvim_buf_clear_namespace(bufnr, -1, 0, -1)
 end
@@ -101,8 +121,10 @@ function M.parse_and_write(bufnr, flattened_outline_items)
 
   clear_virt_text(bufnr)
   local details = parser.get_details(flattened_outline_items)
+  local lineno, lineno_max = parser.get_lineno(flattened_outline_items)
   M.add_highlights(bufnr, hl_info, flattened_outline_items)
   M.write_details(bufnr, details)
+  M.write_lineno(bufnr, lineno, lineno_max)
 end
 
 return M

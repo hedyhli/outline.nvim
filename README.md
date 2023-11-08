@@ -80,7 +80,7 @@ features:
 
 ## Features
 
-[Skip this section](#symbols-outlinenvim)
+[Skip to plugin readme](#symbols-outlinenvim)
 
 Below is a list of features I've included in this fork which, at the time of
 writing, has not been included upstream (in the original repo). I try my best to
@@ -98,6 +98,11 @@ Features/Changes:
     - simrat39/symbols-outline.nvim#143
     - simrat39/symbols-outline.nvim#174
     - simrat39/symbols-outline.nvim#207
+
+- Show line number of each symbol in outline window (see [recipes](#recipes)
+for a screenshot)
+  - Fixed issues:
+    - simrat39/symbols-outline.nvim#212
 
 - Cursorline option for the outline window.
 
@@ -120,13 +125,16 @@ Screen recordings of some of the features is shown at the bottom of the readme.
 
 ## PRs
 
-[Skip this section](#symbols-outlinenvim)
+[Skip to plugin readme](#symbols-outlinenvim)
 
 Key:
 ```
 ✅ = Either merged superseded
 📮 = Planned for merge
 ```
+
+- 📮 center view on goto symbol
+  (#239 by skomposzczet)
 
 - ✅ Open handler checks if view is not already open
   (#235 by eyalz800)
@@ -206,7 +214,7 @@ Key:
 
 ## TODO
 
-[Skip this section](#symbols-outlinenvim)
+[Skip to plugin readme](#symbols-outlinenvim)
 
 Key:
 ```
@@ -214,8 +222,6 @@ Key:
 - [/] : WIP
 -     : Idea
 ```
-
-Items will be moved to above list when complete.
 
 - Folds
   - `[ ]` Org-like <kbd>shift+tab</kbd> behavior: Open folds level-by-level
@@ -238,7 +244,8 @@ Items will be moved to above list when complete.
 
 - View
   - `[/]` Outline window customizations (simrat39/symbols-outline#137)
-  - `[/]` Option to show line number next to symbols
+  - ✅ Option to show line number next to symbols (simrat39/symbols-outline#212)
+  - `[/]` Option to hide cursor in outline window if cursorline enabled
 
 
 ## Related plugins
@@ -258,6 +265,24 @@ Items will be moved to above list when complete.
 Supports all your favourite languages.**
 
 ![demo](https://github.com/simrat39/rust-tools-demos/raw/master/symbols-demo.gif)
+
+Table of contents
+
+<!-- mtoc start -->
+
+* [Prerequisites](#prerequisites)
+* [Installation](#installation)
+* [Setup](#setup)
+* [Configuration](#configuration)
+    * [Terminology](#terminology)
+    * [Options](#options)
+* [Commands](#commands)
+    * [Lua API](#lua-api)
+* [Default keymaps](#default-keymaps)
+* [Highlights](#highlights)
+* [Recipes](#recipes)
+
+<!-- mtoc end -->
 
 ## Prerequisites
 
@@ -388,6 +413,11 @@ local opts = {
   show_cursorline = true,  -- Only in this fork
   -- Show extra details with the symbols (lsp dependent)
   show_symbol_details = true,
+  -- Only in this fork.
+  -- Show line numbers of each symbol next to them.
+  -- Why? See this comment:
+  -- https://github.com/simrat39/symbols-outline.nvim/issues/212#issuecomment-1793503563
+  show_symbol_lineno = false,
   -- Highlight group for the preview background
   preview_bg_highlight = 'Pmenu',
   -- Depth past which nodes will be folded by default
@@ -664,4 +694,22 @@ auto_goto = true,
 This feature was added by @stickperson in an upstream PR 🙌
 
 https://github.com/hedyhli/symbols-outline.nvim/assets/50042066/3d06e342-97ac-400c-8598-97a9235de66c
+
+
+**Hide the extra details after each symbol name**
+
+```lua
+show_symbol_details = false,
+```
+
+**Show line numbers next to each symbol to jump to that symbol quickly**
+
+```lua
+show_symbol_lineno = true,
+```
+
+The default highlight group is `LineNr`.
+
+<img width="900" alt="image" src="https://github.com/hedyhli/symbols-outline.nvim/assets/50042066/2bbb5833-f40b-4c53-8338-407252d61443">
+
 

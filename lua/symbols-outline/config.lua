@@ -25,6 +25,7 @@ M.defaults = {
   show_relative_numbers = false,
   show_cursorline = true,
   show_symbol_details = true,
+  show_symbol_lineno = false,
   preview_bg_highlight = 'Pmenu',
   winblend = 0,
   autofold_depth = nil,
