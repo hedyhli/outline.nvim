@@ -313,15 +313,17 @@ Key:
 
 ---
 
-<!-- panvimdoc-ignore-end -->
 
 # symbols-outline.nvim
+
+<!-- panvimdoc-ignore-end -->
 
 **A tree like view for symbols in Neovim using the Language Server Protocol.
 Supports all your favourite languages.**
 
 ![demo](https://github.com/simrat39/rust-tools-demos/raw/master/symbols-demo.gif)
 
+<!-- panvimdoc-ignore-start -->
 Table of contents
 
 <!-- mtoc start -->
@@ -342,6 +344,7 @@ Table of contents
 * [Recipes](#recipes)
 
 <!-- mtoc end -->
+<!-- panvimdoc-ignore-end -->
 
 ## Prerequisites
 

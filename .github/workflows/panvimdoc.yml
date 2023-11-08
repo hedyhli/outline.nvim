@@ -17,5 +17,5 @@ jobs:
         with:
           commit_message: "Auto generate vim docs"
           branch: ${{ github.head_ref }}
-          skip_dirty_check: false
           # Don't commit if no changes are needed
+          skip_dirty_check: false
