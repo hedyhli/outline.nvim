@@ -26,12 +26,14 @@ end
 
 M.has_code_win = has_code_win
 
-local function get_offset()
+local function get_width_offset()
+  ---@type integer
   local outline_winnr = so.view.winnr
-  local width = 53
-  local height = 0
+  local width = cfg.get_preview_width() + 3
+  local has_numbers = vim.api.nvim_win_get_option(outline_winnr, "number")
+  has_numbers = has_numbers or vim.api.nvim_win_get_option(outline_winnr, "relativenumber")
 
-  if cfg.has_numbers() then
+  if has_numbers then
     width = width + 4
   end
 
@@ -40,7 +42,8 @@ local function get_offset()
   else
     width = vim.api.nvim_win_get_width(outline_winnr) + 1
   end
-  return { height, width }
+
+  return width
 end
 
 local function get_height()
@@ -108,17 +111,16 @@ local function show_preview()
         state.preview_win = nil
       end,
     })
-    local offsets = get_offset()
     local height = get_height()
     local winheight = math.ceil(height / 2)
     state.preview_win = vim.api.nvim_open_win(state.preview_buf, false, {
       relative = 'win',
-      width = 50,
       height = winheight,
+      width = cfg.get_preview_width(),
       bufpos = { 0, 0 },
-      col = offsets[2],
+      col = get_width_offset(),
       -- Position preview window middle-aligned vertically
-      row = math.ceil((height - winheight) / 2),
+      row = math.floor((height - winheight) / 2) - 1,
       border = cfg.o.preview_window.border,
     })
     setup_preview_buf()
