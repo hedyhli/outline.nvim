@@ -3,49 +3,27 @@
 ==============================================================================
 Table of Contents                          *symbols-outline-table-of-contents*
 
-1. symbols-outline.nvim                 |symbols-outline-symbols-outline.nvim|
-  - Prerequisites         |symbols-outline-symbols-outline.nvim-prerequisites|
-  - Installation           |symbols-outline-symbols-outline.nvim-installation|
-  - Setup                         |symbols-outline-symbols-outline.nvim-setup|
-  - Configuration         |symbols-outline-symbols-outline.nvim-configuration|
-  - Commands                   |symbols-outline-symbols-outline.nvim-commands|
-  - Default keymaps     |symbols-outline-symbols-outline.nvim-default-keymaps|
-  - Highlights               |symbols-outline-symbols-outline.nvim-highlights|
-  - Lua API                     |symbols-outline-symbols-outline.nvim-lua-api|
-  - Tips                           |symbols-outline-symbols-outline.nvim-tips|
-  - Recipes                     |symbols-outline-symbols-outline.nvim-recipes|
-
-==============================================================================
-1. symbols-outline.nvim                 *symbols-outline-symbols-outline.nvim*
-
+  - Prerequisites                              |symbols-outline-prerequisites|
+  - Installation                                |symbols-outline-installation|
+  - Setup                                              |symbols-outline-setup|
+  - Configuration                              |symbols-outline-configuration|
+  - Commands                                        |symbols-outline-commands|
+  - Default keymaps                          |symbols-outline-default-keymaps|
+  - Highlights                                    |symbols-outline-highlights|
+  - Lua API                                          |symbols-outline-lua-api|
+  - Tips                                                |symbols-outline-tips|
+  - Recipes                                          |symbols-outline-recipes|
 **A tree like view for symbols in Neovim using the Language Server Protocol.
 Supports all your favourite languages.**
 
-Table of contents
 
-- |symbols-outline-prerequisites|
-- |symbols-outline-installation|
-- |symbols-outline-setup|
-- |symbols-outline-configuration|
-    - |symbols-outline-terminology|
-    - |symbols-outline-default-options|
-- |symbols-outline-commands|
-- |symbols-outline-default-keymaps|
-- |symbols-outline-highlights|
-    - |symbols-outline-outline-window|
-    - |symbols-outline-preview-window|
-- |symbols-outline-lua-api|
-- |symbols-outline-tips|
-- |symbols-outline-recipes|
-
-
-PREREQUISITES             *symbols-outline-symbols-outline.nvim-prerequisites*
+PREREQUISITES                                  *symbols-outline-prerequisites*
 
 - `neovim 0.7+`
 - Properly configured Neovim LSP client
 
 
-INSTALLATION               *symbols-outline-symbols-outline.nvim-installation*
+INSTALLATION                                    *symbols-outline-installation*
 
 Packer:
 
@@ -90,7 +68,7 @@ This allows Lazy.nvim to lazy load the plugin on commands `SymbolsOutline`,
 `SymbolsOutlineOpen`, and your keybindings.
 
 
-SETUP                             *symbols-outline-symbols-outline.nvim-setup*
+SETUP                                                  *symbols-outline-setup*
 
 Call the setup function with your configuration options.
 
@@ -102,7 +80,7 @@ Note that a call to `.setup()` is _required_ for this plugin to work
 <
 
 
-CONFIGURATION             *symbols-outline-symbols-outline.nvim-configuration*
+CONFIGURATION                                  *symbols-outline-configuration*
 
 The configuration structure has been heavily improved and refactored in this
 plugin. For details and reasoning, see |symbols-outline-breaking-changes|.
@@ -325,7 +303,7 @@ To find out exactly what some of the options do, please see the
 screen-recordings.
 
 
-COMMANDS                       *symbols-outline-symbols-outline.nvim-commands*
+COMMANDS                                            *symbols-outline-commands*
 
 - **:SymbolsOutline[!]**
     Toggle symbols outline. With bang (`!`) the cursor focus stays in your original
@@ -356,7 +334,7 @@ COMMANDS                       *symbols-outline-symbols-outline.nvim-commands*
     With bang, it can be understood as the converse of `focus_location`.
 
 
-DEFAULT KEYMAPS         *symbols-outline-symbols-outline.nvim-default-keymaps*
+DEFAULT KEYMAPS                              *symbols-outline-default-keymaps*
 
 These mappings are active for the outline window.
 
@@ -381,7 +359,7 @@ These mappings are active for the outline window.
   E            Unfold all symbols
   R            Reset all folding
 
-HIGHLIGHTS                   *symbols-outline-symbols-outline.nvim-highlights*
+HIGHLIGHTS                                        *symbols-outline-highlights*
 
 
 OUTLINE WINDOW ~
@@ -417,7 +395,7 @@ PREVIEW WINDOW ~
 <
 
 
-LUA API                         *symbols-outline-symbols-outline.nvim-lua-api*
+LUA API                                              *symbols-outline-lua-api*
 
 Symbols-outline provides the following public API for use in lua.
 
@@ -452,7 +430,7 @@ Symbols-outline provides the following public API for use in lua.
     With `opts.focus_outline=false`, cursor focus will remain on code window.
 
 
-TIPS                               *symbols-outline-symbols-outline.nvim-tips*
+TIPS                                                    *symbols-outline-tips*
 
 - To open the outline but don’t focus on it, you can use `:SymbolsOutline!` or
     `:SymbolsOutlineOpen`.
@@ -466,7 +444,7 @@ TIPS                               *symbols-outline-symbols-outline.nvim-tips*
     preview floating window. See |symbols-outline-highlights|.
 
 
-RECIPES                         *symbols-outline-symbols-outline.nvim-recipes*
+RECIPES                                              *symbols-outline-recipes*
 
 Behaviour you may want to achieve and the combination of configuration options
 to achieve it.
@@ -542,7 +520,7 @@ it using `outline_window.winhl`: please see |symbols-outline-highlights|.
 
 
 ==============================================================================
-2. Links                                               *symbols-outline-links*
+1. Links                                               *symbols-outline-links*
 
 1. *demo*: https://github.com/simrat39/rust-tools-demos/raw/master/symbols-demo.gif
 2. *@stickperson*: 
