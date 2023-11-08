@@ -157,7 +157,7 @@ Features/Changes:
 
 - Outline/Preview window border/background/winhighlight configuration.
   (simrat39/symbols-outline.nvim#136). See `outline_window.winhl`,
-  `preview_window.bg_hl`, `preview_window.*width` options.
+  `preview_window.winhl`, `preview_window.*width` options.
 
 - All highlights used including the virtual text for symbol details and symbol
   lineno are now fully customizable using `outline_window.winhl`. See
