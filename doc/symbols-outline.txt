@@ -3,15 +3,7 @@
 ==============================================================================
 Table of Contents                          *symbols-outline-table-of-contents*
 
-1. Fork status                                   |symbols-outline-fork-status|
-  - Maintenance status        |symbols-outline-fork-status-maintenance-status|
-  - Fixes                                  |symbols-outline-fork-status-fixes|
-  - 🛑 Breaking changes  |symbols-outline-fork-status-🛑-breaking-changes|
-  - Features                            |symbols-outline-fork-status-features|
-  - PRs                                      |symbols-outline-fork-status-prs|
-  - TODO                                    |symbols-outline-fork-status-todo|
-  - Related plugins              |symbols-outline-fork-status-related-plugins|
-2. symbols-outline.nvim                 |symbols-outline-symbols-outline.nvim|
+1. symbols-outline.nvim                 |symbols-outline-symbols-outline.nvim|
   - Prerequisites         |symbols-outline-symbols-outline.nvim-prerequisites|
   - Installation           |symbols-outline-symbols-outline.nvim-installation|
   - Setup                         |symbols-outline-symbols-outline.nvim-setup|
@@ -24,238 +16,7 @@ Table of Contents                          *symbols-outline-table-of-contents*
   - Recipes                     |symbols-outline-symbols-outline.nvim-recipes|
 
 ==============================================================================
-1. Fork status                                   *symbols-outline-fork-status*
-
-|symbols-outline-skip-to-plugin-readme|
-
-This is a fork of the original symbols-outline.nvim which fixes a lot of bugs
-from the original repo.
-
-It also adds many more features listed |symbols-outline-below|.
-
-It does not attempt to be an up-to-date successor of the original repo, nor
-does it attempt to ensure everyone’s use-cases are satisfied by providing an
-overall better experience. It is merely a fork which I maintain for my personal
-use-cases which incorporates some selected PRs.
-
-
-MAINTENANCE STATUS            *symbols-outline-fork-status-maintenance-status*
-
-This fork is NOT guaranteed to be completely bug-free, nor as stable as the
-original (aside from the already broken things in the original repo). However,
-since I use this plugin myself, it is guaranteed that selected issues that I
-encounter myself would be fixed (to the best of my ability).
-
-I do not merge PRs from the original repo that I don’t personally need.
-
-- **DO use this fork if**:
-    - You want to use the bugfixes included in this fork, including `auto_preview`,
-        and others listed in |symbols-outline-fixes|
-    - You want to use |symbols-outline-features| available in this fork, which are not
-        included upstream
-    - You are OK with some things not being looked after well such as CoC support
-        (things I don’t personally use)
-- **Do NOT use this fork if**:
-    - You do not need the bugfixes in this fork
-    - You want a stable plugin (aside from the existing bugs in original repo)
-    - You don’t need the extra features in this fork
-
-
-FIXES                                      *symbols-outline-fork-status-fixes*
-
-- Extra padding/indent on left on outline window removed. Fixed issues:
-    - simrat39/symbols-outline.nvim#165
-    - simrat39/symbols-outline.nvim#178
-    - simrat39/symbols-outline.nvim#209
-- Symbol preview empty (simrat39/symbols-outline.nvim#176)
-- `SymbolsOutlineClose` crashing when already closed: simrat39/symbols-outline.nvim#163
-- Symbols not showing by supporting Nerd fonts v3.0: simrat39/symbols-outline.nvim#225
-- Newlines in symbols crash: simrat39/symbols-outline.nvim#204 (simrat39/symbols-outline.nvim#184)
-- `code_actions`: simrat39/symbols-outline.nvim#168 (simrat39/symbols-outline.nvim#123)
-- Fold all operation too slow: simrat39/symbols-outline.nvim#223 (simrat39/symbols-outline.nvim#224)
-- "Invalid buffer id" error simrat39/symbols-outline.nvim#177
-- Open handler triggering multiple times ends up in messy state with errors
-    simrat39/symbols-outline.nvim#235
-- Fixed `_highlight_current_item` function checking provider on outline window
-- Fixed behaviour of empty markdown headings `^(#+)(%s+)$` being listed in the
-    outline.
-
-
-🛑 BREAKING CHANGES      *symbols-outline-fork-status-🛑-breaking-changes*
-
-This section may be relevant to you if your existing config uses the mentioned
-features:
-
-- **Config**: Configuration options have been significantly restructured to
-    provide better consistency and understandability. Please see the
-    |symbols-outline-default-config| for an example of the full list.
-    - Options that control the looks
-        and behaviour of outline window is now moved to `outline_window` table;
-    - Options that control the items that show up are now in `outline_items`
-    - Options for the preview window is in `preview_window`.
-    - Symbol icons are now in `symbols.icons`, symbol blacklists are in
-        `symbols.blacklist`
-    - Lsp blacklists are now in `providers.lsp.blacklist_clients`.
-    - Fold options are now in `symbol_folding` with `fold_markers` being
-        `symbol_folding.markers`, consistent to `guides.markers`.
-    The reasoning for the above is simple. When you see 'border' under
-    `preview_window` you can directly infer it controls the border for the preview
-    window. Previously, for example, when you see `winblend` or `wrap`: is it for
-    the outline window or the preview window? Furthermore, this change also aids
-    extensibility to the configuration, and avoids cluttering the root setup opts
-    namespace.
-    If you disagree with this decision, you are always free to switch back to the
-    original symbols-outline.nvim, or you could pin a commit in this fork if you
-    still want to use the features and fixes from here.
-- **Config**: `keymaps.focus_location` RENAMED to `keymaps.peek_location` to
-    avoid confusion with focus window commands.
-- **Config**: Marker icons used for guides can now be customized. `show_guides`
-    REMOVED in favor of `guides.enabled`.
-    You can set `guides = false` to disable guides altogether, or set `guides =
-    true` to enable it but use default configuration for the guides. Otherwise,
-    please use `guides.enabled` if your configuration for `guides` is a table.
-- **Behaviour**: Removed hover floating window from `toggle_preview`.
-    - Instead, you can set `open_hover_on_preview=true` (true by default) so that
-        the `hover_symbol` action can be triggered when `toggle_preview`is
-        triggered.
-    - The preview window’s size changed to half of neovim height (rather than a
-        third). This is planned to be configurable.
-    - The preview window is positioned to be vertically center-aligned (rather
-        than fixed to the top). This is planned to be configurable.
-- **Behaviour**: When `auto_close=true` only auto close if `goto_location` is
-    used (where focus changed), and not for `focus_location`
-    (simrat39/symbols-outline.nvim#119).
-- **Behaviour**: For `auto_preview=true`, previously preview is only shown after
-    some delay. Now preview is shown instantly every time the cursor moves.
-
-
-FEATURES                                *symbols-outline-fork-status-features*
-
-|symbols-outline-skip-to-plugin-readme|
-
-Below is a list of features I’ve included in this fork which, at the time of
-writing, has not been included upstream (in the original repo). I try my best
-to keep this list up to date.
-
-Features/Changes:
-
-- Toggling folds (and added default keymaps for it)
-    (simrat39/symbols-outline.nvim#194).
-- Control focus between outline and code window.
-    - New commands: SymbolsOutline`Focus,FocusOutline,FocusCode` (see
-        |symbols-outline-commands|)
-    - Fixed issues:
-        - simrat39/symbols-outline.nvim#143
-        - simrat39/symbols-outline.nvim#174
-        - simrat39/symbols-outline.nvim#207
-- Show line number of each symbol in outline window (see
-    |symbols-outline-recipes| for a screenshot)
-    - Fixed issues:
-        - simrat39/symbols-outline.nvim#212
-- Cursorline option for the outline window.
-- Added function and command to show provider and outline window status, somewhat
-    like `:LspInfo`.
-- Move down/up by one line and peek_location immediately, default bindings are
-    `<C-j>` and `<C-k>` just like Aerial.
-- Flash highlight when using goto/peek location.
-- Auto jump config option (see config `auto_goto`)
-    (simrat39/symbols-outline.nvim#229, simrat39/symbols-outline.nvim#228).
-- New Follow command, opposite of `goto_location`/`focus_location`
-- New restore location keymap option to go back to corresponding outline location
-    synced with code (see config `restore_location`).
-
-Screen recordings of some of the features is shown at the
-|symbols-outline-bottom-of-the-readme|.
-
-
-PRS                                          *symbols-outline-fork-status-prs*
-
-|symbols-outline-skip-to-plugin-readme|
-
-Key:
-
->
-    ✅ = Either merged superseded
-    📮 = Planned for merge
-<
-
-- 📮 center view on goto symbol (#239 by skomposzczet)
-- ✅ Open handler checks if view is not already open (#235 by eyalz800)
-- ✅ auto_jump config param (#229 by stickperson)
-    **Renamed to auto_goto for consistency**
-- ✅ Update nerd fonts to 3.0 (#225 by anstadnik)
-- ✅ fix(folding): optimize fold/unfold all (#223 by wjdwndud0114)
-- ✅ Support markdown setext-style headers (#222 by msr1k)
-- ✅ fix(icons): replace obsolete icons (#219 by loichyan)
-    **Superseded by #225**
-- ✅ Support ccls symbols (#218 by rqdmap)
-- ✅ fix: replace newlines with spaces in writer (#204 by tbung)
-- ✅ Make close_outline idempotent (#200 by showermat)
-    **Superseded by #163**
-- Distinguish between public and private function display in Elixir (#187 by
-    scottming)
-- ✅ Fix some options (#180 by cljoly)
-- ✅ fix: Invalid buffer id error (#177 by snowair)
-- ✅ fix(code_actions): use the builtin code_action (#168 by zjp-CN)
-- ✅ fix: plugin crashes when SymbolOutlineClose used (#163 by beauwilliams)
-- 📮 feat: Add window_bg_highlight to config (#137 by Zane-)
-- 📮 Added preview width and relative size (#130 by Freyskeyd)
-- 📮 Improve preview, hover windows configurability and looks (#128 by toppair)
-- ✅ Do not close outline when focus_location occurs (#119 by M1Sports20)
-- ✅ feat: instant_preview (#116 by axieax)
-    **Superseded with an improved implementation**
-- ✅ check if code_win is nill (#110 by i3Cheese)
-    **Superseded before this fork was created**
-    (perhaps the PR was forgotten to be closed)
-- Floating window (Draft) (#101 by druskus20)
-
-
-TODO                                        *symbols-outline-fork-status-todo*
-
-|symbols-outline-skip-to-plugin-readme|
-
-Key:
-
->
-    - [ ] : Planned
-    - [/] : WIP
-    -     : Idea
-<
-
-- Folds
-    - `[ ]` Org-like shift+tab behavior: Open folds level-by-level
-    - `[ ]` Optionally not opening all child nodes when opening parent node
-    - Fold siblings and siblings of parent on startup
-- Navigation
-    - Go to parent
-    - Cycle siblings
-- `[ ]` simrat39/symbols-outline.nvim#75: Handling of the outline window when
-    attached buffer is closed.
-    Maybe it should continue working, so that pressing enter can open a split to
-    the correct location, and pressing `q` can properly close the buffer.
-- Preview / Hover
-    - `[/]` Configurable winhighlight options for preview window (like nvim-cmp)
-        (simrat39/symbols-outline#128)
-    - `[/]` Configurable width and height of preview window (simrat39/symbols-outline.nvim#130)
-- View
-    - `[/]` Outline window customizations (simrat39/symbols-outline.nvim#137)
-    - ✅ Option to show line number next to symbols (simrat39/symbols-outline.nvim#212)
-    - `[/]` Option to hide cursor in outline window if cursorline enabled
-
-
-RELATED PLUGINS                  *symbols-outline-fork-status-related-plugins*
-
-- nvim-navic
-- nvim-navbuddy
-- dropdown.nvim
-- treesitter (inspect/edit)
-- lspsaga
-- navigator.lua
-
-------------------------------------------------------------------------------
-
-==============================================================================
-2. symbols-outline.nvim                 *symbols-outline-symbols-outline.nvim*
+1. symbols-outline.nvim                 *symbols-outline-symbols-outline.nvim*
 
 **A tree like view for symbols in Neovim using the Language Server Protocol.
 Supports all your favourite languages.**
@@ -271,6 +32,8 @@ Table of contents
 - |symbols-outline-commands|
 - |symbols-outline-default-keymaps|
 - |symbols-outline-highlights|
+    - |symbols-outline-outline-window|
+    - |symbols-outline-preview-window|
 - |symbols-outline-lua-api|
 - |symbols-outline-tips|
 - |symbols-outline-recipes|
@@ -374,8 +137,10 @@ Default values are shown:
         -- Where to open the split window: right/left
         position = 'right',
         -- Percentage or integer of columns
-        width = 25,
-        -- Whether width is relative to existing windows
+        width = 25, 
+        -- Whether width is relative to the total width of nvim
+        -- When relative_width = true, this means take 25% of the total
+        -- screen width for outline window.
         relative_width = true,
     
         -- Behaviour changed in this fork:
@@ -398,6 +163,11 @@ Default values are shown:
         -- Set to false to remain focus on your previous buffer when opening
         -- symbols-outline.
         focus_on_open = true,
+        -- Only in this fork:
+        -- Winhighlight option for outline window.
+        -- See :help 'winhl'
+        -- To change background color to "CustomHl" for example, set to "Normal:CustomHl".
+        winhl = "SymbolsOutlineDetails:Comment,SymbolsOutlineLineno:LineNr",
       },
     
       outline_items = {
@@ -441,15 +211,22 @@ Default values are shown:
         -- below.
         -- Only in this fork
         open_hover_on_preview = true,
+        -- Only in this fork:
+        width = 50,     -- Percentage or integer of columns
+        min_width = 50, -- This is the number of columns
+        -- Whether width is relative to the total width of nvim.
+        -- When relative_width = true, this means take 50% of the total
+        -- screen width for preview window, ensure the result width is at least 50
+        -- characters wide.
+        relative_width = true,
         -- Border option for floating preview window.
         -- Options include: single/double/rounded/solid/shadow or an array of border
         -- characters.
         -- See :help nvim_open_win() and search for "border" option.
         border = 'single',
-        border_hl = 'Pmenu',
-        -- Highlight group for the preview background
-        bg_hl = 'Pmenu',
-        -- Pseudo-transparency of the preview window
+        -- winhl options for the preview window, see ':h winhl'
+        winhl = '',
+        -- Pseudo-transparency of the preview window, see ':h winblend'
         winblend = 0
       },
     
@@ -478,18 +255,18 @@ Default values are shown:
         -- These fold actions are collapsing tree nodes, not code folding
         fold = "h",
         unfold = "l",
-        fold_toggle = '<Tab>',       -- Only in this fork
+        fold_toggle = "<Tab>",       -- Only in this fork
         -- Toggle folds for all nodes.
         -- If at least one node is folded, this action will fold all nodes.
         -- If all nodes are folded, this action will unfold all nodes.
-        fold_toggle_all = '<S-Tab>', -- Only in this fork
+        fold_toggle_all = "<S-Tab>", -- Only in this fork
         fold_all = "W",
         unfold_all = "E",
         fold_reset = "R",
         -- Only in this fork:
         -- Move down/up by one line and peek_location immediately.
-        down_and_goto = '<C-j>',
-        up_and_goto = '<C-k>',
+        down_and_goto = "<C-j>",
+        up_and_goto = "<C-k>",
       },
     
       providers = {
@@ -606,14 +383,38 @@ These mappings are active for the outline window.
 
 HIGHLIGHTS                   *symbols-outline-symbols-outline.nvim-highlights*
 
+
+OUTLINE WINDOW ~
+
+Default:
+
+>lua
+    outline_window = {
+      winhl = "SymbolsOutlineDetails:Comment,SymbolsOutlineLineno:LineNr",
+    },
+<
+
+Possible highlight groups to customize:
+
+  -------------------------------------------------------------------------
   Highlight                 Purpose
-  ------------------------- ----------------------------------------
-  FocusedSymbol             Highlight of the focused symbol
-  Pmenu                     Highlight of the preview popup windows
+  ------------------------- -----------------------------------------------
+  SymbolsOutlineCurrent     Highlight of the focused symbol
+
   SymbolsOutlineConnector   Highlight of the table connectors
-  Comment                   Highlight of the info virtual text
-Note that some highlights are configurable such as the preview window border
-and background. Please see |symbols-outline-configuration-options|.
+
+  SymbolsOutlineDetails     Highlight of the details info virtual text
+
+  SymbolsOutlineLineno      Highlight of the lineno column
+  -------------------------------------------------------------------------
+
+PREVIEW WINDOW ~
+
+>lua
+    preview_window = {
+      winhl = "",
+    },
+<
 
 
 LUA API                         *symbols-outline-symbols-outline.nvim-lua-api*
@@ -660,6 +461,9 @@ TIPS                               *symbols-outline-symbols-outline.nvim-tips*
 - After navigating around in the outline window, you can use `<C-g>` (default
     mapping for `restore_location`) to go back to the corresponding outline
     location based on the code location.
+- To customize the background colors, text colors, and borders, you can use
+    `outline_window.winhl` for the outline window or `preview_window.winhl` for the
+    preview floating window. See |symbols-outline-highlights|.
 
 
 RECIPES                         *symbols-outline-symbols-outline.nvim-recipes*
@@ -670,7 +474,7 @@ to achieve it.
 Code snippets in this section are to be placed in `.setup({ <HERE> })` directly
 unless specified otherwise.
 
-**Unfold all others except currently hovered item**
+- **Unfold all others except currently hovered item**
 
 >lua
     symbol_folding = {
@@ -681,7 +485,7 @@ unless specified otherwise.
 
 
 
-**Use outline window as a quick-jump window**
+- **Use outline window as a quick-jump window**
 
 >lua
     preview_window = {
@@ -714,7 +518,7 @@ having `auto_goto` on by default.
 
 This feature is newly added in this fork.
 
-**Hide the extra details after each symbol name**
+- **Hide the extra details after each symbol name**
 
 >lua
     outline_items = {
@@ -722,7 +526,7 @@ This feature is newly added in this fork.
     },
 <
 
-**Show line numbers next to each symbol to jump to that symbol quickly**
+- **Show line numbers next to each symbol to jump to that symbol quickly**
 
 This feature is newly added in this fork.
 
@@ -732,16 +536,13 @@ This feature is newly added in this fork.
     },
 <
 
-The default highlight group for the line numbers is `LineNr`.
+The default highlight group for the line numbers is `LineNr`, you can customize
+it using `outline_window.winhl`: please see |symbols-outline-highlights|.
 
 
-
-------------------------------------------------------------------------------
-Any other recipes you think others may also find useful? Feel free to open a
-PR.
 
 ==============================================================================
-3. Links                                               *symbols-outline-links*
+2. Links                                               *symbols-outline-links*
 
 1. *demo*: https://github.com/simrat39/rust-tools-demos/raw/master/symbols-demo.gif
 2. *@stickperson*: 
