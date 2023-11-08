@@ -37,6 +37,10 @@ I do not merge PRs from the original repo that I don't personally need.
 
 ## Fixes
 
+- Extra padding/indent on left on outline window removed. Fixed issues:
+  - simrat39/symbols-outline.nvim/165
+  - simrat39/symbols-outline.nvim/178
+  - simrat39/symbols-outline.nvim/209
 - Symbol preview empty (simrat39/symbols-outline.nvim#176)
 - `SymbolsOutlineClose` crashing when already closed: simrat39/symbols-outline.nvim#163
 - Symbols not showing by supporting Nerd fonts v3.0: simrat39/symbols-outline.nvim#225

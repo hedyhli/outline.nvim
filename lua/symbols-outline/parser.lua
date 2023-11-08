@@ -118,12 +118,10 @@ function M.get_lines(flattened_outline_items)
     end
 
     for index, _ in ipairs(line) do
-      -- all items start with a space (or two)
       if config.options.guides.enabled then
-        -- makes the guides and add guide markers
         local guide_markers = config.options.guides.markers
         if index == 1 then
-          line[index] = ' '
+          line[index] = ''
           -- if index is last, add a bottom marker if current item is last,
           -- else add a middle marker
         elseif index == #line then
@@ -177,6 +175,7 @@ function M.get_lines(flattened_outline_items)
       running_length = running_length + vim.fn.strlen(line[index])
     end
 
+    line[1] = ''
     local final_prefix = line
 
     local string_prefix = t_utils.table_to_str(final_prefix)
@@ -197,7 +196,7 @@ function M.get_lines(flattened_outline_items)
     local max_width = #tostring(lineno_max)
     -- Padded prefix to the right of lineno for better readability if linenos
     -- get more than 2 digits.
-    local prefix = string.rep(' ', math.max(2, max_width) - 1)
+    local prefix = string.rep(' ', math.max(2, max_width)+1)
     -- Offset to hl_info due to adding lineno on the left of each symbol line
     local total_offset = #prefix
     for i, node in ipairs(flattened_outline_items) do

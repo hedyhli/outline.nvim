@@ -25,6 +25,7 @@ function View:setup_view()
   -- window stuff
   vim.api.nvim_win_set_option(self.winnr, 'spell', false)
   vim.api.nvim_win_set_option(self.winnr, 'signcolumn', 'no')
+  vim.api.nvim_win_set_option(self.winnr, 'foldcolumn', '0')
   vim.api.nvim_win_set_option(self.winnr, 'number', false)
   vim.api.nvim_win_set_option(self.winnr, 'relativenumber', false)
   vim.api.nvim_win_set_option(self.winnr, 'winfixwidth', true)
