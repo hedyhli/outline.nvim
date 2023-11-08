@@ -2,7 +2,7 @@ local parser = require 'symbols-outline.parser'
 local providers = require 'symbols-outline.providers.init'
 local ui = require 'symbols-outline.ui'
 local writer = require 'symbols-outline.writer'
-local config = require 'symbols-outline.config'
+local cfg = require 'symbols-outline.config'
 local utils = require 'symbols-outline.utils.init'
 local View = require 'symbols-outline.view'
 local folding = require 'symbols-outline.folding'
@@ -11,7 +11,7 @@ local M = {}
 
 local function setup_global_autocmd()
   if
-    config.options.highlight_hovered_item or config.options.auto_unfold_hover
+    cfg.o.outline_items.highlight_hovered_item or cfg.o.symbol_folding.auto_unfold_hover
   then
     vim.api.nvim_create_autocmd('CursorHold', {
       pattern = '*',
@@ -107,7 +107,7 @@ end
 -- Wraps __goto_location and handles auto_close
 function M._goto_location(change_focus)
   M.__goto_location(change_focus)
-  if change_focus and config.options.auto_close then
+  if change_focus and cfg.o.outline_window.auto_close then
     M.close_outline()
   end
 end
@@ -130,7 +130,7 @@ function M._toggle_fold(move_cursor, node_index)
 end
 
 local function setup_buffer_autocmd()
-  if config.options.auto_preview then
+  if cfg.o.preview_window.auto_preview then
     vim.api.nvim_create_autocmd('CursorMoved', {
       buffer = 0,
       callback = require('symbols-outline.preview').show,
@@ -141,7 +141,7 @@ local function setup_buffer_autocmd()
       callback = require('symbols-outline.preview').close,
     })
   end
-  if config.options.auto_goto then
+  if cfg.o.outline_window.auto_goto then
     vim.api.nvim_create_autocmd('CursorMoved', {
       buffer = 0,
       callback = function()
@@ -261,76 +261,76 @@ local function setup_keymaps(bufnr)
     utils.nmap(bufnr, ...)
   end
   -- goto_location of symbol and focus that window
-  map(config.options.keymaps.goto_location, function()
+  map(cfg.o.keymaps.goto_location, function()
     M._goto_location(true)
   end)
   -- goto_location of symbol but stay in outline
-  map(config.options.keymaps.peek_location, function()
+  map(cfg.o.keymaps.peek_location, function()
     M._goto_location(false)
   end)
   -- Navigate to corresponding outline location for current code location
-  map(config.options.keymaps.restore_location, function()
+  map(cfg.o.keymaps.restore_location, function()
     M._map_follow_cursor()
   end)
   -- Move down/up in outline and peek that location in code
-  map(config.options.keymaps.down_and_goto, function()
+  map(cfg.o.keymaps.down_and_goto, function()
     M._move_and_goto('down')
   end)
   -- Move down/up in outline and peek that location in code
-  map(config.options.keymaps.up_and_goto, function()
+  map(cfg.o.keymaps.up_and_goto, function()
     M._move_and_goto('up')
   end)
   -- hover symbol
   map(
-    config.options.keymaps.hover_symbol,
+    cfg.o.keymaps.hover_symbol,
     require('symbols-outline.hover').show_hover
   )
   -- preview symbol
   map(
-    config.options.keymaps.toggle_preview,
+    cfg.o.keymaps.toggle_preview,
     require('symbols-outline.preview').toggle
   )
   -- rename symbol
   map(
-    config.options.keymaps.rename_symbol,
+    cfg.o.keymaps.rename_symbol,
     require('symbols-outline.rename').rename
   )
   -- code actions
   map(
-    config.options.keymaps.code_actions,
+    cfg.o.keymaps.code_actions,
     require('symbols-outline.code_action').show_code_actions
   )
   -- show help
   map(
-    config.options.keymaps.show_help,
+    cfg.o.keymaps.show_help,
     require('symbols-outline.config').show_help
   )
   -- close outline
-  map(config.options.keymaps.close, function()
+  map(cfg.o.keymaps.close, function()
     M.view:close()
   end)
   -- toggle fold selection
-  map(config.options.keymaps.fold_toggle, M._toggle_fold)
+  map(cfg.o.keymaps.fold_toggle, M._toggle_fold)
   -- fold selection
-  map(config.options.keymaps.fold, function()
+  map(cfg.o.keymaps.fold, function()
     M._set_folded(true)
   end)
   -- unfold selection
-  map(config.options.keymaps.unfold, function()
+  map(cfg.o.keymaps.unfold, function()
     M._set_folded(false)
   end)
   -- toggle fold all
-  map(config.options.keymaps.fold_toggle_all, M._toggle_all_fold)
+  map(cfg.o.keymaps.fold_toggle_all, M._toggle_all_fold)
   -- fold all
-  map(config.options.keymaps.fold_all, function()
+  map(cfg.o.keymaps.fold_all, function()
     M._set_all_folded(true)
   end)
   -- unfold all
-  map(config.options.keymaps.unfold_all, function()
+  map(cfg.o.keymaps.unfold_all, function()
     M._set_all_folded(false)
   end)
   -- fold reset
-  map(config.options.keymaps.fold_reset, function()
+  map(cfg.o.keymaps.fold_reset, function()
     M._set_all_folded(nil)
   end)
 end
@@ -362,7 +362,7 @@ local function handler(response, opts)
 
   M._highlight_current_item(M.state.code_win)
 
-  if not config.options.focus_on_open or (opts and not opts.focus_outline) then
+  if not cfg.o.outline_window.focus_on_open or (opts and not opts.focus_outline) then
     vim.fn.win_gotoid(M.state.code_win)
   end
 end
@@ -561,7 +561,7 @@ end
 
 ---Set up configuration options for symbols-outline.
 function M.setup(opts)
-  config.setup(opts)
+  cfg.setup(opts)
   ui.setup_highlights()
 
   M.view = View:new()

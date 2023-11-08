@@ -19,7 +19,7 @@ function M.rename()
 
   local params = get_rename_params(node, so.state.code_win)
 
-  local new_name = vim.fn.input('New Name: ', node.name)
+  local new_name = vim.fn.input({ prompt = 'New Name: ', default = node.name })
   if not new_name or new_name == '' or new_name == node.name then
     return
   end

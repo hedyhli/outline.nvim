@@ -1,4 +1,4 @@
-local config = require 'symbols-outline.config'
+local cfg = require('symbols-outline.config')
 
 local View = {}
 
@@ -14,9 +14,9 @@ function View:setup_view()
   -- delete buffer when window is closed / buffer is hidden
   vim.api.nvim_buf_set_option(self.bufnr, 'bufhidden', 'delete')
   -- create a split
-  vim.cmd(config.get_split_command())
+  vim.cmd(cfg.get_split_command())
   -- resize to a % of the current window size
-  vim.cmd('vertical resize ' .. config.get_window_width())
+  vim.cmd('vertical resize ' .. cfg.get_window_width())
 
   -- get current (outline) window and attach our buffer to it
   self.winnr = vim.api.nvim_get_current_win()
@@ -30,7 +30,7 @@ function View:setup_view()
   vim.api.nvim_win_set_option(self.winnr, 'relativenumber', false)
   vim.api.nvim_win_set_option(self.winnr, 'winfixwidth', true)
   vim.api.nvim_win_set_option(self.winnr, 'list', false)
-  vim.api.nvim_win_set_option(self.winnr, 'wrap', config.options.wrap)
+  vim.api.nvim_win_set_option(self.winnr, 'wrap', cfg.o.outline_window.wrap)
   vim.api.nvim_win_set_option(self.winnr, 'linebreak', true) -- only has effect when wrap=true
   vim.api.nvim_win_set_option(self.winnr, 'breakindent', true) -- only has effect when wrap=true
   --  Would be nice to use guides.markers.vertical as part of showbreak to keep
@@ -43,15 +43,15 @@ function View:setup_view()
   vim.api.nvim_buf_set_option(self.bufnr, 'filetype', 'Outline')
   vim.api.nvim_buf_set_option(self.bufnr, 'modifiable', false)
 
-  if config.options.show_numbers or config.options.show_relative_numbers then
+  if cfg.o.outline_window.show_numbers or cfg.o.outline_window.show_relative_numbers then
     vim.api.nvim_win_set_option(self.winnr, 'nu', true)
   end
 
-  if config.options.show_relative_numbers then
+  if cfg.o.outline_window.show_relative_numbers then
     vim.api.nvim_win_set_option(self.winnr, 'rnu', true)
   end
 
-  if config.options.show_cursorline then
+  if cfg.o.outline_window.show_cursorline then
     vim.api.nvim_win_set_option(self.winnr, 'cursorline', true)
   end
 end

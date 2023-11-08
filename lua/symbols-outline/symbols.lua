@@ -40,7 +40,7 @@ M.kinds = {
 }
 
 function M.icon_from_kind(kind)
-  local symbols = config.options.symbols
+  local symbols = config.o.symbols.icons
 
   if type(kind) == 'string' then
     return symbols[kind].icon

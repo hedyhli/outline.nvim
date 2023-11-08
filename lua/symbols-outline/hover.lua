@@ -1,5 +1,5 @@
 local so = require 'symbols-outline'
-local soconfig = require 'symbols-outline.config'
+local cfg = require 'symbols-outline.config'
 local util = vim.lsp.util
 
 local M = {}
@@ -40,7 +40,7 @@ function M.show_hover()
       end
       -- FIXME
       local bufnr, winnr = util.open_floating_preview(markdown_lines, 'markdown', config)
-      local winhi = 'Normal:' .. soconfig.options.preview_bg_highlight
+      local winhi = 'Normal:' .. cfg.o.preview_window.bg_hl
       vim.api.nvim_win_set_option(winnr, 'winhighlight', winhi)
     end
   )

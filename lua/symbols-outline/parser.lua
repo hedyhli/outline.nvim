@@ -1,6 +1,6 @@
 local symbols = require 'symbols-outline.symbols'
 local ui = require 'symbols-outline.ui'
-local config = require 'symbols-outline.config'
+local cfg = require 'symbols-outline.config'
 local t_utils = require 'symbols-outline.utils.table'
 local lsp_utils = require 'symbols-outline.utils.lsp_utils'
 local folding = require 'symbols-outline.folding'
@@ -17,7 +17,7 @@ local function parse_result(result, depth, hierarchy, parent)
   local ret = {}
 
   for index, value in pairs(result) do
-    if not config.is_symbol_blacklisted(symbols.kinds[value.kind]) then
+    if not cfg.is_symbol_blacklisted(symbols.kinds[value.kind]) then
       -- the hierarchy is basically a table of booleans which tells whether
       -- the parent was the last in its group or not
       local hir = hierarchy or {}
@@ -99,7 +99,7 @@ function M.get_lines(flattened_outline_items)
 
   for node_line, node in ipairs(flattened_outline_items) do
     local depth = node.depth
-    local marker_space = (config.options.fold_markers and 1) or 0
+    local marker_space = (cfg.o.symbol_folding.markers and 1) or 0
 
     local line = t_utils.str_to_table(string.rep(' ', depth + marker_space))
     local running_length = 1
@@ -118,15 +118,15 @@ function M.get_lines(flattened_outline_items)
     end
 
     for index, _ in ipairs(line) do
-      if config.options.guides.enabled then
-        local guide_markers = config.options.guides.markers
+      if cfg.o.guides.enabled then
+        local guide_markers = cfg.o.guides.markers
         if index == 1 then
           line[index] = ''
           -- if index is last, add a bottom marker if current item is last,
           -- else add a middle marker
         elseif index == #line then
           -- add fold markers
-          local fold_markers = config.options.fold_markers
+          local fold_markers = cfg.o.symbol_folding.markers
           if fold_markers and folding.is_foldable(node) then
             if folding.is_folded(node) then
               line[index] = fold_markers[1]
@@ -184,14 +184,14 @@ function M.get_lines(flattened_outline_items)
 
     local hl_start = #string_prefix
     local hl_end = #string_prefix + #node.icon
-    local hl_type = config.options.symbols[symbols.kinds[node.kind]].hl
+    local hl_type = cfg.o.symbols.icons[symbols.kinds[node.kind]].hl
     table.insert(hl_info, { node_line, hl_start, hl_end, hl_type })
 
     node.prefix_length = #string_prefix + #node.icon + 1
   end
 
   local final_hl = {}
-  if config.options.show_symbol_lineno then
+  if cfg.o.outline_items.show_symbol_lineno then
     -- Width of the highest lineno value
     local max_width = #tostring(lineno_max)
     -- Padded prefix to the right of lineno for better readability if linenos
@@ -209,7 +209,7 @@ function M.get_lines(flattened_outline_items)
       })
       node.prefix_length = node.prefix_length + total_offset
     end
-    if config.options.guides.enabled then
+    if cfg.o.guides.enabled then
       for _, hl in ipairs(guide_hl_info) do
         table.insert(final_hl, {
           hl[1],
@@ -222,7 +222,7 @@ function M.get_lines(flattened_outline_items)
   else
     -- Merge lists hl_info and guide_hl_info
     final_hl = hl_info
-    if config.options.guides.enabled then
+    if cfg.o.guides.enabled then
       for _, hl in ipairs(guide_hl_info) do
         table.insert(final_hl, hl)
       end

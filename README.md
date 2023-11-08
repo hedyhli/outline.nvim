@@ -59,11 +59,38 @@ outline.
 This section may be relevant to you if your existing config uses the mentioned
 features:
 
+- **Config**: Configuration options have been significantly restructured to
+provide better consistency and understandability. Please see the [default config](#configuration) for an example of the full list.
+  - Options that control the looks
+and behaviour of outline window is now moved to `outline_window` table;
+  - Options that control the items that show up are now in `outline_items`
+  - Options for the preview window is in `preview_window`.
+  - Symbol icons are now in `symbols.icons`, symbol blacklists are in
+  `symbols.blacklist`
+  - Lsp blacklists are now in `providers.lsp.blacklist_clients`.
+  - Fold options are now in `symbol_folding` with `fold_markers` being
+  `symbol_folding.markers`, consistent to `guides.markers`.
+
+  The reasoning for the above is simple. When you see 'border' under
+  `preview_window` you can directly infer it controls the border for the preview
+  window. Previously, for example, when you see `winblend` or `wrap`: is it for
+  the outline window or the preview window? Furthermore, this change also aids
+  extensibility to the configuration, and avoids cluttering the root setup opts
+  namespace.
+
+  If you disagree with this decision, you are always free to switch back to the
+  original symbols-outline.nvim, or you could pin a commit in this fork if you
+  still want to use the features and fixes from here.
+
 - **Config**: `keymaps.focus_location` RENAMED to `keymaps.peek_location` to
   avoid confusion with focus window commands.
 
 - **Config**: Marker icons used for guides can now be customized. `show_guides`
   REMOVED in favor of `guides.enabled`.
+
+  You can set `guides = false` to disable guides altogether, or set `guides =
+  true` to enable it but use default configuration for the guides. Otherwise,
+  please use `guides.enabled` if your configuration for `guides` is a table.
 
 - **Behaviour**: Removed hover floating window from `toggle_preview`.
   - Instead, you can set `open_hover_on_preview=true` (true by default) so that
@@ -113,7 +140,8 @@ for a screenshot)
 - Added function and command to show provider and outline window status,
   somewhat like `:LspInfo`.
 
-- Move down/up by one line and peek_location immediately.
+- Move down/up by one line and peek_location immediately, default bindings are
+`<C-j>` and `<C-k>` just like Aerial.
 
 - Flash highlight when using goto/peek location.
 
@@ -125,7 +153,7 @@ for a screenshot)
 - New restore location keymap option to go back to corresponding outline
   location synced with code (see config `restore_location`).
 
-Screen recordings of some of the features is shown at the bottom of the readme.
+Screen recordings of some of the features is shown at the [bottom of the readme](#recipes).
 
 ## PRs
 
@@ -279,11 +307,12 @@ Table of contents
 * [Setup](#setup)
 * [Configuration](#configuration)
     * [Terminology](#terminology)
-    * [Options](#options)
+    * [Default options](#default-options)
 * [Commands](#commands)
-    * [Lua API](#lua-api)
 * [Default keymaps](#default-keymaps)
 * [Highlights](#highlights)
+* [Lua API](#lua-api)
+* [Tips](#tips)
 * [Recipes](#recipes)
 
 <!-- mtoc end -->
@@ -295,17 +324,15 @@ Table of contents
 
 ## Installation
 
-Use `hedyhli/symbols-outline.nvim` if you wish to use this fork.
-
 Packer:
 ```lua
-use 'simrat39/symbols-outline.nvim'
+use 'hedyhli/symbols-outline.nvim'
 ```
 
 Lazy:
 ```lua
 {
-  "simrat39/symbols-outline.nvim",
+  "hedyhli/symbols-outline.nvim",
   config = function()
     -- Example mapping to toggle outline
     vim.keymap.set("n", "<leader>tt", "<cmd>SymbolsOutline<CR>",
@@ -321,11 +348,11 @@ Lazy:
 Lazy with lazy-loading:
 ```lua
 {
-  "simrat39/symbols-outline.nvim",
+  "hedyhli/symbols-outline.nvim",
   cmd = { "SymbolsOutline", "SymbolsOutlineOpen" },
   keys = {
     -- Example mapping to toggle outline
-    { "<leader>tt", "<cmd>SymbolsOutline<CR>", desc = "Toggle outline window" },
+    { "<leader>tt", "<cmd>SymbolsOutline<CR>", desc = "Toggle outline" },
   },
   opts = {
     -- Your setup opts here
@@ -350,7 +377,13 @@ require("symbols-outline").setup({})
 
 ## Configuration
 
+The configuration structure has been heavily improved and refactored in this
+plugin. For details and reasoning, see [breaking changes](#-breaking-changes).
+
 ### Terminology
+
+Check this list if you there's any confusion with the terms used in the
+configuration.
 
 - **Provider**: Source of the items in the outline view. Could be LSP, CoC, etc.
 - **Node**: An item in the outline view
@@ -363,23 +396,56 @@ require("symbols-outline").setup({})
 provided by provider.
 - **Focus**: Which window the cursor is in
 
-### Options
+### Default options
 
 Pass a table to the setup call with your configuration options.
 
 Default values are shown:
 
 ```lua
-local opts = {
-  -- Where to open the split window: right/left
-  position = 'right',
-  -- Whether width is relative to existing windows
-  relative_width = true,
-  -- Percentage or integer of columns
-  width = 25,
+{
+  outline_window = {
+    -- Where to open the split window: right/left
+    position = 'right',
+    -- Percentage or integer of columns
+    width = 25,
+    -- Whether width is relative to existing windows
+    relative_width = true,
 
-  -- Whether to highlight the currently hovered symbol (high cpu usage)
-  highlight_hovered_item = true,
+    -- Behaviour changed in this fork:
+    -- Auto close the outline window if goto_location is triggered and not for
+    -- peek_location
+    auto_close = false,
+    -- Automatically go to location in code when navigating outline window.
+    -- Only in this fork
+    auto_goto = false,
+
+    -- Vim options for the outline window
+    show_numbers = false,
+    show_relative_numbers = false,
+    show_cursorline = true,  -- Only in this fork
+
+    -- Whether to wrap long lines, or let them flow off the window
+    wrap = false,
+    -- Only in this fork:
+    -- Whether to focus on the outline window when it is opened.
+    -- Set to false to remain focus on your previous buffer when opening
+    -- symbols-outline.
+    focus_on_open = true,
+  },
+
+  outline_items = {
+    -- Whether to highlight the currently hovered symbol (high cpu usage)
+    highlight_hovered_item = true,
+    -- Show extra details with the symbols (lsp dependent)
+    show_symbol_details = true,
+    -- Only in this fork.
+    -- Show line numbers of each symbol next to them.
+    -- Why? See this comment:
+    -- https://github.com/simrat39/symbols-outline.nvim/issues/212#issuecomment-1793503563
+    show_symbol_lineno = false,
+  },
+
   -- Options for outline guides.
   -- Only in this fork
   guides = {
@@ -391,54 +457,35 @@ local opts = {
       horizontal = '─',
     },
   },
-  -- Automatically open preview of code on hover
-  auto_preview = false,
-  -- Automatically open hover_symbol when opening toggle_preview (see keymaps).
-  -- If you disable this you can still open hover_symbol using your keymap
-  -- below.
-  -- Only in this fork
-  open_hover_on_preview = true,
-  -- Border option for floating preview window.
-  -- Options include: single/double/rounded/solid/shadow or an array of border
-  -- characters.
-  -- See :help nvim_open_win() and search for "border" option.
-  border = 'single',
-  -- Behaviour changed in this fork:
-  -- Auto close the outline window if goto_location is triggered and not for
-  -- peek_location
-  auto_close = false,
-  -- Automatically go to location in code when navigating outline window.
-  -- Only in this fork
-  auto_goto = false,
 
-  -- Vim options for the outline window
-  show_numbers = false,
-  show_relative_numbers = false,
-  show_cursorline = true,  -- Only in this fork
-  -- Show extra details with the symbols (lsp dependent)
-  show_symbol_details = true,
-  -- Only in this fork.
-  -- Show line numbers of each symbol next to them.
-  -- Why? See this comment:
-  -- https://github.com/simrat39/symbols-outline.nvim/issues/212#issuecomment-1793503563
-  show_symbol_lineno = false,
-  -- Highlight group for the preview background
-  preview_bg_highlight = 'Pmenu',
-  -- Depth past which nodes will be folded by default
-  autofold_depth = nil,
-  -- Automatically unfold hovered symbol
-  auto_unfold_hover = true,
-  fold_markers = { '', '' },
-  -- Whether to wrap long lines, or let them flow off the window
-  wrap = false,
+  symbol_folding = {
+    -- Depth past which nodes will be folded by default
+    autofold_depth = nil,
+    -- Automatically unfold hovered symbol
+    auto_unfold_hover = true,
+    markers = { '', '' },
+  },
 
-  -- Only in this fork:
-  -- Whether to focus on the outline window when it is opened.
-  -- Set to false to remain focus on your previous buffer when opening
-  -- symbols-outline.
-  focus_on_open = true,
-  -- Pseudo-transparency of the preview window
-  winblend = 0
+  preview_window = {
+    -- Automatically open preview of code location when navigating outline window
+    auto_preview = false,
+    -- Automatically open hover_symbol when opening preview (see keymaps for
+    -- hover_symbol).
+    -- If you disable this you can still open hover_symbol using your keymap
+    -- below.
+    -- Only in this fork
+    open_hover_on_preview = true,
+    -- Border option for floating preview window.
+    -- Options include: single/double/rounded/solid/shadow or an array of border
+    -- characters.
+    -- See :help nvim_open_win() and search for "border" option.
+    border = 'single',
+    border_hl = 'Pmenu',
+    -- Highlight group for the preview background
+    bg_hl = 'Pmenu',
+    -- Pseudo-transparency of the preview window
+    winblend = 0
+  },
 
   -- These keymaps can be a string or a table for multiple keys
   keymaps = { 
@@ -479,52 +526,58 @@ local opts = {
     up_and_goto = '<C-k>',
   },
 
-  -- Lsp clients to ignore
-  lsp_blacklist = {},
-  -- Symbols to ignore.
-  -- Possible values: lua/symbols-outline/symbols.lua
-  symbol_blacklist = {},
+  providers = {
+    lsp = {
+      -- Lsp client names to ignore
+      blacklist_clients = {},
+    },
+  },
 
   symbols = {
-    -- Changed in this fork
-    File = { icon = "󰈔", hl = "@text.uri" },
-    Module = { icon = "󰆧", hl = "@namespace" },
-    Namespace = { icon = "󰅪", hl = "@namespace" },
-    Package = { icon = "󰏗", hl = "@namespace" },
-    Class = { icon = "𝓒", hl = "@type" },
-    Method = { icon = "ƒ", hl = "@method" },
-    Property = { icon = "", hl = "@method" },
-    Field = { icon = "󰆨", hl = "@field" },
-    Constructor = { icon = "", hl = "@constructor" },
-    Enum = { icon = "ℰ", hl = "@type" },
-    Interface = { icon = "󰜰", hl = "@type" },
-    Function = { icon = "", hl = "@function" },
-    Variable = { icon = "", hl = "@constant" },
-    Constant = { icon = "", hl = "@constant" },
-    String = { icon = "𝓐", hl = "@string" },
-    Number = { icon = "#", hl = "@number" },
-    Boolean = { icon = "⊨", hl = "@boolean" },
-    Array = { icon = "󰅪", hl = "@constant" },
-    Object = { icon = "⦿", hl = "@type" },
-    Key = { icon = "🔐", hl = "@type" },
-    Null = { icon = "NULL", hl = "@type" },
-    EnumMember = { icon = "", hl = "@field" },
-    Struct = { icon = "𝓢", hl = "@type" },
-    Event = { icon = "🗲", hl = "@type" },
-    Operator = { icon = "+", hl = "@operator" },
-    TypeParameter = { icon = "𝙏", hl = "@parameter" },
-    Component = { icon = "󰅴", hl = "@function" },
-    Fragment = { icon = "󰅴", hl = "@constant" },
-    -- ccls
-    TypeAlias =  { icon = ' ', hl = '@type' },
-    Parameter = { icon = ' ', hl = '@parameter' },
-    StaticMethod = { icon = ' ', hl = '@function' },
-    Macro = { icon = ' ', hl = '@macro' },
+    -- Symbols to ignore.
+    -- Possible values are the Keys in the icons table below.
+    blacklist = {},
+    -- Changed in this fork to fix deprecated icons not showing.
+    icons = {
+      File = { icon = "󰈔", hl = "@text.uri" },
+      Module = { icon = "󰆧", hl = "@namespace" },
+      Namespace = { icon = "󰅪", hl = "@namespace" },
+      Package = { icon = "󰏗", hl = "@namespace" },
+      Class = { icon = "𝓒", hl = "@type" },
+      Method = { icon = "ƒ", hl = "@method" },
+      Property = { icon = "", hl = "@method" },
+      Field = { icon = "󰆨", hl = "@field" },
+      Constructor = { icon = "", hl = "@constructor" },
+      Enum = { icon = "ℰ", hl = "@type" },
+      Interface = { icon = "󰜰", hl = "@type" },
+      Function = { icon = "", hl = "@function" },
+      Variable = { icon = "", hl = "@constant" },
+      Constant = { icon = "", hl = "@constant" },
+      String = { icon = "𝓐", hl = "@string" },
+      Number = { icon = "#", hl = "@number" },
+      Boolean = { icon = "⊨", hl = "@boolean" },
+      Array = { icon = "󰅪", hl = "@constant" },
+      Object = { icon = "⦿", hl = "@type" },
+      Key = { icon = "🔐", hl = "@type" },
+      Null = { icon = "NULL", hl = "@type" },
+      EnumMember = { icon = "", hl = "@field" },
+      Struct = { icon = "𝓢", hl = "@type" },
+      Event = { icon = "🗲", hl = "@type" },
+      Operator = { icon = "+", hl = "@operator" },
+      TypeParameter = { icon = "𝙏", hl = "@parameter" },
+      Component = { icon = "󰅴", hl = "@function" },
+      Fragment = { icon = "󰅴", hl = "@constant" },
+      -- Added ccls symbols in this fork
+      TypeAlias =  { icon = ' ', hl = '@type' },
+      Parameter = { icon = ' ', hl = '@parameter' },
+      StaticMethod = { icon = ' ', hl = '@function' },
+      Macro = { icon = ' ', hl = '@macro' },
+    },
   },
 }
 ```
 
-To find out exactly what some of the options do, check out the
+To find out exactly what some of the options do, please see the
 [recipes](#recipes) section of the readme at the bottom for screen-recordings.
 
 ## Commands
@@ -576,7 +629,47 @@ To find out exactly what some of the options do, check out the
   With bang, it can be understood as the converse of `focus_location`.
 
 
-### Lua API
+## Default keymaps
+
+These mappings are active for the outline window.
+
+| Key        | Action                                             |
+| ---------- | -------------------------------------------------- |
+| Escape     | Close outline                                      |
+| ?          | Show help message                                  |
+| Enter      | Go to symbol location in code                      |
+| o          | Go to symbol location in code without losing focus |
+| Ctrl+k     | Go up and goto location                            |
+| Ctrl+j     | Go down and goto location                          |
+| Ctrl+g     | Go to code location in outline window              |
+| Ctrl+Space | Hover current symbol                               |
+| K          | Toggles the current symbol preview                 |
+| r          | Rename symbol                                      |
+| a          | Code actions                                       |
+| h          | Fold symbol or parent symbol                       |
+| Tab        | Toggle fold under cursor                           |
+| Shift+Tab  | Toggle all folds                                   |
+| l          | Unfold symbol                                      |
+| W          | Fold all symbols                                   |
+| E          | Unfold all symbols                                 |
+| R          | Reset all folding                                  |
+
+## Highlights
+
+| Highlight               | Purpose                                |
+| ----------------------- | -------------------------------------- |
+| FocusedSymbol           | Highlight of the focused symbol        |
+| Pmenu                   | Highlight of the preview popup windows |
+| SymbolsOutlineConnector | Highlight of the table connectors      |
+| Comment                 | Highlight of the info virtual text     |
+
+
+Note that some highlights are configurable such as the preview window border and
+background. Please see [configuration options](#default-options).
+
+## Lua API
+
+Symbols-outline provides the following public API for use in lua.
 
 ```lua
 require'symbols-outline'
@@ -630,40 +723,17 @@ require'symbols-outline'
 
   With `opts.focus_outline=false`, cursor focus will remain on code window.
 
+## Tips
 
-## Default keymaps
+- To open the outline but don't focus on it, you can use `:SymbolsOutline!` or
+`:SymbolsOutlineOpen`.
 
-These mappings are active for the outline window.
+  This is useful in autocmds, say you have a filetype that, whenever a buffer with
+  that filetype is opened you want to open the outline.
 
-| Key        | Action                                             |
-| ---------- | -------------------------------------------------- |
-| Escape     | Close outline                                      |
-| ?          | Show help message                                  |
-| Enter      | Go to symbol location in code                      |
-| o          | Go to symbol location in code without losing focus |
-| Ctrl+k     | Go up and goto location                            |
-| Ctrl+j     | Go down and goto location                          |
-| Ctrl+g     | Go to code location in outline window              |
-| Ctrl+Space | Hover current symbol                               |
-| K          | Toggles the current symbol preview                 |
-| r          | Rename symbol                                      |
-| a          | Code actions                                       |
-| h          | Fold symbol or parent symbol                       |
-| Tab        | Toggle fold under cursor                           |
-| Shift+Tab  | Toggle all folds                                   |
-| l          | Unfold symbol                                      |
-| W          | Fold all symbols                                   |
-| E          | Unfold all symbols                                 |
-| R          | Reset all folding                                  |
-
-## Highlights
-
-| Highlight               | Purpose                                |
-| ----------------------- | -------------------------------------- |
-| FocusedSymbol           | Highlight of the focused symbol        |
-| Pmenu                   | Highlight of the preview popup windows |
-| SymbolsOutlineConnector | Highlight of the table connectors      |
-| Comment                 | Highlight of the info virtual text     |
+- After navigating around in the outline window, you can use `<C-g>` (default
+  mapping for `restore_location`) to go back to the corresponding outline
+  location based on the code location.
 
 
 ## Recipes
@@ -671,30 +741,40 @@ These mappings are active for the outline window.
 Behaviour you may want to achieve and the combination of configuration options
 to achieve it.
 
+Code snippets in this section are to be placed in `.setup({ <HERE> })` directly
+unless specified otherwise.
+
 **Unfold all others except currently hovered item**
 
 ```lua
-autofold_depth = 1,
-auto_unfold_hover = true,
+symbol_folding = {
+  autofold_depth = 1,
+  auto_unfold_hover = true,
+},
 ```
 <img width="900" alt="image" src="https://github.com/hedyhli/symbols-outline.nvim/assets/50042066/2e0c5f91-a979-4e64-a100-256ad062dce3">
 
 
-Any other recipes you think others may also find useful? Feel free to open a PR.
-
 **Use outline window as a quick-jump window**
 
 ```lua
-auto_preview = true,
+preview_window = {
+  auto_preview = true,
+},
 ```
 
 https://github.com/hedyhli/symbols-outline.nvim/assets/50042066/a473d791-d1b9-48e9-917f-b816b564a645
 
+Note that in the recording I have `preview_window.open_hover_on_preview =
+false`.
+
 Alternatively, if you want to automatically navigate to the corresponding code
-location and not use the preview window:
+location directly and not use the preview window:
 
 ```lua
-auto_goto = true,
+outline_window = {
+  auto_goto = true,
+},
 ```
 
 This feature was added by @stickperson in an upstream PR 🙌
@@ -704,21 +784,30 @@ https://github.com/hedyhli/symbols-outline.nvim/assets/50042066/3d06e342-97ac-40
 Or, you can use keys `<C-j>` and `<C-k>` to achieve the same effect, whilst not
 having `auto_goto` on by default.
 
+This feature is newly added in this fork.
 
 **Hide the extra details after each symbol name**
 
 ```lua
-show_symbol_details = false,
+outline_items = {
+  show_symbol_details = false,
+},
 ```
 
 **Show line numbers next to each symbol to jump to that symbol quickly**
 
+This feature is newly added in this fork.
+
 ```lua
-show_symbol_lineno = true,
+outline_items = {
+  show_symbol_lineno = false,
+},
 ```
 
-The default highlight group is `LineNr`.
+The default highlight group for the line numbers is `LineNr`.
 
 <img width="900" alt="image" src="https://github.com/hedyhli/symbols-outline.nvim/assets/50042066/2bbb5833-f40b-4c53-8338-407252d61443">
 
+---
+Any other recipes you think others may also find useful? Feel free to open a PR.
 

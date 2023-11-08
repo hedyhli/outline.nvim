@@ -1,5 +1,5 @@
 local so = require 'symbols-outline'
-local config = require 'symbols-outline.config'
+local cfg = require 'symbols-outline.config'
 local hover = require 'symbols-outline.hover'
 
 local M = {}
@@ -31,11 +31,11 @@ local function get_offset()
   local width = 53
   local height = 0
 
-  if config.has_numbers() then
+  if cfg.has_numbers() then
     width = width + 4
   end
 
-  if config.options.position == 'right' then
+  if cfg.o.outline_window.position == 'right' then
     width = 0 - width
   else
     width = vim.api.nvim_win_get_width(outline_winnr) + 1
@@ -91,10 +91,10 @@ local function setup_preview_buf()
 end
 
 local function set_bg_hl()
-  local winhi = 'Normal:' .. config.options.preview_bg_highlight
+  local winhi = 'Normal:' .. cfg.o.preview_window.bg_hl
   vim.api.nvim_win_set_option(state.preview_win, 'winhighlight', winhi)
   -- vim.api.nvim_win_set_option(state.hover_win, 'winhighlight', winhi)
-  local winblend = config.options.winblend
+  local winblend = cfg.o.preview_window.winblend
   vim.api.nvim_win_set_option(state.preview_win, 'winblend', winblend)
   -- vim.api.nvim_win_set_option(state.hover_win, 'winblend', winblend)
 end
@@ -119,7 +119,7 @@ local function show_preview()
       col = offsets[2],
       -- Position preview window middle-aligned vertically
       row = math.ceil((height - winheight) / 2),
-      border = config.options.border,
+      border = cfg.o.preview_window.border,
     })
     setup_preview_buf()
   else
@@ -134,7 +134,7 @@ function M.show()
 
   show_preview()
   set_bg_hl()
-  if config.options.open_hover_on_preview then
+  if cfg.o.preview_window.open_hover_on_preview then
     hover.show_hover()
   end
 end

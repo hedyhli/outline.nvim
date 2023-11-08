@@ -1,5 +1,5 @@
 local parser = require 'symbols-outline.parser'
-local config = require 'symbols-outline.config'
+local cfg = require('symbols-outline.config')
 local ui = require 'symbols-outline.ui'
 
 local M = {}
@@ -52,7 +52,7 @@ function M.write_details(bufnr, lines)
   if not is_buffer_outline(bufnr) then
     return
   end
-  if not config.options.show_symbol_details then
+  if not cfg.o.outline_items.show_symbol_details then
     return
   end
 
@@ -69,7 +69,7 @@ function M.write_lineno(bufnr, lines, max)
   if not is_buffer_outline(bufnr) then
     return
   end
-  if not config.options.show_symbol_lineno then
+  if not cfg.o.outline_items.show_symbol_lineno then
     return
   end
   local maxwidth = #tostring(max)
@@ -90,7 +90,7 @@ local function clear_virt_text(bufnr)
 end
 
 M.add_hover_highlights = function(bufnr, nodes)
-  if not config.options.highlight_hovered_item then
+  if not cfg.o.outline_items.highlight_hovered_item then
     return
   end
 
@@ -101,7 +101,7 @@ M.add_hover_highlights = function(bufnr, nodes)
       goto continue
     end
 
-    local marker_fac = (config.options.fold_markers and 1) or 0
+    local marker_fac = (cfg.o.symbol_folding.markers and 1) or 0
     if node.prefix_length then
       ui.add_hover_highlight(
         bufnr,
