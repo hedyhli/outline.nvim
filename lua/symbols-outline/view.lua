@@ -31,6 +31,7 @@ function View:setup_view()
   vim.api.nvim_win_set_option(self.winnr, 'winfixwidth', true)
   vim.api.nvim_win_set_option(self.winnr, 'list', false)
   vim.api.nvim_win_set_option(self.winnr, 'wrap', cfg.o.outline_window.wrap)
+  vim.api.nvim_win_set_option(self.winnr, 'winhl', cfg.o.outline_window.winhl)
   vim.api.nvim_win_set_option(self.winnr, 'linebreak', true) -- only has effect when wrap=true
   vim.api.nvim_win_set_option(self.winnr, 'breakindent', true) -- only has effect when wrap=true
   --  Would be nice to use guides.markers.vertical as part of showbreak to keep

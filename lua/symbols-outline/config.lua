@@ -28,16 +28,16 @@ M.defaults = {
     show_numbers = false,
     show_relative_numbers = false,
     show_cursorline = true,
+    winhl = "SymbolsOutlineDetails:Comment,SymbolsOutlineLineno:LineNr",
   },
   preview_window = {
     auto_preview = false,
     width = 50,
     min_width = 50,
     relative_width = true,
-    bg_hl = 'Pmenu',
     border = 'single',
-    border_hl = 'Pmenu',
     open_hover_on_preview = true,
+    winhl = '',
     winblend = 0,
   },
   symbol_folding = {

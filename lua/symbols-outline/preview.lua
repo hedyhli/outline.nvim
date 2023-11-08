@@ -94,12 +94,8 @@ local function setup_preview_buf()
 end
 
 local function set_bg_hl()
-  local winhi = 'Normal:' .. cfg.o.preview_window.bg_hl
-  vim.api.nvim_win_set_option(state.preview_win, 'winhighlight', winhi)
-  -- vim.api.nvim_win_set_option(state.hover_win, 'winhighlight', winhi)
-  local winblend = cfg.o.preview_window.winblend
-  vim.api.nvim_win_set_option(state.preview_win, 'winblend', winblend)
-  -- vim.api.nvim_win_set_option(state.hover_win, 'winblend', winblend)
+  vim.api.nvim_win_set_option(state.preview_win, 'winhl', cfg.o.preview_window.winhl)
+  vim.api.nvim_win_set_option(state.preview_win, 'winblend', cfg.o.preview_window.winblend)
 end
 
 local function show_preview()

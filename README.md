@@ -1,3 +1,5 @@
+<!-- panvimdoc-ignore-start -->
+
 # Fork status
 
 [Skip to plugin readme](#symbols-outlinenvim)
@@ -131,7 +133,7 @@ Features/Changes:
     - simrat39/symbols-outline.nvim#207
 
 - Show line number of each symbol in outline window (see [recipes](#recipes)
-for a screenshot)
+  for a screenshot)
   - Fixed issues:
     - simrat39/symbols-outline.nvim#212
 
@@ -153,7 +155,16 @@ for a screenshot)
 - New restore location keymap option to go back to corresponding outline
   location synced with code (see config `restore_location`).
 
+- Outline/Preview window border/background/winhighlight configuration.
+  (simrat39/symbols-outline.nvim#136). See `outline_window.winhl`,
+  `preview_window.bg_hl`, `preview_window.*width` options.
+
+- All highlights used including the virtual text for symbol details and symbol
+  lineno are now fully customizable using `outline_window.winhl`. See
+  [highlights](#outline-window).
+
 Screen recordings of some of the features is shown at the [bottom of the readme](#recipes).
+
 
 ## PRs
 
@@ -167,6 +178,15 @@ Key:
 
 - 📮 center view on goto symbol
   (#239 by skomposzczet)
+
+- Distinguish between public and private function display in Elixir
+  (#187 by scottming)
+
+- Floating window (Draft)
+  (#101 by druskus20)
+
+
+<details><summary>Show completed PRs</summary>
 
 - ✅ Open handler checks if view is not already open
   (#235 by eyalz800)
@@ -201,9 +221,6 @@ Key:
 
   **Superseded by #163**
 
-- Distinguish between public and private function display in Elixir
-  (#187 by scottming)
-
 - ✅ Fix some options
   (#180 by cljoly)
 
@@ -216,14 +233,20 @@ Key:
 - ✅ fix: plugin crashes when SymbolOutlineClose used
   (#163 by beauwilliams)
 
-- 📮 feat: Add window_bg_highlight to config
+- ✅ feat: Add window_bg_highlight to config
   (#137 by Zane-)
 
-- 📮 Added preview width and relative size
+  **Improved implementation**
+
+- ✅ Added preview width and relative size
   (#130 by Freyskeyd)
 
-- 📮 Improve preview, hover windows configurability and looks
+  **Improved upon and refactored with new config structure**
+
+- ✅ Improve preview, hover windows configurability and looks
   (#128 by toppair)
+
+  **Improved upon and refactored with new config structure**
 
 - ✅ Do not close outline when focus_location occurs
   (#119 by M1Sports20)
@@ -240,8 +263,7 @@ Key:
 
   (perhaps the PR was forgotten to be closed)
 
-- Floating window (Draft)
-  (#101 by druskus20)
+</details>
 
 
 ## TODO
@@ -270,12 +292,12 @@ Key:
   the correct location, and pressing `q` can properly close the buffer.
 
 - Preview / Hover
-  - `[/]` Configurable winhighlight options for preview window (like nvim-cmp)
+  - ✅ Configurable winhighlight options for preview window (like nvim-cmp)
   (simrat39/symbols-outline#128)
-  - `[/]` Configurable width and height of preview window (simrat39/symbols-outline.nvim#130)
+  - ✅ Configurable width and height of preview window (simrat39/symbols-outline.nvim#130)
 
 - View
-  - `[/]` Outline window customizations (simrat39/symbols-outline.nvim#137)
+  - ✅ Outline window customizations (simrat39/symbols-outline.nvim#137)
   - ✅ Option to show line number next to symbols (simrat39/symbols-outline.nvim#212)
   - `[/]` Option to hide cursor in outline window if cursorline enabled
 
@@ -290,6 +312,8 @@ Key:
 - navigator.lua
 
 ---
+
+<!-- panvimdoc-ignore-end -->
 
 # symbols-outline.nvim
 
@@ -311,6 +335,8 @@ Table of contents
 * [Commands](#commands)
 * [Default keymaps](#default-keymaps)
 * [Highlights](#highlights)
+    * [Outline window](#outline-window)
+    * [Preview window](#preview-window)
 * [Lua API](#lua-api)
 * [Tips](#tips)
 * [Recipes](#recipes)
@@ -408,8 +434,10 @@ Default values are shown:
     -- Where to open the split window: right/left
     position = 'right',
     -- Percentage or integer of columns
-    width = 25,
-    -- Whether width is relative to existing windows
+    width = 25, 
+    -- Whether width is relative to the total width of nvim
+    -- When relative_width = true, this means take 25% of the total
+    -- screen width for outline window.
     relative_width = true,
 
     -- Behaviour changed in this fork:
@@ -432,6 +460,11 @@ Default values are shown:
     -- Set to false to remain focus on your previous buffer when opening
     -- symbols-outline.
     focus_on_open = true,
+    -- Only in this fork:
+    -- Winhighlight option for outline window.
+    -- See :help 'winhl'
+    -- To change background color to "CustomHl" for example, set to "Normal:CustomHl".
+    winhl = "SymbolsOutlineDetails:Comment,SymbolsOutlineLineno:LineNr",
   },
 
   outline_items = {
@@ -475,15 +508,22 @@ Default values are shown:
     -- below.
     -- Only in this fork
     open_hover_on_preview = true,
+    -- Only in this fork:
+    width = 50,     -- Percentage or integer of columns
+    min_width = 50, -- This is the number of columns
+    -- Whether width is relative to the total width of nvim.
+    -- When relative_width = true, this means take 50% of the total
+    -- screen width for preview window, ensure the result width is at least 50
+    -- characters wide.
+    relative_width = true,
     -- Border option for floating preview window.
     -- Options include: single/double/rounded/solid/shadow or an array of border
     -- characters.
     -- See :help nvim_open_win() and search for "border" option.
     border = 'single',
-    border_hl = 'Pmenu',
-    -- Highlight group for the preview background
-    bg_hl = 'Pmenu',
-    -- Pseudo-transparency of the preview window
+    -- winhl options for the preview window, see ':h winhl'
+    winhl = '',
+    -- Pseudo-transparency of the preview window, see ':h winblend'
     winblend = 0
   },
 
@@ -512,18 +552,18 @@ Default values are shown:
     -- These fold actions are collapsing tree nodes, not code folding
     fold = "h",
     unfold = "l",
-    fold_toggle = '<Tab>',       -- Only in this fork
+    fold_toggle = "<Tab>",       -- Only in this fork
     -- Toggle folds for all nodes.
     -- If at least one node is folded, this action will fold all nodes.
     -- If all nodes are folded, this action will unfold all nodes.
-    fold_toggle_all = '<S-Tab>', -- Only in this fork
+    fold_toggle_all = "<S-Tab>", -- Only in this fork
     fold_all = "W",
     unfold_all = "E",
     fold_reset = "R",
     -- Only in this fork:
     -- Move down/up by one line and peek_location immediately.
-    down_and_goto = '<C-j>',
-    up_and_goto = '<C-k>',
+    down_and_goto = "<C-j>",
+    up_and_goto = "<C-k>",
   },
 
   providers = {
@@ -656,16 +696,32 @@ These mappings are active for the outline window.
 
 ## Highlights
 
-| Highlight               | Purpose                                |
-| ----------------------- | -------------------------------------- |
-| FocusedSymbol           | Highlight of the focused symbol        |
-| Pmenu                   | Highlight of the preview popup windows |
-| SymbolsOutlineConnector | Highlight of the table connectors      |
-| Comment                 | Highlight of the info virtual text     |
+### Outline window
 
+Default:
 
-Note that some highlights are configurable such as the preview window border and
-background. Please see [configuration options](#default-options).
+```lua
+outline_window = {
+  winhl = "SymbolsOutlineDetails:Comment,SymbolsOutlineLineno:LineNr",
+},
+```
+
+Possible highlight groups to customize:
+
+| Highlight               | Purpose                                        |
+| ----------------------- | ---------------------------------------------- |
+| SymbolsOutlineCurrent   | Highlight of the focused symbol                |
+| SymbolsOutlineConnector | Highlight of the table connectors              |
+| SymbolsOutlineDetails   | Highlight of the details info virtual text     |
+| SymbolsOutlineLineno    | Highlight of the lineno column                 |
+
+### Preview window
+
+```lua
+preview_window = {
+  winhl = "",
+},
+```
 
 ## Lua API
 
@@ -723,6 +779,7 @@ require'symbols-outline'
 
   With `opts.focus_outline=false`, cursor focus will remain on code window.
 
+
 ## Tips
 
 - To open the outline but don't focus on it, you can use `:SymbolsOutline!` or
@@ -735,6 +792,10 @@ require'symbols-outline'
   mapping for `restore_location`) to go back to the corresponding outline
   location based on the code location.
 
+- To customize the background colors, text colors, and borders, you can use
+  `outline_window.winhl` for the outline window or `preview_window.winhl` for the
+  preview floating window. See [highlights](#highlights).
+
 
 ## Recipes
 
@@ -744,7 +805,7 @@ to achieve it.
 Code snippets in this section are to be placed in `.setup({ <HERE> })` directly
 unless specified otherwise.
 
-**Unfold all others except currently hovered item**
+- **Unfold all others except currently hovered item**
 
 ```lua
 symbol_folding = {
@@ -755,7 +816,7 @@ symbol_folding = {
 <img width="900" alt="image" src="https://github.com/hedyhli/symbols-outline.nvim/assets/50042066/2e0c5f91-a979-4e64-a100-256ad062dce3">
 
 
-**Use outline window as a quick-jump window**
+- **Use outline window as a quick-jump window**
 
 ```lua
 preview_window = {
@@ -786,7 +847,7 @@ having `auto_goto` on by default.
 
 This feature is newly added in this fork.
 
-**Hide the extra details after each symbol name**
+- **Hide the extra details after each symbol name**
 
 ```lua
 outline_items = {
@@ -794,7 +855,7 @@ outline_items = {
 },
 ```
 
-**Show line numbers next to each symbol to jump to that symbol quickly**
+- **Show line numbers next to each symbol to jump to that symbol quickly**
 
 This feature is newly added in this fork.
 
@@ -804,10 +865,15 @@ outline_items = {
 },
 ```
 
-The default highlight group for the line numbers is `LineNr`.
+The default highlight group for the line numbers is `LineNr`, you can customize
+it using `outline_window.winhl`: please see [highlights](#outline-window).
 
 <img width="900" alt="image" src="https://github.com/hedyhli/symbols-outline.nvim/assets/50042066/2bbb5833-f40b-4c53-8338-407252d61443">
+
+
+<!-- panvimdoc-ignore-start -->
 
 ---
 Any other recipes you think others may also find useful? Feel free to open a PR.
 
+<!-- panvimdoc-ignore-end -->

@@ -58,7 +58,7 @@ function M.write_details(bufnr, lines)
 
   for index, value in ipairs(lines) do
     vim.api.nvim_buf_set_extmark(bufnr, ns, index - 1, -1, {
-      virt_text = { { value, 'Comment' } },
+      virt_text = { { value, 'SymbolsOutlineDetails' } },
       virt_text_pos = 'eol',
       hl_mode = 'combine',
     })
@@ -77,7 +77,7 @@ function M.write_lineno(bufnr, lines, max)
   for index, value in ipairs(lines) do
     local leftpad = string.rep(' ', maxwidth-#value)
     vim.api.nvim_buf_set_extmark(bufnr, ns, index - 1, -1, {
-      virt_text = { {leftpad..value, 'LineNr' } },
+      virt_text = { {leftpad..value, 'SymbolsOutlineLineno' } },
       virt_text_pos = 'overlay',
       virt_text_win_col = 0,
       hl_mode = 'combine',
