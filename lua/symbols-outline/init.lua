@@ -46,6 +46,9 @@ M.state = {
   outline_items = {},
   flattened_outline_items = {},
   code_win = 0,
+  -- In case unhide_cursor was called before hide_cursor for _some_ reason,
+  -- this can still be used as a fallback
+  original_cursor = vim.o.guicursor,
 }
 
 local function wipe_state()
@@ -129,6 +132,19 @@ function M._toggle_fold(move_cursor, node_index)
   end
 end
 
+local function hide_cursor()
+  -- Set cursor color to CursorLine in normal mode
+  M.state.original_cursor = vim.o.guicursor
+  local cur = vim.o.guicursor:match("n.-:(.-)[-,]")
+  vim.opt.guicursor:append("n:"..cur.."-Cursorline")
+end
+
+local function unhide_cursor()
+  -- vim.opt doesn't seem to provide a way to remove last item, like a pop()
+  -- vim.o.guicursor = vim.o.guicursor:gsub(",n.-:.-$", "")
+  vim.o.guicursor = M.state.original_cursor
+end
+
 local function setup_buffer_autocmd()
   if cfg.o.preview_window.auto_preview then
     vim.api.nvim_create_autocmd('CursorMoved', {
@@ -148,6 +164,19 @@ local function setup_buffer_autocmd()
         -- Don't use _goto_location because we don't want to auto-close
         M.__goto_location(false)
       end
+    })
+  end
+  if cfg.o.outline_window.hide_cursor then
+    -- Unfortunately guicursor is a global option, so we have to make sure to
+    -- set and unset when cursor leaves the outline window.
+    hide_cursor()
+    vim.api.nvim_create_autocmd('BufEnter', {
+      buffer = 0,
+      callback = hide_cursor
+    })
+    vim.api.nvim_create_autocmd('BufLeave', {
+      buffer = 0,
+      callback = unhide_cursor
     })
   end
 end

@@ -163,7 +163,9 @@ Features/Changes:
   lineno are now fully customizable using `outline_window.winhl`. See
   [highlights](#outline-window).
 
-Screen recordings of some of the features is shown at the [bottom of the readme](#recipes).
+- Option to blend cursor with cursorline (`outline_window.hide_cursor`)
+
+Screen recordings/shots of some of the features is shown at the [bottom of the readme](#recipes).
 
 
 ## PRs
@@ -272,18 +274,23 @@ Key:
 
 Key:
 ```
+-     : Idea
 - [ ] : Planned
 - [/] : WIP
--     : Idea
+- ❌  : Was idea, found usable workaround
+- ✅  : Implemented
 ```
 
 - Folds
   - `[ ]` Org-like <kbd>shift+tab</kbd> behavior: Open folds level-by-level
   - `[ ]` Optionally not opening all child nodes when opening parent node
   - Fold siblings and siblings of parent on startup
+
 - Navigation
-  - Go to parent
-  - Cycle siblings
+  - ❌ Go to parent (as of now you can press `hl` to achieve the same
+    effect)
+  - ❌ Cycle siblings (as of now when reached the last sibling, you can use `hlj`
+    to go back to first sibling)
 
 - `[ ]` simrat39/symbols-outline.nvim#75: Handling of the outline window when attached
   buffer is closed.
@@ -299,7 +306,7 @@ Key:
 - View
   - ✅ Outline window customizations (simrat39/symbols-outline.nvim#137)
   - ✅ Option to show line number next to symbols (simrat39/symbols-outline.nvim#212)
-  - `[/]` Option to hide cursor in outline window if cursorline enabled
+  - ✅ Option to hide cursor in outline window if cursorline enabled
 
 
 ## Related plugins
@@ -326,24 +333,24 @@ Supports all your favourite languages.**
 <!-- panvimdoc-ignore-start -->
 Table of contents
 
-<!-- mtoc start -->
+<!-- mtoc-start -->
 
 * [Prerequisites](#prerequisites)
 * [Installation](#installation)
 * [Setup](#setup)
 * [Configuration](#configuration)
-    * [Terminology](#terminology)
-    * [Default options](#default-options)
+  * [Terminology](#terminology)
+  * [Default options](#default-options)
 * [Commands](#commands)
 * [Default keymaps](#default-keymaps)
 * [Highlights](#highlights)
-    * [Outline window](#outline-window)
-    * [Preview window](#preview-window)
+  * [Outline window](#outline-window)
+  * [Preview window](#preview-window)
 * [Lua API](#lua-api)
 * [Tips](#tips)
 * [Recipes](#recipes)
 
-<!-- mtoc end -->
+<!-- mtoc-end -->
 <!-- panvimdoc-ignore-end -->
 
 ## Prerequisites
@@ -454,7 +461,18 @@ Default values are shown:
     -- Vim options for the outline window
     show_numbers = false,
     show_relative_numbers = false,
-    show_cursorline = true,  -- Only in this fork
+
+    -- Only in this fork (this and the one below)
+    show_cursorline = true,
+    -- Enable this when you enabled cursorline so your cursor color can
+    -- blend with the cursorline, in effect, as if your cursor is hidden
+    -- in the outline window.
+    -- This is useful because with cursorline, there isn't really a need
+    -- to know the vertical column position of the cursor and it may even
+    -- be distracting, rendering lineno/guides/icons unreadable.
+    -- This makes your line of cursor look the same as if the cursor wasn't
+    -- focused on the outline window.
+    hide_cursor = false,
 
     -- Whether to wrap long lines, or let them flow off the window
     wrap = false,
@@ -816,7 +834,7 @@ symbol_folding = {
   auto_unfold_hover = true,
 },
 ```
-<img width="900" alt="image" src="https://github.com/hedyhli/symbols-outline.nvim/assets/50042066/2e0c5f91-a979-4e64-a100-256ad062dce3">
+<img width="900" alt="outline window showing auto fold depth" src="https://github.com/hedyhli/symbols-outline.nvim/assets/50042066/2e0c5f91-a979-4e64-a100-256ad062dce3">
 
 
 - **Use outline window as a quick-jump window**
@@ -871,8 +889,25 @@ outline_items = {
 The default highlight group for the line numbers is `LineNr`, you can customize
 it using `outline_window.winhl`: please see [highlights](#outline-window).
 
-<img width="900" alt="image" src="https://github.com/hedyhli/symbols-outline.nvim/assets/50042066/2bbb5833-f40b-4c53-8338-407252d61443">
+<img width="900" alt="outline window showing lineno" src="https://github.com/hedyhli/symbols-outline.nvim/assets/50042066/2bbb5833-f40b-4c53-8338-407252d61443">
 
+- **Single cursorline**
+
+```lua
+outline_window = {
+  show_cursorline = true,
+  hide_cursor = true,
+}
+```
+
+This will be how the outline window look like when focused.
+
+<img width="300" alt="outline window showing hide_cursor" src="https://github.com/hedyhli/symbols-outline.nvim/assets/50042066/1e13c4db-ae51-4e1f-a388-2758871df36a">
+
+Note that in the screenshot, `outline_items.show_symbol_lineno` is also enabled.
+
+Some may find this unhelpful, but one may argue that elements in each row of the
+outline becomes more readable this way, hence this is an option.
 
 <!-- panvimdoc-ignore-start -->
 

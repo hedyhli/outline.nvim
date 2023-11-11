@@ -28,6 +28,7 @@ M.defaults = {
     show_numbers = false,
     show_relative_numbers = false,
     show_cursorline = true,
+    hide_cursor = false,
     winhl = "SymbolsOutlineDetails:Comment,SymbolsOutlineLineno:LineNr",
   },
   preview_window = {
@@ -107,7 +108,7 @@ M.defaults = {
       StaticMethod = { icon = ' ', hl = '@function' },
       Macro = { icon = ' ', hl = '@macro' },
     },
-    },
+  },
 }
 
 M.o = {}
@@ -184,6 +185,12 @@ function M.show_help()
   print(vim.inspect(M.o.keymaps))
 end
 
+function M.check_config()
+  if M.o.outline_window.hide_cursor and not M.o.outline_window.show_cursorline then
+    vim.notify("[symbols-outline.config]: hide_cursor enabled WITHOUT cursorline enabled!", vim.log.levels.ERROR)
+  end
+end
+
 function M.setup(options)
   vim.g.symbols_outline_loaded = 1
   M.o = vim.tbl_deep_extend('force', {}, M.defaults, options or {})
@@ -191,6 +198,7 @@ function M.setup(options)
   if type(guides) == 'boolean' and guides then
     M.o.guides = M.defaults.guides
   end
+  M.check_config()
 end
 
 return M
