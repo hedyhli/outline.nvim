@@ -812,7 +812,7 @@ require'symbols-outline'
 ## Tips
 
 - To open the outline but don't focus on it, you can use `:SymbolsOutline!` or
-`:SymbolsOutlineOpen`.
+`:SymbolsOutlineOpen!`.
 
   This is useful in autocmds, say you have a filetype that, whenever a buffer with
   that filetype is opened you want to open the outline.
