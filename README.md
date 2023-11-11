@@ -165,6 +165,9 @@ Features/Changes:
 
 - Option to blend cursor with cursorline (`outline_window.hide_cursor`)
 
+- Option to use lspkind for icons, and use your own fetcher function. See
+[config](#configuration) and [tips](#tips)
+
 Screen recordings/shots of some of the features is shown at the [bottom of the readme](#recipes).
 
 
@@ -602,6 +605,17 @@ Default values are shown:
     -- Symbols to ignore.
     -- Possible values are the Keys in the icons table below.
     blacklist = {},
+    -- Added in this fork:
+    -- You can use a custom function that returns the icon for each symbol kind.
+    -- This function takes a kind (string) as parameter and should return an
+    -- icon.
+    icon_fetcher = nil,
+    -- 3rd party source for fetching icons. Fallback if icon_fetcher returned
+    -- empty string. Currently supported values: 'lspkind'
+    icon_source = nil,
+    -- The next fall back if both icon_fetcher and icon_source has failed, is
+    -- the custom mapping of icons specified below. The icons table is also
+    -- needed for specifying hl group.
     -- Changed in this fork to fix deprecated icons not showing.
     icons = {
       File = { icon = "󰈔", hl = "@text.uri" },
@@ -644,6 +658,15 @@ Default values are shown:
 
 To find out exactly what some of the options do, please see the
 [recipes](#recipes) section of the readme at the bottom for screen-recordings.
+
+The order in which the sources for icons are checked is:
+
+1. Icon fetcher function
+2. Icon source (only `lspkind` is supported for this option as of now)
+3. Icons table
+
+A fallback is always used if the previous candidate returned either an empty
+string or a falsey value.
 
 ## Commands
 
@@ -744,6 +767,9 @@ Possible highlight groups provided by symbols-outline to customize:
 You can customize any other highlight groups using `winhl` too, this option is
 passed directly to the `winhl` vim option unprocessed.
 
+To customize colors of the symbol icons, use the `symbols.icons` table. See
+[config](#configuration).
+
 ### Preview window
 
 ```lua
@@ -825,6 +851,20 @@ require'symbols-outline'
   `outline_window.winhl` for the outline window or `preview_window.winhl` for the
   preview floating window. See [highlights](#highlights).
 
+- To fix symbol icon related issues, there are several options. If you use
+  `lspkind`, you can set `symbols.icon_source = 'lspkind'` to use lspkind for
+  fetching icons. You can also use your own function `symbols.icon_fetcher` that
+  takes a string and should return an icon. Otherwise, you can edit the
+  `symbols.icons` table for specifying icons.
+
+  The order in which the sources of icons are checked is:
+
+  1. Icon fetcher function
+  2. Icon source
+  3. Icons table
+
+  A fallback is always used if the previous candidate returned either an empty
+  string or a falsey value.
 
 ## Recipes
 
@@ -919,6 +959,23 @@ outline becomes more readable this way, hence this is an option.
 
 This feature is newly added in this fork, and is currently experimental (may be
 unstable).
+
+- **Custom icons**
+
+You can write your own function for fetching icons. Here is one such example
+that simply returns in plain text, the first letter of the given kind.
+
+```lua
+symbols = {
+  icon_fetcher = function(kind) return kind:sub(1,1) end
+}
+```
+
+The fetcher function, if provided, is checked first before using `icon_source`
+and `icons` as fallback.
+
+<img width="300" alt="outline with plain text icons" src="https://github.com/hedyhli/symbols-outline.nvim/assets/50042066/655b534b-da16-41a7-926e-f14475376a04">
+
 
 <!-- panvimdoc-ignore-start -->
 

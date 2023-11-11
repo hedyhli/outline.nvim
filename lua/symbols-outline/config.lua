@@ -74,6 +74,8 @@ M.defaults = {
   },
   symbols = {
     blacklist = {},
+    icon_source = nil,
+    icon_fetcher = nil,
     icons = {
       File = { icon = '󰈔', hl = '@text.uri' },
       Module = { icon = '󰆧', hl = '@namespace' },

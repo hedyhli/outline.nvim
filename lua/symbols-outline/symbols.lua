@@ -1,4 +1,4 @@
-local config = require 'symbols-outline.config'
+local cfg = require 'symbols-outline.config'
 
 local M = {}
 
@@ -39,18 +39,36 @@ M.kinds = {
   [255] = 'Macro',
 }
 
+---@param kind string|integer
 function M.icon_from_kind(kind)
-  local symbols = config.o.symbols.icons
-
-  if type(kind) == 'string' then
-    return symbols[kind].icon
+  local kindstr = kind
+  if type(kind) ~= 'string' then
+    kindstr = M.kinds[kind]
+  end
+  if not kindstr then
+    kindstr = 'Object'
   end
 
-  -- If the kind index is not available then default to 'Object'
-  if M.kinds[kind] == nil then
-    kind = 19
+  if type(cfg.o.symbols.icon_fetcher) == 'function' then
+    local icon = cfg.o.symbols.icon_fetcher(kindstr)
+    if icon and icon ~= "" then
+      return icon
+    end
   end
-  return symbols[M.kinds[kind]].icon
+
+  if cfg.o.symbols.icon_source == 'lspkind' then
+    local has_lspkind, lspkind = pcall(require, 'lspkind')
+    if not has_lspkind then
+      vim.notify("[symbols-outline]: icon_source set to lspkind but failed to require lspkind!", vim.log.levels.ERROR)
+    else
+      local icon = lspkind.symbolic(kindstr, { with_text = false })
+      if icon and icon ~= "" then
+        return icon
+      end
+    end
+  end
+
+  return cfg.o.symbols.icons[kindstr].icon
 end
 
 return M
