@@ -115,6 +115,11 @@ function M._goto_location(change_focus)
   end
 end
 
+function M._goto_and_close()
+  M.__goto_location(true)
+  M.close_outline()
+end
+
 function M._move_and_goto(direction)
   local move = direction == 'down' and 1 or -1
   local cur = vim.api.nvim_win_get_cursor(0)
@@ -298,9 +303,9 @@ local function setup_keymaps(bufnr)
     M._goto_location(false)
   end)
   -- Navigate to corresponding outline location for current code location
-  map(cfg.o.keymaps.restore_location, function()
-    M._map_follow_cursor()
-  end)
+  map(cfg.o.keymaps.restore_location, M._map_follow_cursor)
+  -- Navigate to corresponding outline location for current code location
+  map(cfg.o.keymaps.goto_and_close, M._goto_and_close)
   -- Move down/up in outline and peek that location in code
   map(cfg.o.keymaps.down_and_goto, function()
     M._move_and_goto('down')

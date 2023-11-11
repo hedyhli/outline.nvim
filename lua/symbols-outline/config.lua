@@ -51,6 +51,7 @@ M.defaults = {
     close = { '<Esc>', 'q' },
     goto_location = '<Cr>',
     peek_location = 'o',
+    goto_and_close = '<S-Cr>',
     restore_location = "<C-g>",
     hover_symbol = '<C-space>',
     toggle_preview = 'K',
