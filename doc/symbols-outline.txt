@@ -452,7 +452,7 @@ Symbols-outline provides the following public API for use in lua.
 TIPS                                                    *symbols-outline-tips*
 
 - To open the outline but don’t focus on it, you can use `:SymbolsOutline!` or
-    `:SymbolsOutlineOpen`.
+    `:SymbolsOutlineOpen!`.
     This is useful in autocmds, say you have a filetype that, whenever a buffer
     with that filetype is opened you want to open the outline.
 - After navigating around in the outline window, you can use `<C-g>` (default
