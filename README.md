@@ -484,7 +484,9 @@ Default values are shown:
     -- Only in this fork:
     -- Winhighlight option for outline window.
     -- See :help 'winhl'
-    -- To change background color to "CustomHl" for example, set to "Normal:CustomHl".
+    -- To change background color to "CustomHl" for example, append "Normal:CustomHl".
+    -- Note that if you're adding highlight changes, you should append to this
+    -- default value, otherwise details/lineno will not have highlights.
     winhl = "SymbolsOutlineDetails:Comment,SymbolsOutlineLineno:LineNr",
   },
 
@@ -559,7 +561,9 @@ Default values are shown:
     -- Jump to symbol under cursor but keep focus on outline window.
     -- Renamed in this fork!
     peek_location = "o",
-    -- Only in this fork:
+    -- Only in this fork (next 2):
+    -- Visit location in code and close outline immediately
+    goto_and_close = "<S-Cr>"
     -- Change cursor position of outline window to the current location in code.
     -- "Opposite" of goto/peek_location.
     restore_location = "<C-g>",
@@ -696,14 +700,15 @@ These mappings are active for the outline window.
 
 | Key        | Action                                             |
 | ---------- | -------------------------------------------------- |
-| Escape     | Close outline                                      |
-| ?          | Show help message                                  |
+| Esc / q    | Close outline                                      |
+| ?          | Show help                                          |
 | Enter      | Go to symbol location in code                      |
 | o          | Go to symbol location in code without losing focus |
+| Shift+Enter| Go to symbol location in code and close outline    |
 | Ctrl+k     | Go up and goto location                            |
 | Ctrl+j     | Go down and goto location                          |
-| Ctrl+g     | Go to code location in outline window              |
-| Ctrl+Space | Hover current symbol                               |
+| Ctrl+g     | Update outline window to focus on code location    |
+| Ctrl+Space | Hover current symbol (provider action)             |
 | K          | Toggles the current symbol preview                 |
 | r          | Rename symbol                                      |
 | a          | Code actions                                       |
@@ -727,7 +732,7 @@ outline_window = {
 },
 ```
 
-Possible highlight groups to customize:
+Possible highlight groups provided by symbols-outline to customize:
 
 | Highlight               | Purpose                                        |
 | ----------------------- | ---------------------------------------------- |
@@ -735,6 +740,9 @@ Possible highlight groups to customize:
 | SymbolsOutlineConnector | Highlight of the table connectors              |
 | SymbolsOutlineDetails   | Highlight of the details info virtual text     |
 | SymbolsOutlineLineno    | Highlight of the lineno column                 |
+
+You can customize any other highlight groups using `winhl` too, this option is
+passed directly to the `winhl` vim option unprocessed.
 
 ### Preview window
 
@@ -900,7 +908,7 @@ outline_window = {
 }
 ```
 
-This will be how the outline window look like when focused.
+This will be how the outline window looks like when focused:
 
 <img width="300" alt="outline window showing hide_cursor" src="https://github.com/hedyhli/symbols-outline.nvim/assets/50042066/1e13c4db-ae51-4e1f-a388-2758871df36a">
 
@@ -908,6 +916,9 @@ Note that in the screenshot, `outline_items.show_symbol_lineno` is also enabled.
 
 Some may find this unhelpful, but one may argue that elements in each row of the
 outline becomes more readable this way, hence this is an option.
+
+This feature is newly added in this fork, and is currently experimental (may be
+unstable).
 
 <!-- panvimdoc-ignore-start -->
 
