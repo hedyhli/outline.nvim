@@ -1,4 +1,4 @@
-*symbols-outline.txt*       For NVIM v0.7.0      Last change: 2023 November 11
+*symbols-outline.txt*       For NVIM v0.7.0      Last change: 2023 November 12
 
 ==============================================================================
 Table of Contents                          *symbols-outline-table-of-contents*
