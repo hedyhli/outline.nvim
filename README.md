@@ -169,6 +169,8 @@ Features/Changes:
 - Option to use lspkind for icons, and use your own fetcher function. See
 [config](#configuration) and [tips](#tips)
 
+- Option for outline window split command
+
 Screen recordings/shots of some of the features is shown at the [bottom of the readme](#recipes).
 
 
@@ -447,6 +449,15 @@ Default values are shown:
   outline_window = {
     -- Where to open the split window: right/left
     position = 'right',
+    -- Only in this fork:
+    -- The default split commands used are 'topleft vs' and 'botright vs'
+    -- depending on `position`. You can change this by providing your own
+    -- `split_command`.
+    -- `position` will not be considered if `split_command` is non-nil.
+    -- This should be a valid vim command used for opening the split for the
+    -- outline window. Eg, 'rightbelow vsplit'.
+    split_command = nil,
+
     -- Percentage or integer of columns
     width = 25, 
     -- Whether width is relative to the total width of nvim
@@ -866,6 +877,9 @@ require'symbols-outline'
 
   A fallback is always used if the previous candidate returned either an empty
   string or a falsey value.
+
+- You can customize the split command used for creating the outline window split
+  using `outline_window.split_command`, such as `"topleft vsp"`. See `:h windows`
 
 ## Recipes
 

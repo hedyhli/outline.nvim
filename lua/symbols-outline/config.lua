@@ -19,6 +19,7 @@ M.defaults = {
   },
   outline_window = {
     position = 'right',
+    split_command = nil,
     width = 25,
     relative_width = true,
     wrap = false,
@@ -151,6 +152,10 @@ function M.get_preview_width()
 end
 
 function M.get_split_command()
+  local sc = M.o.outline_window.split_command
+  if sc then
+    return sc
+  end
   if M.o.outline_window.position == 'left' then
     return 'topleft vs'
   else
@@ -194,6 +199,18 @@ function M.check_config()
   end
 end
 
+function M.resolve_config()
+  local sc = M.o.outline_window.split_command
+  if not sc then
+    return
+  end
+  -- This should not be needed, nor is it failsafe. But in case user only provides
+  -- the, eg, "topleft", we append the ' vs'.
+  if not sc:find(' vs', 1, true) then
+    M.o.outline_window.split_command = sc..' vs'
+  end
+end
+
 function M.setup(options)
   vim.g.symbols_outline_loaded = 1
   M.o = vim.tbl_deep_extend('force', {}, M.defaults, options or {})
@@ -202,6 +219,7 @@ function M.setup(options)
     M.o.guides = M.defaults.guides
   end
   M.check_config()
+  M.resolve_config()
 end
 
 return M
