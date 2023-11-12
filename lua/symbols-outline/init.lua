@@ -252,11 +252,15 @@ function M._highlight_current_item(winnr)
     return
   end
 
-  if
-    not has_outline_open   -- Outline not open
-    -- Not currently on outline window, but no code window is given.
-    or (not winnr and not current_buffer_is_outline)
-  then
+  if current_buffer_is_outline and not winnr then
+    -- Don't update cursor pos and content if they are navigating the outline.
+    -- Winnr may be given when user explicitly wants to restore location
+    -- (follow_cursor), or through the open handler.
+    return
+  end
+
+  if not has_outline_open and not winnr then
+    -- Outline not open and no code window given
     return
   end
 
