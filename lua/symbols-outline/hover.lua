@@ -40,8 +40,7 @@ function M.show_hover()
       end
       -- FIXME
       local bufnr, winnr = util.open_floating_preview(markdown_lines, 'markdown', config)
-      local winhi = 'Normal:' .. cfg.o.preview_window.bg_hl
-      vim.api.nvim_win_set_option(winnr, 'winhighlight', winhi)
+      vim.api.nvim_win_set_option(winnr, 'winhighlight', cfg.o.preview_window.winhl)
     end
   )
 end
