@@ -38,7 +38,7 @@ M.defaults = {
     min_width = 50,
     relative_width = true,
     border = 'single',
-    open_hover_on_preview = true,
+    open_hover_on_preview = false,
     winhl = '',
     winblend = 0,
   },

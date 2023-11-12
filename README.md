@@ -147,7 +147,6 @@ Default values are shown:
   outline_window = {
     -- Where to open the split window: right/left
     position = 'right',
-    -- Only in this fork:
     -- The default split commands used are 'topleft vs' and 'botright vs'
     -- depending on `position`. You can change this by providing your own
     -- `split_command`.
@@ -163,19 +162,16 @@ Default values are shown:
     -- screen width for outline window.
     relative_width = true,
 
-    -- Behaviour changed in this fork:
     -- Auto close the outline window if goto_location is triggered and not for
     -- peek_location
     auto_close = false,
     -- Automatically go to location in code when navigating outline window.
-    -- Only in this fork
     auto_goto = false,
 
     -- Vim options for the outline window
     show_numbers = false,
     show_relative_numbers = false,
 
-    -- Only in this fork (this and the one below)
     show_cursorline = true,
     -- Enable this when you enabled cursorline so your cursor color can
     -- blend with the cursorline, in effect, as if your cursor is hidden
@@ -189,12 +185,10 @@ Default values are shown:
 
     -- Whether to wrap long lines, or let them flow off the window
     wrap = false,
-    -- Only in this fork:
     -- Whether to focus on the outline window when it is opened.
     -- Set to false to remain focus on your previous buffer when opening
     -- outline.
     focus_on_open = true,
-    -- Only in this fork:
     -- Winhighlight option for outline window.
     -- See :help 'winhl'
     -- To change background color to "CustomHl" for example, append "Normal:CustomHl".
@@ -208,7 +202,6 @@ Default values are shown:
     highlight_hovered_item = true,
     -- Show extra details with the symbols (lsp dependent)
     show_symbol_details = true,
-    -- Only in this fork.
     -- Show line numbers of each symbol next to them.
     -- Why? See this comment:
     -- https://github.com/simrat39/symbols-outline.nvim/issues/212#issuecomment-1793503563
@@ -216,7 +209,6 @@ Default values are shown:
   },
 
   -- Options for outline guides.
-  -- Only in this fork
   guides = {
     enabled = true,
     markers = {
@@ -242,9 +234,7 @@ Default values are shown:
     -- hover_symbol).
     -- If you disable this you can still open hover_symbol using your keymap
     -- below.
-    -- Only in this fork
-    open_hover_on_preview = true,
-    -- Only in this fork:
+    open_hover_on_preview = false,
     width = 50,     -- Percentage or integer of columns
     min_width = 50, -- This is the number of columns
     -- Whether width is relative to the total width of nvim.
@@ -272,9 +262,7 @@ Default values are shown:
     -- 'auto_close' option above.
     goto_location = "<Cr>",
     -- Jump to symbol under cursor but keep focus on outline window.
-    -- Renamed in this fork!
     peek_location = "o",
-    -- Only in this fork (next 2):
     -- Visit location in code and close outline immediately
     goto_and_close = "<S-Cr>"
     -- Change cursor position of outline window to the current location in code.
@@ -290,15 +278,14 @@ Default values are shown:
     -- These fold actions are collapsing tree nodes, not code folding
     fold = "h",
     unfold = "l",
-    fold_toggle = "<Tab>",       -- Only in this fork
+    fold_toggle = "<Tab>",
     -- Toggle folds for all nodes.
     -- If at least one node is folded, this action will fold all nodes.
     -- If all nodes are folded, this action will unfold all nodes.
-    fold_toggle_all = "<S-Tab>", -- Only in this fork
+    fold_toggle_all = "<S-Tab>",
     fold_all = "W",
     unfold_all = "E",
     fold_reset = "R",
-    -- Only in this fork:
     -- Move down/up by one line and peek_location immediately.
     down_and_goto = "<C-j>",
     up_and_goto = "<C-k>",
@@ -315,7 +302,6 @@ Default values are shown:
     -- Symbols to ignore.
     -- Possible values are the Keys in the icons table below.
     blacklist = {},
-    -- Added in this fork:
     -- You can use a custom function that returns the icon for each symbol kind.
     -- This function takes a kind (string) as parameter and should return an
     -- icon.
@@ -326,7 +312,6 @@ Default values are shown:
     -- The next fall back if both icon_fetcher and icon_source has failed, is
     -- the custom mapping of icons specified below. The icons table is also
     -- needed for specifying hl group.
-    -- Changed in this fork to fix deprecated icons not showing.
     icons = {
       File = { icon = "󰈔", hl = "@text.uri" },
       Module = { icon = "󰆧", hl = "@namespace" },
@@ -356,7 +341,6 @@ Default values are shown:
       TypeParameter = { icon = "𝙏", hl = "@parameter" },
       Component = { icon = "󰅴", hl = "@function" },
       Fragment = { icon = "󰅴", hl = "@constant" },
-      -- Added ccls symbols in this fork
       TypeAlias =  { icon = ' ', hl = '@type' },
       Parameter = { icon = ' ', hl = '@parameter' },
       StaticMethod = { icon = ' ', hl = '@function' },
@@ -611,9 +595,6 @@ preview_window = {
 ```
 
 https://github.com/hedyhli/outline.nvim/assets/50042066/a473d791-d1b9-48e9-917f-b816b564a645
-
-Note that in the recording I have `preview_window.open_hover_on_preview =
-false`.
 
 Alternatively, if you want to automatically navigate to the corresponding code
 location directly and not use the preview window:
