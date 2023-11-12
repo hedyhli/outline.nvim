@@ -45,6 +45,12 @@ Table of contents
 * [Lua API](#lua-api)
 * [Tips](#tips)
 * [Recipes](#recipes)
+  * [Unfold others](#unfold-others)
+  * [Auto-jump](#auto-jump)
+  * [Symbol details](#symbol-details)
+  * [Line numbers](#line-numbers)
+  * [Blend cursor with cursorline](#blend-cursor-with-cursorline)
+  * [Custom icons](#custom-icons)
 * [TODO](#todo)
 * [Related plugins](#related-plugins)
 
@@ -461,12 +467,12 @@ outline_window = {
 
 Possible highlight groups provided by outline.nvim to customize:
 
-| Highlight        | Purpose                                        |
-| ---------------- | ---------------------------------------------- |
-| OutlineCurrent   | Highlight of the focused symbol                |
-| OutlineConnector | Highlight of the table connectors              |
-| OutlineDetails   | Highlight of the details info virtual text     |
-| OutlineLineno    | Highlight of the lineno column                 |
+| Highlight        | Description                     |
+| ---------------- | ------------------------------- |
+| OutlineCurrent   | Current symbol under cursor     |
+| OutlineGuides    | Guide markers in the outline    |
+| OutlineDetails   | Symbol details in virtual text  |
+| OutlineLineno    | The Lineno column virtual text  |
 
 You can customize any other highlight groups using `winhl` too, this option is
 passed directly to the `winhl` vim option unprocessed.
@@ -581,7 +587,9 @@ to achieve it.
 Code snippets in this section are to be placed in `.setup({ <HERE> })` directly
 unless specified otherwise.
 
-- **Unfold all others except currently hovered item**
+### Unfold others
+
+Unfold all others except currently hovered item
 
 ```lua
 symbol_folding = {
@@ -592,7 +600,9 @@ symbol_folding = {
 <img width="900" alt="outline window showing auto fold depth" src="https://github.com/hedyhli/outline.nvim/assets/50042066/2e0c5f91-a979-4e64-a100-256ad062dce3">
 
 
-- **Use outline window as a quick-jump window**
+### Auto-jump
+
+Use outline window as a quick-jump window
 
 ```lua
 preview_window = {
@@ -621,9 +631,9 @@ https://github.com/hedyhli/outline.nvim/assets/50042066/3d06e342-97ac-400c-8598-
 Or, you can use keys `<C-j>` and `<C-k>` to achieve the same effect, whilst not
 having `auto_goto` on by default.
 
-This feature is newly added in this fork.
+### Symbol details
 
-- **Hide the extra details after each symbol name**
+Hide the extra details after each symbol name
 
 ```lua
 outline_items = {
@@ -631,13 +641,16 @@ outline_items = {
 },
 ```
 
-- **Show line numbers next to each symbol to jump to that symbol quickly**
+You can customize its highlight group by setting `OutlineDetails` in
+`outline_window.winhl`.
 
-This feature is newly added in this fork.
+### Line numbers
+
+Show line numbers next to each symbol to jump to that symbol quickly
 
 ```lua
 outline_items = {
-  show_symbol_lineno = false,
+  show_symbol_lineno = true,
 },
 ```
 
@@ -646,7 +659,10 @@ it using `outline_window.winhl`: please see [highlights](#outline-window).
 
 <img width="900" alt="outline window showing lineno" src="https://github.com/hedyhli/outline.nvim/assets/50042066/2bbb5833-f40b-4c53-8338-407252d61443">
 
-- **Single cursorline**
+
+### Blend cursor with cursorline
+
+'Single' cursorline
 
 ```lua
 outline_window = {
@@ -667,7 +683,7 @@ outline becomes more readable this way, hence this is an option.
 This feature is newly added in this fork, and is currently experimental (may be
 unstable).
 
-- **Custom icons**
+### Custom icons
 
 You can write your own function for fetching icons. Here is one such example
 that simply returns in plain text, the first letter of the given kind.

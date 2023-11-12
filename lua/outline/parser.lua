@@ -113,7 +113,7 @@ function M.get_lines(flattened_outline_items)
         node_line,
         from,
         to,
-        'OutlineConnector',
+        'OutlineGuides',
       })
     end
 

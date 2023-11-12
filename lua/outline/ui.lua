@@ -41,9 +41,9 @@ function M.setup_highlights()
     'gui'
   )
 
-  if vim.fn.hlexists 'OutlineConnector' == 0 then
+  if vim.fn.hlexists 'OutlineGuides' == 0 then
     vim.cmd(
-      string.format('hi OutlineConnector guifg=%s', comment_fg_gui)
+      string.format('hi OutlineGuides guifg=%s', comment_fg_gui)
     )
   end
 end
