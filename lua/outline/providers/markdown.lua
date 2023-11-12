@@ -1,4 +1,4 @@
-local md_parser = require 'symbols-outline.markdown'
+local md_parser = require 'outline.markdown'
 
 local M = {}
 

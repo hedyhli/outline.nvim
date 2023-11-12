@@ -1,5 +1,5 @@
-local config = require 'symbols-outline.config'
-local tbl_utils = require 'symbols-outline.utils.table'
+local config = require 'outline.config'
+local tbl_utils = require 'outline.utils.table'
 
 local M = {}
 

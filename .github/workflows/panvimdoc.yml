@@ -11,7 +11,7 @@ jobs:
       - name: panvimdoc
         uses: kdheepak/panvimdoc@main
         with:
-          vimdoc: symbols-outline
+          vimdoc: outline
           version: "NVIM v0.7.0"
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:

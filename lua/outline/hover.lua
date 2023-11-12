@@ -1,5 +1,5 @@
-local so = require 'symbols-outline'
-local cfg = require 'symbols-outline.config'
+local so = require 'outline'
+local cfg = require 'outline.config'
 local util = vim.lsp.util
 
 local M = {}

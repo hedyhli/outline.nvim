@@ -10,7 +10,7 @@ function M.add_hover_highlight(bufnr, line, col_start)
   vim.api.nvim_buf_add_highlight(
     bufnr,
     M.hovered_hl_ns,
-    'SymbolsOutlineCurrent',
+    'OutlineCurrent',
     line,
     col_start,
     -1
@@ -18,15 +18,15 @@ function M.add_hover_highlight(bufnr, line, col_start)
 end
 
 function M.setup_highlights()
-  -- Setup the SymbolsOutlineCurrent highlight group if it hasn't been done already by
+  -- Setup the OutlineCurrent highlight group if it hasn't been done already by
   -- a theme or manually set
-  if vim.fn.hlexists 'SymbolsOutlineCurrent' == 0 then
+  if vim.fn.hlexists 'OutlineCurrent' == 0 then
     local cline_hl = vim.api.nvim_get_hl_by_name('CursorLine', true)
     local string_hl = vim.api.nvim_get_hl_by_name('String', true)
 
     vim.api.nvim_set_hl(
       0,
-      'SymbolsOutlineCurrent',
+      'OutlineCurrent',
       { bg = cline_hl.background, fg = string_hl.foreground }
     )
   end
@@ -41,9 +41,9 @@ function M.setup_highlights()
     'gui'
   )
 
-  if vim.fn.hlexists 'SymbolsOutlineConnector' == 0 then
+  if vim.fn.hlexists 'OutlineConnector' == 0 then
     vim.cmd(
-      string.format('hi SymbolsOutlineConnector guifg=%s', comment_fg_gui)
+      string.format('hi OutlineConnector guifg=%s', comment_fg_gui)
     )
   end
 end

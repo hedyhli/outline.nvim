@@ -1,6 +1,6 @@
-local so = require 'symbols-outline'
-local cfg = require 'symbols-outline.config'
-local hover = require 'symbols-outline.hover'
+local so = require 'outline'
+local cfg = require 'outline.config'
+local hover = require 'outline.hover'
 
 local M = {}
 

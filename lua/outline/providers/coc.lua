@@ -28,7 +28,7 @@ local function convert_symbols(result)
     local s = {}
     local kinds_index = {}
     -- create a inverse indexing of symbols.kind
-    local symbols = require("symbols-outline.symbols")
+    local symbols = require("outline.symbols")
     for k, v in pairs(symbols.kinds) do
         kinds_index[v] = k
     end

@@ -1,6 +1,6 @@
-local parser = require 'symbols-outline.parser'
-local cfg = require('symbols-outline.config')
-local ui = require 'symbols-outline.ui'
+local parser = require 'outline.parser'
+local cfg = require('outline.config')
+local ui = require 'outline.ui'
 
 local M = {}
 
@@ -13,7 +13,7 @@ local function is_buffer_outline(bufnr)
   return string.match(name, 'OUTLINE') ~= nil and ft == 'Outline'
 end
 
-local hlns = vim.api.nvim_create_namespace 'symbols-outline-icon-highlight'
+local hlns = vim.api.nvim_create_namespace 'outline-icon-highlight'
 
 function M.write_outline(bufnr, lines)
   if not is_buffer_outline(bufnr) then
@@ -46,7 +46,7 @@ function M.add_highlights(bufnr, hl_info, nodes)
   M.add_hover_highlights(bufnr, nodes)
 end
 
-local ns = vim.api.nvim_create_namespace 'symbols-outline-virt-text'
+local ns = vim.api.nvim_create_namespace 'outline-virt-text'
 
 function M.write_details(bufnr, lines)
   if not is_buffer_outline(bufnr) then
@@ -58,7 +58,7 @@ function M.write_details(bufnr, lines)
 
   for index, value in ipairs(lines) do
     vim.api.nvim_buf_set_extmark(bufnr, ns, index - 1, -1, {
-      virt_text = { { value, 'SymbolsOutlineDetails' } },
+      virt_text = { { value, 'OutlineDetails' } },
       virt_text_pos = 'eol',
       hl_mode = 'combine',
     })
@@ -77,7 +77,7 @@ function M.write_lineno(bufnr, lines, max)
   for index, value in ipairs(lines) do
     local leftpad = string.rep(' ', maxwidth-#value)
     vim.api.nvim_buf_set_extmark(bufnr, ns, index - 1, -1, {
-      virt_text = { {leftpad..value, 'SymbolsOutlineLineno' } },
+      virt_text = { {leftpad..value, 'OutlineLineno' } },
       virt_text_pos = 'overlay',
       virt_text_win_col = 0,
       hl_mode = 'combine',

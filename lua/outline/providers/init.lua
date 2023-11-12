@@ -1,9 +1,9 @@
 local M = {}
 
 local providers = {
-  'symbols-outline/providers/nvim-lsp',
-  'symbols-outline/providers/coc',
-  'symbols-outline/providers/markdown',
+  'outline/providers/nvim-lsp',
+  'outline/providers/coc',
+  'outline/providers/markdown',
 }
 
 _G._symbols_outline_current_provider = nil

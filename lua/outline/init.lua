@@ -1,11 +1,11 @@
-local parser = require 'symbols-outline.parser'
-local providers = require 'symbols-outline.providers.init'
-local ui = require 'symbols-outline.ui'
-local writer = require 'symbols-outline.writer'
-local cfg = require 'symbols-outline.config'
-local utils = require 'symbols-outline.utils.init'
-local View = require 'symbols-outline.view'
-local folding = require 'symbols-outline.folding'
+local parser = require 'outline.parser'
+local providers = require 'outline.providers.init'
+local ui = require 'outline.ui'
+local writer = require 'outline.writer'
+local cfg = require 'outline.config'
+local utils = require 'outline.utils.init'
+local View = require 'outline.view'
+local folding = require 'outline.folding'
 
 local M = {}
 
@@ -35,7 +35,7 @@ local function setup_global_autocmd()
 
   vim.api.nvim_create_autocmd('WinEnter', {
     pattern = '*',
-    callback = require('symbols-outline.preview').close,
+    callback = require('outline.preview').close,
   })
 end
 
@@ -154,12 +154,12 @@ local function setup_buffer_autocmd()
   if cfg.o.preview_window.auto_preview then
     vim.api.nvim_create_autocmd('CursorMoved', {
       buffer = 0,
-      callback = require('symbols-outline.preview').show,
+      callback = require('outline.preview').show,
     })
   else
     vim.api.nvim_create_autocmd('CursorMoved', {
       buffer = 0,
-      callback = require('symbols-outline.preview').close,
+      callback = require('outline.preview').close,
     })
   end
   if cfg.o.outline_window.auto_goto then
@@ -321,27 +321,27 @@ local function setup_keymaps(bufnr)
   -- hover symbol
   map(
     cfg.o.keymaps.hover_symbol,
-    require('symbols-outline.hover').show_hover
+    require('outline.hover').show_hover
   )
   -- preview symbol
   map(
     cfg.o.keymaps.toggle_preview,
-    require('symbols-outline.preview').toggle
+    require('outline.preview').toggle
   )
   -- rename symbol
   map(
     cfg.o.keymaps.rename_symbol,
-    require('symbols-outline.rename').rename
+    require('outline.rename').rename
   )
   -- code actions
   map(
     cfg.o.keymaps.code_actions,
-    require('symbols-outline.code_action').show_code_actions
+    require('outline.code_action').show_code_actions
   )
   -- show help
   map(
     cfg.o.keymaps.show_help,
-    require('symbols-outline.config').show_help
+    require('outline.config').show_help
   )
   -- close outline
   map(cfg.o.keymaps.close, function()
@@ -414,7 +414,7 @@ function M.follow_cursor(opts)
     return false
   end
 
-  if require('symbols-outline.preview').has_code_win() then
+  if require('outline.preview').has_code_win() then
     M._highlight_current_item(M.state.code_win)
   else
     return false
@@ -461,7 +461,7 @@ function M.toggle_outline(opts)
   end
 end
 
--- Used for SymbolsOutline user command
+-- Used for Outline user command
 local function _cmd_toggle_outline(opts)
   if opts.bang then
     M.toggle_outline({ focus_outline = false })
@@ -479,7 +479,7 @@ function M.open_outline(opts)
   if not M.view:is_open() then
     local found = providers.request_symbols(handler, opts)
     if not found then
-      vim.notify("[symbols-outline]: No providers found for current buffer", vim.log.levels.WARN)
+      vim.notify("[outline]: No providers found for current buffer", vim.log.levels.WARN)
     -- else
     --   print("Using provider ".._G._symbols_outline_current_provider.name.."...")
     end
@@ -512,7 +512,7 @@ end
 ---Set cursor to focus on the code window, return whether this operation was successful.
 ---@return boolean ok Whether it was successful. If unsuccessful, it might mean that the attached code window has been closed or is no longer valid.
 function M.focus_code()
-  if require('symbols-outline.preview').has_code_win() then
+  if require('outline.preview').has_code_win() then
     vim.fn.win_gotoid(M.state.code_win)
     return true
   end
@@ -522,7 +522,7 @@ end
 ---Toggle focus between outline and code window, returns whether it was successful.
 ---@return boolean ok Whether it was successful. If `ok=false`, either the outline window is not open or the code window is no longer valid.
 function M.focus_toggle()
-  if M.view:is_open() and require('symbols-outline.preview').has_code_win() then
+  if M.view:is_open() and require('outline.preview').has_code_win() then
     local winid = vim.fn.win_getid()
     if winid == M.state.code_win then
       vim.fn.win_gotoid(M.view.winnr)
@@ -550,7 +550,7 @@ function M.show_status()
     else
       print("Outline window is not open.")
     end
-    if require('symbols-outline.preview').has_code_win() then
+    if require('outline.preview').has_code_win() then
       print("Code window is active.")
     else
       print("Warning: code window is either closed or invalid. Please close and reopen the outline window.")
@@ -572,7 +572,7 @@ end
 
 local function setup_commands()
   local cmd = function(n, c, o)
-    vim.api.nvim_create_user_command('SymbolsOutline'..n, c, o)
+    vim.api.nvim_create_user_command('Outline'..n, c, o)
   end
 
   cmd('', _cmd_toggle_outline, {
@@ -602,7 +602,7 @@ With bang, don't switch cursor focus to outline window.",
   })
 end
 
----Set up configuration options for symbols-outline.
+---Set up configuration options for outline.
 function M.setup(opts)
   cfg.setup(opts)
   ui.setup_highlights()

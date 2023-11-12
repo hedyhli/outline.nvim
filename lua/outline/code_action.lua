@@ -1,4 +1,4 @@
-local main = require 'symbols-outline'
+local main = require 'outline'
 
 local M = {}
 

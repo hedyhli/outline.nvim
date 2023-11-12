@@ -1,4 +1,4 @@
-local cfg = require('symbols-outline.config')
+local cfg = require('outline.config')
 
 local View = {}
 

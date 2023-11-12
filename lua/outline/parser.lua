@@ -1,9 +1,9 @@
-local symbols = require 'symbols-outline.symbols'
-local ui = require 'symbols-outline.ui'
-local cfg = require 'symbols-outline.config'
-local t_utils = require 'symbols-outline.utils.table'
-local lsp_utils = require 'symbols-outline.utils.lsp_utils'
-local folding = require 'symbols-outline.folding'
+local symbols = require 'outline.symbols'
+local ui = require 'outline.ui'
+local cfg = require 'outline.config'
+local t_utils = require 'outline.utils.table'
+local lsp_utils = require 'outline.utils.lsp_utils'
+local folding = require 'outline.folding'
 
 local M = {}
 
@@ -113,7 +113,7 @@ function M.get_lines(flattened_outline_items)
         node_line,
         from,
         to,
-        'SymbolsOutlineConnector',
+        'OutlineConnector',
       })
     end
 

@@ -2,7 +2,7 @@
 
 # Fork status
 
-[Skip to plugin readme](#symbols-outlinenvim)
+[Skip to plugin readme](#outlinenvim)
 
 This is a fork of the original symbols-outline.nvim which fixes a lot of bugs
 from the original repo.
@@ -45,7 +45,7 @@ I do not merge PRs from the original repo that I don't personally need.
   - simrat39/symbols-outline.nvim#178
   - simrat39/symbols-outline.nvim#209
 - Symbol preview empty (simrat39/symbols-outline.nvim#176)
-- `SymbolsOutlineClose` crashing when already closed: simrat39/symbols-outline.nvim#163
+- `OutlineClose` crashing when already closed: simrat39/symbols-outline.nvim#163
 - Symbols not showing by supporting Nerd fonts v3.0: simrat39/symbols-outline.nvim#225
 - Newlines in symbols crash: simrat39/symbols-outline.nvim#204 (simrat39/symbols-outline.nvim#184)
 - `code_actions`: simrat39/symbols-outline.nvim#168 (simrat39/symbols-outline.nvim#123)
@@ -58,6 +58,29 @@ I do not merge PRs from the original repo that I don't personally need.
 outline.
 
 ## 🛑 Breaking changes
+
+The fork has been renamed to outline.nvim for the following reasons:
+
+1. While `symbols-outline` is a great name, using `SymbolsOutline*` everywhere
+   as a prefix for commands and highlight groups is quite long to type.
+1. I did not find existing plugins that use the `outline` import path.
+1. The only plugin I could find named `outline.nvim` does not use this import
+   path.
+1. This is a fork starting anew, it makes sense to undergo a
+   [rename](https://github.com/lewis6991/pckr.nvim).
+
+Regardless of this rename, I am eternally grateful to @simrat39 for their work
+in the original symbols-outline.nvim. This plugin would not exist without it.
+
+What this means for you:
+
+- Commands and highlights that had the `SymbolsOutline*` prefix should now use
+  `Outline*`
+- The import path should be changed from `symbols-outline` to `outline`
+
+That is all.
+
+Here are other breaking changes:
 
 This section may be relevant to you if your existing config uses the mentioned
 features:
@@ -114,7 +137,7 @@ and behaviour of outline window is now moved to `outline_window` table;
 
 ## Features
 
-[Skip to plugin readme](#symbols-outlinenvim)
+[Skip to plugin readme](#outlinenvim)
 
 Below is a list of features I've included in this fork which, at the time of
 writing, has not been included upstream (in the original repo). I try my best to
@@ -126,7 +149,7 @@ Features/Changes:
 (simrat39/symbols-outline.nvim#194).
 
 - Control focus between outline and code window.
-  - New commands: SymbolsOutline`Focus,FocusOutline,FocusCode` (see
+  - New commands: Outline`Focus,FocusOutline,FocusCode` (see
   [commands](#commands))
   - Fixed issues:
     - simrat39/symbols-outline.nvim#143
@@ -276,7 +299,7 @@ Key:
 
 ## TODO
 
-[Skip to plugin readme](#symbols-outlinenvim)
+[Skip to plugin readme](#outlinenvim)
 
 Key:
 ```
@@ -327,7 +350,7 @@ Key:
 ---
 
 
-# symbols-outline.nvim
+# outline.nvim
 
 <!-- panvimdoc-ignore-end -->
 
@@ -368,19 +391,19 @@ Table of contents
 
 Packer:
 ```lua
-use 'hedyhli/symbols-outline.nvim'
+use 'hedyhli/outline.nvim'
 ```
 
 Lazy:
 ```lua
 {
-  "hedyhli/symbols-outline.nvim",
+  "hedyhli/outline.nvim",
   config = function()
     -- Example mapping to toggle outline
-    vim.keymap.set("n", "<leader>tt", "<cmd>SymbolsOutline<CR>",
-      { desc = "SymbolsOutline" })
+    vim.keymap.set("n", "<leader>tt", "<cmd>Outline<CR>",
+      { desc = "Toggle Outline" })
 
-    require("symbols-outline").setup {
+    require("outline").setup {
       -- Your setup opts here (leave empty to use defaults)
     }
   end,
@@ -390,11 +413,11 @@ Lazy:
 Lazy with lazy-loading:
 ```lua
 {
-  "hedyhli/symbols-outline.nvim",
-  cmd = { "SymbolsOutline", "SymbolsOutlineOpen" },
+  "hedyhli/outline.nvim",
+  cmd = { "Outline", "OutlineOpen" },
   keys = {
     -- Example mapping to toggle outline
-    { "<leader>tt", "<cmd>SymbolsOutline<CR>", desc = "Toggle outline" },
+    { "<leader>tt", "<cmd>Outline<CR>", desc = "Toggle outline" },
   },
   opts = {
     -- Your setup opts here
@@ -402,8 +425,8 @@ Lazy with lazy-loading:
 },
 ```
 
-This allows Lazy.nvim to lazy load the plugin on commands `SymbolsOutline`,
-`SymbolsOutlineOpen`, and your keybindings.
+This allows Lazy.nvim to lazy load the plugin on commands `Outline`,
+`OutlineOpen`, and your keybindings.
 
 
 ## Setup
@@ -414,7 +437,7 @@ Note that a call to `.setup()` is *required* for this plugin to work
 (simrat39/symbols-outline.nvim#213).
 
 ```lua
-require("symbols-outline").setup({})
+require("outline").setup({})
 ```
 
 ## Configuration
@@ -494,7 +517,7 @@ Default values are shown:
     -- Only in this fork:
     -- Whether to focus on the outline window when it is opened.
     -- Set to false to remain focus on your previous buffer when opening
-    -- symbols-outline.
+    -- outline.
     focus_on_open = true,
     -- Only in this fork:
     -- Winhighlight option for outline window.
@@ -502,7 +525,7 @@ Default values are shown:
     -- To change background color to "CustomHl" for example, append "Normal:CustomHl".
     -- Note that if you're adding highlight changes, you should append to this
     -- default value, otherwise details/lineno will not have highlights.
-    winhl = "SymbolsOutlineDetails:Comment,SymbolsOutlineLineno:LineNr",
+    winhl = "OutlineDetails:Comment,OutlineLineno:LineNr",
   },
 
   outline_items = {
@@ -682,39 +705,39 @@ string or a falsey value.
 
 ## Commands
 
-- **:SymbolsOutline[!]**
+- **:Outline[!]**
 
-  Toggle symbols outline. With bang (`!`) the cursor focus stays in your
+  Toggle outline. With bang (`!`) the cursor focus stays in your
   original window after opening the outline window. Set `focus_on_win = true` to
   always use this behaviour.
 
-- **:SymbolsOutlineOpen[!]**
+- **:OutlineOpen[!]**
 
-  Open symbols outline. With bang (`!`) the cursor focus stays in your original
+  Open outline. With bang (`!`) the cursor focus stays in your original
   window after opening the outline window. Set `focus_on_win = true` to always
   use this behaviour.
 
-- **:SymbolsOutlineClose**
+- **:OutlineClose**
 
-  Close symbols outline
+  Close outline
 
-- **:SymbolsOutlineFocus**
+- **:OutlineFocus**
 
-  Toggle focus on symbols outline
+  Toggle focus on outline
 
-- **:SymbolsOutlineFocusOutline**
+- **:OutlineFocusOutline**
 
-  Focus on symbols outline
+  Focus on outline
 
-- **:SymbolsOutlineFocusCode**
+- **:OutlineFocusCode**
 
   Focus on source window
 
-- **:SymbolsOutlineStatus**
+- **:OutlineStatus**
 
   Display current provider and outline window status in the messages area.
 
-- **:SymbolsOutlineFollow[!]**
+- **:OutlineFollow[!]**
 
   Go to corresponding node in outline based on cursor position in code, and
   focus on the outline window.
@@ -763,18 +786,18 @@ Default:
 
 ```lua
 outline_window = {
-  winhl = "SymbolsOutlineDetails:Comment,SymbolsOutlineLineno:LineNr",
+  winhl = "OutlineDetails:Comment,OutlineLineno:LineNr",
 },
 ```
 
-Possible highlight groups provided by symbols-outline to customize:
+Possible highlight groups provided by outline.nvim to customize:
 
-| Highlight               | Purpose                                        |
-| ----------------------- | ---------------------------------------------- |
-| SymbolsOutlineCurrent   | Highlight of the focused symbol                |
-| SymbolsOutlineConnector | Highlight of the table connectors              |
-| SymbolsOutlineDetails   | Highlight of the details info virtual text     |
-| SymbolsOutlineLineno    | Highlight of the lineno column                 |
+| Highlight        | Purpose                                        |
+| ---------------- | ---------------------------------------------- |
+| OutlineCurrent   | Highlight of the focused symbol                |
+| OutlineConnector | Highlight of the table connectors              |
+| OutlineDetails   | Highlight of the details info virtual text     |
+| OutlineLineno    | Highlight of the lineno column                 |
 
 You can customize any other highlight groups using `winhl` too, this option is
 passed directly to the `winhl` vim option unprocessed.
@@ -792,10 +815,10 @@ preview_window = {
 
 ## Lua API
 
-Symbols-outline provides the following public API for use in lua.
+Outline.nvim provides the following public API for use in lua.
 
 ```lua
-require'symbols-outline'
+require'outline'
 ```
 - setup(opts)
 
@@ -849,8 +872,8 @@ require'symbols-outline'
 
 ## Tips
 
-- To open the outline but don't focus on it, you can use `:SymbolsOutline!` or
-`:SymbolsOutlineOpen!`.
+- To open the outline but don't focus on it, you can use `:Outline!` or
+`:OutlineOpen!`.
 
   This is useful in autocmds, say you have a filetype that, whenever a buffer with
   that filetype is opened you want to open the outline.
@@ -897,7 +920,7 @@ symbol_folding = {
   auto_unfold_hover = true,
 },
 ```
-<img width="900" alt="outline window showing auto fold depth" src="https://github.com/hedyhli/symbols-outline.nvim/assets/50042066/2e0c5f91-a979-4e64-a100-256ad062dce3">
+<img width="900" alt="outline window showing auto fold depth" src="https://github.com/hedyhli/outline.nvim/assets/50042066/2e0c5f91-a979-4e64-a100-256ad062dce3">
 
 
 - **Use outline window as a quick-jump window**
@@ -908,7 +931,7 @@ preview_window = {
 },
 ```
 
-https://github.com/hedyhli/symbols-outline.nvim/assets/50042066/a473d791-d1b9-48e9-917f-b816b564a645
+https://github.com/hedyhli/outline.nvim/assets/50042066/a473d791-d1b9-48e9-917f-b816b564a645
 
 Note that in the recording I have `preview_window.open_hover_on_preview =
 false`.
@@ -924,7 +947,7 @@ outline_window = {
 
 This feature was added by @stickperson in an upstream PR 🙌
 
-https://github.com/hedyhli/symbols-outline.nvim/assets/50042066/3d06e342-97ac-400c-8598-97a9235de66c
+https://github.com/hedyhli/outline.nvim/assets/50042066/3d06e342-97ac-400c-8598-97a9235de66c
 
 Or, you can use keys `<C-j>` and `<C-k>` to achieve the same effect, whilst not
 having `auto_goto` on by default.
@@ -952,7 +975,7 @@ outline_items = {
 The default highlight group for the line numbers is `LineNr`, you can customize
 it using `outline_window.winhl`: please see [highlights](#outline-window).
 
-<img width="900" alt="outline window showing lineno" src="https://github.com/hedyhli/symbols-outline.nvim/assets/50042066/2bbb5833-f40b-4c53-8338-407252d61443">
+<img width="900" alt="outline window showing lineno" src="https://github.com/hedyhli/outline.nvim/assets/50042066/2bbb5833-f40b-4c53-8338-407252d61443">
 
 - **Single cursorline**
 
@@ -965,7 +988,7 @@ outline_window = {
 
 This will be how the outline window looks like when focused:
 
-<img width="300" alt="outline window showing hide_cursor" src="https://github.com/hedyhli/symbols-outline.nvim/assets/50042066/1e13c4db-ae51-4e1f-a388-2758871df36a">
+<img width="300" alt="outline window showing hide_cursor" src="https://github.com/hedyhli/outline.nvim/assets/50042066/1e13c4db-ae51-4e1f-a388-2758871df36a">
 
 Note that in the screenshot, `outline_items.show_symbol_lineno` is also enabled.
 
@@ -989,7 +1012,7 @@ symbols = {
 The fetcher function, if provided, is checked first before using `icon_source`
 and `icons` as fallback.
 
-<img width="300" alt="outline with plain text icons" src="https://github.com/hedyhli/symbols-outline.nvim/assets/50042066/655b534b-da16-41a7-926e-f14475376a04">
+<img width="300" alt="outline with plain text icons" src="https://github.com/hedyhli/outline.nvim/assets/50042066/655b534b-da16-41a7-926e-f14475376a04">
 
 
 <!-- panvimdoc-ignore-start -->

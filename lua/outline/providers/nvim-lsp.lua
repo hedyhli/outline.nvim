@@ -1,6 +1,6 @@
-local config = require 'symbols-outline.config'
-local lsp_utils = require 'symbols-outline.utils.lsp_utils'
-local jsx = require 'symbols-outline.utils.jsx'
+local config = require 'outline.config'
+local lsp_utils = require 'outline.utils.lsp_utils'
+local jsx = require 'outline.utils.jsx'
 
 local M = {}
 
