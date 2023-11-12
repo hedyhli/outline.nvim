@@ -70,7 +70,7 @@ end
 local function __refresh()
   local current_buffer_is_outline = M.view.bufnr
     == vim.api.nvim_get_current_buf()
-  if M.view:is_open() and current_buffer_is_outline then
+  if M.view:is_open() and not current_buffer_is_outline then
     local function refresh_handler(response)
       if response == nil or type(response) ~= 'table' then
         return
