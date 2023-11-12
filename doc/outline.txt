@@ -416,12 +416,12 @@ Default:
 
 Possible highlight groups provided by outline.nvim to customize:
 
-  Highlight          Purpose
-  ------------------ --------------------------------------------
-  OutlineCurrent     Highlight of the focused symbol
-  OutlineConnector   Highlight of the table connectors
-  OutlineDetails     Highlight of the details info virtual text
-  OutlineLineno      Highlight of the lineno column
+  Highlight        Description
+  ---------------- --------------------------------
+  OutlineCurrent   Current symbol under cursor
+  OutlineGuides    Guide markers in the outline
+  OutlineDetails   Symbol details in virtual text
+  OutlineLineno    The Lineno column virtual text
 You can customize any other highlight groups using `winhl` too, this option is
 passed directly to the `winhl` vim option unprocessed.
 
@@ -508,7 +508,10 @@ to achieve it.
 Code snippets in this section are to be placed in `.setup({ <HERE> })` directly
 unless specified otherwise.
 
-- **Unfold all others except currently hovered item**
+
+UNFOLD OTHERS ~
+
+Unfold all others except currently hovered item
 
 >lua
     symbol_folding = {
@@ -519,7 +522,10 @@ unless specified otherwise.
 
 
 
-- **Use outline window as a quick-jump window**
+
+AUTO-JUMP ~
+
+Use outline window as a quick-jump window
 
 >lua
     preview_window = {
@@ -550,9 +556,10 @@ https://github.com/hedyhli/outline.nvim/assets/50042066/3d06e342-97ac-400c-8598-
 Or, you can use keys `<C-j>` and `<C-k>` to achieve the same effect, whilst not
 having `auto_goto` on by default.
 
-This feature is newly added in this fork.
 
-- **Hide the extra details after each symbol name**
+SYMBOL DETAILS ~
+
+Hide the extra details after each symbol name
 
 >lua
     outline_items = {
@@ -560,13 +567,17 @@ This feature is newly added in this fork.
     },
 <
 
-- **Show line numbers next to each symbol to jump to that symbol quickly**
+You can customize its highlight group by setting `OutlineDetails` in
+`outline_window.winhl`.
 
-This feature is newly added in this fork.
+
+LINE NUMBERS ~
+
+Show line numbers next to each symbol to jump to that symbol quickly
 
 >lua
     outline_items = {
-      show_symbol_lineno = false,
+      show_symbol_lineno = true,
     },
 <
 
@@ -575,7 +586,10 @@ it using `outline_window.winhl`: please see |outline-highlights|.
 
 
 
-- **Single cursorline**
+
+BLEND CURSOR WITH CURSORLINE ~
+
+'Single' cursorline
 
 >lua
     outline_window = {
@@ -597,7 +611,8 @@ the outline becomes more readable this way, hence this is an option.
 This feature is newly added in this fork, and is currently experimental (may be
 unstable).
 
-- **Custom icons**
+
+CUSTOM ICONS ~
 
 You can write your own function for fetching icons. Here is one such example
 that simply returns in plain text, the first letter of the given kind.
