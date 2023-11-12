@@ -2,10 +2,9 @@
 
 **A note on fork status**
 
-[Skip to plugin readme](#outlinenvim)
-
 This is a fork of the original symbols-outline.nvim which fixes a lot of bugs
-from the original repo, and also adds many more features (see #12 on github).
+from the original repo, and also adds many more features ([see #12 on
+github](https://github.com/hedyhli/outline.nvim/issues/12)).
 
 It started out as a personal fork which I maintain for my personal use-cases,
 soon more and more features found their way in and I started introducing
@@ -13,8 +12,8 @@ significant changes. However, due to simrat's status with the original plugin,
 I eventually decided to rename and detach the fork, starting to work on this
 as a new plugin.
 
-You can see all the changes from the original plugin before fork detach in #12
-on github.
+You can see all the changes from the original plugin before fork detach in [#12
+on github](https://github.com/hedyhli/outline.nvim/issues/12).
 
 
 ---
