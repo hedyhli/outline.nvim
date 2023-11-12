@@ -11,8 +11,9 @@ It also adds many more features listed [below](#features).
 
 It does not attempt to be an up-to-date successor of the original repo, nor does
 it attempt to ensure everyone's use-cases are satisfied by providing an overall
-better experience. It is merely a fork which I maintain for my personal
-use-cases which incorporates some selected PRs.
+better experience. For now, it is a fork which I maintain for my personal
+use-cases that incorporates a significant number of existing [PRs](#prs) and [fixes](#fixes)
+many previously reported issues.
 
 ## Maintenance status
 
