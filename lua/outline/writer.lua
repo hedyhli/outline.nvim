@@ -137,8 +137,8 @@ function M.make_outline(bufnr, items)
   local function add_guide_hl(from, to)
     table.insert(hl, {
       #flattened,
-      from + lineno_offset,
-      to + lineno_offset,
+      from,
+      to,
       "OutlineGuides"
     })
   end
@@ -146,8 +146,8 @@ function M.make_outline(bufnr, items)
   local function add_fold_hl(from, to)
     table.insert(hl, {
       #flattened,
-      from + lineno_offset,
-      to + lineno_offset,
+      from,
+      to,
       "OutlineFoldMarker"
     })
   end
@@ -202,12 +202,13 @@ function M.make_outline(bufnr, items)
     -- Finished with guide prefix
     -- Join all prefix chars by a space
     local pref_str = table.concat(pref, ' ')
+    local total_pref_len = lineno_offset + #pref_str
 
     -- Guide hl goes from start of prefix till before the fold marker, if any.
     -- Fold hl goes from start of fold marker until before the icon.
-    add_guide_hl(lineno_offset, #pref_str - fold_marker_width)
+    add_guide_hl(lineno_offset, total_pref_len - fold_marker_width)
     if fold_marker_width > 0 then
-      add_fold_hl(#pref_str - fold_marker_width, #pref_str + 1)
+      add_fold_hl(total_pref_len - fold_marker_width, total_pref_len + 1)
     end
 
     local line = lineno_prefix..pref_str..' '..node.icon..' '..node.name
