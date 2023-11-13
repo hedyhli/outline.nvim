@@ -100,11 +100,11 @@ end
 -- Handles highlights, virtual text, and of course lines of outline to write
 ---@param bufnr integer Nothing is done if is_buffer_outline(bufnr) is not true
 ---@param items outline.SymbolNode[] Tree of symbols after being parsed by parser.parse_result
----@return outline.FlatSymbolNode[]? flattened_items No return value if bufnr is invalid
+---@return outline.FlatSymbolNode[] flattened_items Empty table returned if bufnr is invalid
 ---@param codewin integer code window
 function M.make_outline(bufnr, items, codewin)
   if not M.is_buffer_outline(bufnr) then
-    return
+    return {}
   end
   local codebuf = vim.api.nvim_win_get_buf(codewin)
 

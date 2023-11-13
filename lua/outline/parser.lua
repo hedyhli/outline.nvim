@@ -99,10 +99,18 @@ end
 ---Iterator that traverses the tree parent first before children, returning each node.
 -- Essentailly 'flatten' items, but returns an iterator.
 ---@param items outline.SymbolNode[] Tree of symbols parsed by parse_result
-function M.preorder_iter(items)
-  local node = { children = items, traversal_child = 1, depth = 1, folded = false }
+---@param children_check function? Takes a node and return whether the children should be explored.
+---Note that the root node (param items) is always explored regardless of children_check.
+function M.preorder_iter(items, children_check)
+  local node = { children = items, traversal_child = 1, depth = 1, is_root = true }
   local prev
   local visited = {}
+
+  if children_check == nil then
+    children_check = function(n)
+      return not folding.is_folded(n)
+    end
+  end
 
   return function()
     while node do
@@ -113,7 +121,7 @@ function M.preorder_iter(items)
 
       if
         node.children and node.traversal_child <= #node.children
-        and not folding.is_folded(node)
+        and (node.is_root or children_check(node))
       then
         prev = node
         if node.children[node.traversal_child] then

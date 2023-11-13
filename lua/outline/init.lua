@@ -280,11 +280,21 @@ function M._highlight_current_item(winnr)
     return
   end
 
-  local win = winnr or vim.api.nvim_get_current_win()
-  local hovered_line = vim.api.nvim_win_get_cursor(win)[1] - 1
-  local leaf_node = nil
+  -- TODO: Find an efficient way to:
+  -- 1) Set highlight for all nodes in range (regardless of visibility)
+  -- 2) Find the line number of the deepest node in range, that is visible (no
+  --    parents folded)
+  -- In one go
 
-  local cb = function(value)
+  local win = winnr or vim.api.nvim_get_current_win()
+  local buf = vim.api.nvim_win_get_buf(win)
+
+  local hovered_line = vim.api.nvim_win_get_cursor(win)[1] - 1
+  local parent_nodes = {}
+
+  -- Must not skip folded nodes so that when user unfolds a parent, they can see the leaf
+  -- node highlighted.
+  for value in parser.preorder_iter(M.state.outline_items, function() return true end) do
     value.hovered = nil
 
     if
@@ -292,18 +302,35 @@ function M._highlight_current_item(winnr)
       or (hovered_line > value.range_start and hovered_line < value.range_end)
     then
       value.hovered = true
-      leaf_node = value
+      table.insert(parent_nodes, value)
     end
   end
 
-  utils.items_dfs(cb, M.state.outline_items)
+  if #parent_nodes == 0 then
+    return
+  end
 
+  -- Probably can't 'just' writer.add_hover_highlights here because we might
+  -- want to auto_unfold_hover
   _update_lines()
 
-  if leaf_node then
-    for index, node in ipairs(M.state.flattened_outline_items) do
-      if node == leaf_node then
-        vim.api.nvim_win_set_cursor(M.view.winnr, { index, 1 })
+  -- Put cursor on deepest visible match
+  local col = 0
+  if cfg.o.outline_items.show_symbol_lineno then
+    -- Padding area between lineno column and start of guides
+    col = #tostring(vim.api.nvim_buf_line_count(buf) - 1)
+  end
+  local flats = M.state.flattened_outline_items
+  local found = false
+  local find_node
+
+  while #parent_nodes > 0 and not found do
+    find_node = table.remove(parent_nodes, #parent_nodes)
+    -- TODO: Is it feasible to use binary search here?
+    for line, node in ipairs(flats) do
+      if node == find_node then
+        vim.api.nvim_win_set_cursor(M.view.winnr, { line, col })
+        found = true
         break
       end
     end
