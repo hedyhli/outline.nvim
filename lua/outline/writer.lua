@@ -155,6 +155,13 @@ function M.make_outline(bufnr, items, codewin)
   end
 
   local guide_markers = cfg.o.guides.markers
+  if not cfg.o.guides.enabled then
+    guide_markers = {
+      middle = ' ',
+      vertical = ' ',
+      bottom = ' ',
+    }
+  end
   local fold_markers = cfg.o.symbol_folding.markers
 
   for node in parser.preorder_iter(items) do
