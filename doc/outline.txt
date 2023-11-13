@@ -1,4 +1,4 @@
-*outline.txt*           For NVIM v0.7.0          Last change: 2023 November 12
+*outline.txt*           For NVIM v0.7.0          Last change: 2023 November 13
 
 ==============================================================================
 Table of Contents                                  *outline-table-of-contents*
@@ -400,12 +400,19 @@ Default:
 
 Possible highlight groups provided by outline.nvim to customize:
 
-  Highlight        Description
-  ---------------- --------------------------------
-  OutlineCurrent   Current symbol under cursor
-  OutlineGuides    Guide markers in the outline
-  OutlineDetails   Symbol details in virtual text
-  OutlineLineno    The Lineno column virtual text
+  -----------------------------------------------------------------------
+  Highlight           Description
+  ------------------- ---------------------------------------------------
+  OutlineCurrent      Current symbol under cursor
+
+  OutlineGuides       Guide markers section in each line of the outline
+
+  OutlineFoldMarker   Fold markers in the outline
+
+  OutlineDetails      Symbol details in virtual text
+
+  OutlineLineno       The Lineno column virtual text
+  -----------------------------------------------------------------------
 You can customize any other highlight groups using `winhl` too, this option is
 passed directly to the `winhl` vim option unprocessed.
 
@@ -482,6 +489,10 @@ TIPS                                                            *outline-tips*
     string or a falsey value.
 - You can customize the split command used for creating the outline window split
     using `outline_window.split_command`, such as `"topleft vsp"`. See |windows|
+- Is the outline window too slow when first opening a file? This is usually due
+    to the LSP not being ready when you open outline, hence we have to wait for the
+    LSP response before the outline can be shown. If LSP is ready generally the
+    outline latency is almost negligible.
 
 
 RECIPES                                                      *outline-recipes*
