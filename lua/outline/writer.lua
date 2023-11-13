@@ -1,10 +1,22 @@
+local symbols = require 'outline.symbols'
 local parser = require 'outline.parser'
-local cfg = require('outline.config')
+local cfg = require 'outline.config'
 local ui = require 'outline.ui'
+local t_utils = require 'outline.utils.table'
+local folding = require 'outline.folding'
+
+local strlen = vim.fn.strlen
+
 
 local M = {}
 
-local function is_buffer_outline(bufnr)
+local hlns = vim.api.nvim_create_namespace 'outline-icon-highlight'
+local ns = vim.api.nvim_create_namespace 'outline-virt-text'
+
+
+---@param bufnr integer
+---@return boolean
+function M.is_buffer_outline(bufnr)
   if not vim.api.nvim_buf_is_valid(bufnr) then
     return false
   end
@@ -13,23 +25,9 @@ local function is_buffer_outline(bufnr)
   return string.match(name, 'OUTLINE') ~= nil and ft == 'Outline'
 end
 
-local hlns = vim.api.nvim_create_namespace 'outline-icon-highlight'
-
-function M.write_outline(bufnr, lines)
-  if not is_buffer_outline(bufnr) then
-    return
-  end
-
-  lines = vim.tbl_map(function(line)
-    lines, _ = string.gsub(line, "\n", " ")
-    return lines
-  end, lines)
-
-  vim.api.nvim_buf_set_option(bufnr, 'modifiable', true)
-  vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, lines)
-  vim.api.nvim_buf_set_option(bufnr, 'modifiable', false)
-end
-
+---Apply highlights and hover highlights to bufnr
+---@param bufnr integer
+---@param nodes outline.FlatSymbolNode[] flattened nodes
 function M.add_highlights(bufnr, hl_info, nodes)
   for _, line_hl in ipairs(hl_info) do
     local line, hl_start, hl_end, hl_type = unpack(line_hl)
@@ -42,54 +40,17 @@ function M.add_highlights(bufnr, hl_info, nodes)
       hl_end
     )
   end
-
   M.add_hover_highlights(bufnr, nodes)
 end
 
-local ns = vim.api.nvim_create_namespace 'outline-virt-text'
-
-function M.write_details(bufnr, lines)
-  if not is_buffer_outline(bufnr) then
-    return
-  end
-  if not cfg.o.outline_items.show_symbol_details then
-    return
-  end
-
-  for index, value in ipairs(lines) do
-    vim.api.nvim_buf_set_extmark(bufnr, ns, index - 1, -1, {
-      virt_text = { { value, 'OutlineDetails' } },
-      virt_text_pos = 'eol',
-      hl_mode = 'combine',
-    })
-  end
-end
-
-function M.write_lineno(bufnr, lines, max)
-  if not is_buffer_outline(bufnr) then
-    return
-  end
-  if not cfg.o.outline_items.show_symbol_lineno then
-    return
-  end
-  local maxwidth = #tostring(max)
-
-  for index, value in ipairs(lines) do
-    local leftpad = string.rep(' ', maxwidth-#value)
-    vim.api.nvim_buf_set_extmark(bufnr, ns, index - 1, -1, {
-      virt_text = { {leftpad..value, 'OutlineLineno' } },
-      virt_text_pos = 'overlay',
-      virt_text_win_col = 0,
-      hl_mode = 'combine',
-    })
-  end
-end
-
+---@param bufnr integer
 local function clear_virt_text(bufnr)
   vim.api.nvim_buf_clear_namespace(bufnr, -1, 0, -1)
 end
 
-M.add_hover_highlights = function(bufnr, nodes)
+---@param bufnr integer
+---@param nodes outline.FlatSymbolNode[] flattened nodes
+function M.add_hover_highlights (bufnr, nodes)
   if not cfg.o.outline_items.highlight_hovered_item then
     return
   end
@@ -101,7 +62,6 @@ M.add_hover_highlights = function(bufnr, nodes)
       goto continue
     end
 
-    local marker_fac = (cfg.o.symbol_folding.markers and 1) or 0
     if node.prefix_length then
       ui.add_hover_highlight(
         bufnr,
@@ -113,18 +73,207 @@ M.add_hover_highlights = function(bufnr, nodes)
   end
 end
 
--- runs the whole writing routine where the text is cleared, new data is parsed
--- and then written
-function M.parse_and_write(bufnr, flattened_outline_items)
-  local lines, hl_info = parser.get_lines(flattened_outline_items)
-  M.write_outline(bufnr, lines)
+---@class outline.FlatSymbolNode
+---@field name string
+---@field depth integer
+---@field parent outline.SymbolNode
+---@field deprecated boolean
+---@field kind integer|string
+---@field icon string
+---@field detail string
+---@field line integer
+---@field character integer
+---@field range_start integer
+---@field range_end integer
+---@field isLast boolean
+---@field hierarchy boolean
+---@field children? outline.SymbolNode[]
+---@field traversal_child integer
+---@field line_in_outline integer
+---@field prefix_length integer
+---@field hovered boolean
+---@field folded boolean
+
+---The quintessential function of this entire plugin. Clears virtual text,
+-- parses each node and replaces old lines with new lines to be written for the
+-- outline buffer.
+-- Handles highlights, virtual text, and of course lines of outline to write
+---@param bufnr integer Nothing is done if is_buffer_outline(bufnr) is not true
+---@param items outline.SymbolNode[] Tree of symbols after being parsed by parser.parse_result
+---@return outline.FlatSymbolNode[]? flattened_items No return value if bufnr is invalid
+function M.make_outline(bufnr, items)
+  if not M.is_buffer_outline(bufnr) then
+    return
+  end
 
   clear_virt_text(bufnr)
-  local details = parser.get_details(flattened_outline_items)
-  local lineno, lineno_max = parser.get_lineno(flattened_outline_items)
-  M.add_highlights(bufnr, hl_info, flattened_outline_items)
-  M.write_details(bufnr, details)
-  M.write_lineno(bufnr, lineno, lineno_max)
+
+  ---@type string[]
+  local lines = {}
+  ---@type string[]
+  local details = {}
+  ---@type string[]
+  local linenos = {}
+  ---@type outline.FlatSymbolNode[]
+  local flattened = {}
+  local hl = {}
+
+  -- Find the prefix for each line needed for the lineno space
+  local lineno_offset = 0
+  local lineno_prefix = ""
+  -- FIXME: Why is the +1 at the end needed? (Otherwise numbers are misaligned)
+  local lineno_max_width = #tostring(vim.api.nvim_buf_line_count(bufnr) - 1) + 1
+  if cfg.o.outline_items.show_symbol_lineno then
+    -- Use max width-1 plus 1 space padding.
+    -- -1 because if max_width is a power of ten, don't shift the entire lineno
+    -- column by the right just because the last line number requires an extra
+    -- digit. If max_width is 1000, the lineno column will take up 3 columns to
+    -- fill the digits, and 1 padding on the right. The 1000 can fit perfectly
+    -- there.
+    lineno_offset = math.max(2, lineno_max_width) + 1
+    lineno_prefix = string.rep(' ', lineno_offset)
+  end
+
+  -- Closures for convenience
+  local function add_guide_hl(from, to)
+    table.insert(hl, {
+      #flattened,
+      from + lineno_offset,
+      to + lineno_offset,
+      "OutlineGuides"
+    })
+  end
+
+  local function add_fold_hl(from, to)
+    table.insert(hl, {
+      #flattened,
+      from + lineno_offset,
+      to + lineno_offset,
+      "OutlineFoldMarker"
+    })
+  end
+
+  local guide_markers = cfg.o.guides.markers
+  local fold_markers = cfg.o.symbol_folding.markers
+
+  for node in parser.preorder_iter(items) do
+    table.insert(flattened, node)
+    node.line_in_outline = #flattened
+    table.insert(details, node.detail or '')
+    table.insert(linenos, tostring(node.range_start+1))
+
+    -- Make the guides for the line prefix
+    local pref = t_utils.str_to_table(string.rep(' ', node.depth))
+    local fold_marker_width = 0
+
+    if folding.is_foldable(node) then
+      -- Add fold marker
+      local marker = fold_markers[2]
+      if folding.is_folded(node) then
+        marker = fold_markers[1]
+      end
+      pref[#pref] = marker
+      fold_marker_width = strlen(marker)
+    else
+      -- Rightmost guide for the immediate parent, only added if fold marker is
+      -- not added
+      if node.depth > 1 then
+        local marker = guide_markers.middle
+        if node.isLast then
+          marker = guide_markers.bottom
+        end
+        pref[#pref] = marker
+      end
+    end
+
+    -- Add vertical guides to the left, for all parents that isn't the last
+    -- sibling. Iter from first grandparent until second last ancestor (last
+    -- ancestor is the entire outline itself, it should not have a vertical
+    -- guide).
+    local iternode = node
+    for i = node.depth-1, 2, -1 do
+      iternode = iternode.parent_node
+      if not iternode.isLast then
+        pref[i] = guide_markers.vertical
+      end
+    end
+
+    -- Finished with guide prefix
+    -- Join all prefix chars by a space
+    local pref_str = table.concat(pref, ' ')
+
+    -- Guide hl goes from start of prefix till before the fold marker, if any.
+    -- Fold hl goes from start of fold marker until before the icon.
+    add_guide_hl(lineno_offset, #pref_str - fold_marker_width)
+    if fold_marker_width > 0 then
+      add_fold_hl(#pref_str - fold_marker_width, #pref_str + 1)
+    end
+
+    local line = lineno_prefix..pref_str..' '..node.icon..' '..node.name
+
+    -- Highlight for the icon ✨
+    local hl_start = #pref_str + #lineno_prefix + 1  -- Start from icon col
+    local hl_end = hl_start + #node.icon             -- until after icon
+    local hl_type = cfg.o.symbols.icons[symbols.kinds[node.kind]].hl
+    table.insert(hl, { #flattened, hl_start, hl_end, hl_type })
+
+    -- Prefix length is from start until the beginning of the node.name, used
+    -- for hover highlights.
+    node.prefix_length = hl_end + 1
+
+    -- lines passed to nvim_buf_set_lines cannot contain newlines in each line
+    line = line:gsub("\n", " ")
+    table.insert(lines, line)
+  end
+
+  -- Write the lines 🎉
+  vim.api.nvim_buf_set_option(bufnr, 'modifiable', true)
+  vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, lines)
+  vim.api.nvim_buf_set_option(bufnr, 'modifiable', false)
+
+  -- Unfortunately highlights and extmarks cannot be added to lines that do not
+  -- yet exist. Hence this requires another O(n) of iteration.
+  M.add_highlights(bufnr, hl, flattened)
+
+  -- Add details and lineno virtual text.
+  if cfg.o.outline_items.show_symbol_details then
+    for index, value in ipairs(details) do
+      vim.api.nvim_buf_set_extmark(bufnr, ns, index - 1, -1, {
+        virt_text = { { value, 'OutlineDetails' } },
+        virt_text_pos = 'eol',
+        hl_mode = 'combine',
+      })
+    end
+  end
+  if cfg.o.outline_items.show_symbol_lineno then
+    -- Line numbers are left padded, right aligned, positioned at the leftmost
+    -- column
+    for index, value in ipairs(linenos) do
+      local leftpad = string.rep(' ', lineno_max_width-#value)
+      vim.api.nvim_buf_set_extmark(bufnr, ns, index - 1, -1, {
+        virt_text = { {leftpad..value, 'OutlineLineno' } },
+        virt_text_pos = 'overlay',
+        virt_text_win_col = 0,
+        hl_mode = 'combine',
+      })
+    end
+  end
+
+  return flattened
 end
+-- XXX: Is the performance tradeoff of calling `nvim_buf_set_lines` on each
+-- iteration worth it in order to put setting of highlights, details, and
+-- linenos together with each line?
+-- That is,
+-- 1.  { call nvim_buf_set_lines once for all lines }
+--   + { O(n) for each of highlights, details, and linenos }
+--OR
+-- 2.  { call nvim_buf_set_lines for each line }
+--   + { O(1) for each of highlight/detail/lineno the same iteration }
+-- It appears that for highlight/detail/lineno, the number of calls to nvim API
+-- is the same, only 3 extra tables in memory for (1). Where as for (2) you
+-- have to call nvim_buf_set_lines n times (each line) rather than add lines
+-- all at once, saving only the need of 1 extra table (lines table) in memory.
+
 
 return M

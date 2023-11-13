@@ -21,6 +21,7 @@ function M.setup_highlights()
   -- Setup the OutlineCurrent highlight group if it hasn't been done already by
   -- a theme or manually set
   if vim.fn.hlexists 'OutlineCurrent' == 0 then
+    -- TODO: Use nvim_get_hl
     local cline_hl = vim.api.nvim_get_hl_by_name('CursorLine', true)
     local string_hl = vim.api.nvim_get_hl_by_name('String', true)
 

@@ -43,7 +43,9 @@ end
 -- STATE
 -------------------------
 M.state = {
+  ---@type outline.SymbolNode[]
   outline_items = {},
+  ---@type outline.FlatSymbolNode[]
   flattened_outline_items = {},
   code_win = 0,
   -- In case unhide_cursor was called before hide_cursor for _some_ reason,
@@ -56,10 +58,10 @@ local function wipe_state()
 end
 
 local function _update_lines()
-  M.state.flattened_outline_items = parser.flatten(M.state.outline_items)
-  writer.parse_and_write(M.view.bufnr, M.state.flattened_outline_items)
+  M.state.flattened_outline_items = writer.make_outline(M.view.bufnr, M.state.outline_items)
 end
 
+---@param items outline.SymbolNode[]
 local function _merge_items(items)
   utils.merge_items_rec(
     { children = items },
@@ -90,11 +92,13 @@ end
 
 M._refresh = utils.debounce(__refresh, 100)
 
+---@return outline.FlatSymbolNode
 function M._current_node()
   local current_line = vim.api.nvim_win_get_cursor(M.view.winnr)[1]
   return M.state.flattened_outline_items[current_line]
 end
 
+---@param change_focus boolean
 function M.__goto_location(change_focus)
   local node = M._current_node()
   vim.api.nvim_win_set_cursor(
@@ -107,7 +111,9 @@ function M.__goto_location(change_focus)
   end
 end
 
--- Wraps __goto_location and handles auto_close
+---Wraps __goto_location and handles auto_close.
+---@see __goto_location
+---@param change_focus boolean
 function M._goto_location(change_focus)
   M.__goto_location(change_focus)
   if change_focus and cfg.o.outline_window.auto_close then
@@ -120,6 +126,7 @@ function M._goto_and_close()
   M.close_outline()
 end
 
+---@param direction "up"|"down"
 function M._move_and_goto(direction)
   local move = direction == 'down' and 1 or -1
   local cur = vim.api.nvim_win_get_cursor(0)
@@ -128,6 +135,8 @@ function M._move_and_goto(direction)
   M.__goto_location(false)
 end
 
+---@param move_cursor boolean
+---@param node_index integer Index for M.state.flattened_outline_items
 function M._toggle_fold(move_cursor, node_index)
   local node = M.state.flattened_outline_items[node_index] or M._current_node()
   local is_folded = folding.is_folded(node)
@@ -186,6 +195,9 @@ local function setup_buffer_autocmd()
   end
 end
 
+---@param folded boolean
+---@param move_cursor? boolean
+---@param node_index? integer
 function M._set_folded(folded, move_cursor, node_index)
   local node = M.state.flattened_outline_items[node_index] or M._current_node()
   local changed = (folded ~= folding.is_folded(node))
@@ -212,6 +224,7 @@ function M._set_folded(folded, move_cursor, node_index)
   end
 end
 
+---@param nodes outline.SymbolNode[]
 function M._toggle_all_fold(nodes)
   nodes = nodes or M.state.outline_items
   local folded = true
@@ -226,6 +239,8 @@ function M._toggle_all_fold(nodes)
   M._set_all_folded(not folded, nodes)
 end
 
+---@param folded boolean|nil
+---@param nodes? outline.SymbolNode[]
 function M._set_all_folded(folded, nodes)
   local stack = { nodes or M.state.outline_items }
 
@@ -242,6 +257,7 @@ function M._set_all_folded(folded, nodes)
   _update_lines()
 end
 
+---@param winnr? integer Window number of code window
 function M._highlight_current_item(winnr)
   local has_provider = M.has_provider()
   local has_outline_open = M.view:is_open()
@@ -373,6 +389,8 @@ local function setup_keymaps(bufnr)
   end)
 end
 
+---@param response table?
+---@param opts outline.OutlineOpts?
 local function handler(response, opts)
   if response == nil or type(response) ~= 'table' or M.view:is_open() then
     return
@@ -394,9 +412,7 @@ local function handler(response, opts)
   local items = parser.parse(response)
 
   M.state.outline_items = items
-  M.state.flattened_outline_items = parser.flatten(items)
-
-  writer.parse_and_write(M.view.bufnr, M.state.flattened_outline_items)
+  M.state.flattened_outline_items = writer.make_outline(M.view.bufnr, items)
 
   M._highlight_current_item(M.state.code_win)
 
@@ -405,9 +421,12 @@ local function handler(response, opts)
   end
 end
 
+---@class outline.OutlineOpts
+---@field focus_outline boolean
+
 ---Set position of outline window to match cursor position in code, return
 ---whether the window is just newly opened (previously not open).
----@param opts table? Field `focus_outline` = `false` or `nil` means don't focus on outline window after following cursor. If opts is not provided, focus will be on outline window after following cursor.
+---@param opts outline.OutlineOpts? Field `focus_outline` = `false` or `nil` means don't focus on outline window after following cursor. If opts is not provided, focus will be on outline window after following cursor.
 ---@return boolean ok Whether it was successful. If ok=false, either the outline window is not open or the code window cannot be found.
 function M.follow_cursor(opts)
   if not M.view:is_open() then
@@ -449,7 +468,8 @@ end
 
 ---Toggle the outline window, and return whether the outline window is open
 ---after this operation.
----@param opts table? Table of options, @see open_outline
+---@see open_outline
+---@param opts outline.OutlineOpts? Table of options
 ---@return boolean is_open Whether outline window is open
 function M.toggle_outline(opts)
   if M.view:is_open() then
@@ -471,7 +491,7 @@ local function _cmd_toggle_outline(opts)
 end
 
 ---Open the outline window.
----@param opts table? Field focus_outline=false means don't focus on outline window after opening. If opts is not provided, focus will be on outline window after opening.
+---@param opts outline.OutlineOpts? Field focus_outline=false means don't focus on outline window after opening. If opts is not provided, focus will be on outline window after opening.
 function M.open_outline(opts)
   if not opts then
     opts = { focus_outline = true }

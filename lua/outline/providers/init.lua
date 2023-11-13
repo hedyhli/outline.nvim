@@ -26,6 +26,7 @@ function M.has_provider()
 end
 
 ---@param on_symbols function
+---@param opts outline.OutlineOpts?
 ---@return boolean found_provider
 function M.request_symbols(on_symbols, opts)
   for _, value in ipairs(providers) do

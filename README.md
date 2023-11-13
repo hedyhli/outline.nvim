@@ -563,6 +563,11 @@ require'outline'
 - You can customize the split command used for creating the outline window split
   using `outline_window.split_command`, such as `"topleft vsp"`. See `:h windows`
 
+- Is the outline window too slow when first opening a file? This is usually due
+  to the LSP not being ready when you open outline, hence we have to wait for the
+  LSP response before the outline can be shown. If LSP is ready generally the
+  outline latency is almost negligible.
+
 ## Recipes
 
 Behaviour you may want to achieve and the combination of configuration options

@@ -1,11 +1,13 @@
 local M = {}
 local cfg = require 'outline.config'
 
-M.is_foldable = function(node)
+---@param node outline.SymbolNode|outline.FlatSymbolNode
+function M.is_foldable(node)
   return node.children and #node.children > 0
 end
 
-local get_default_folded = function(depth)
+---@param depth integer
+local function get_default_folded(depth)
   local fold_past = cfg.o.symbol_folding.autofold_depth
   if not fold_past then
     return false
@@ -14,7 +16,8 @@ local get_default_folded = function(depth)
   end
 end
 
-M.is_folded = function(node)
+---@param node outline.SymbolNode|outline.FlatSymbolNode
+function M.is_folded(node)
   if node.folded ~= nil then
     return node.folded
   elseif node.hovered and cfg.o.symbol_folding.auto_unfold_hover then

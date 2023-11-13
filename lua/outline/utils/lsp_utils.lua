@@ -83,7 +83,8 @@ local function range_compare(a, b)
   return (a.line < b.line) or (a.line == b.line and a.character < b.character)
 end
 
---- Sorts the result from LSP by where the symbols start.
+---Sort the result from LSP by where the symbols start.
+---Recursively sorts all children of each symbol
 function M.sort_symbols(symbols)
   table.sort(symbols, function(a, b)
     return range_compare(

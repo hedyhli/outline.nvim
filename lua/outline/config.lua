@@ -2,6 +2,8 @@ local vim = vim
 
 local M = {}
 
+-- TODO: Types for config schema
+
 M.defaults = {
   guides = {
     enabled = true,
