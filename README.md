@@ -451,12 +451,13 @@ outline_window = {
 
 Possible highlight groups provided by outline.nvim to customize:
 
-| Highlight        | Description                     |
-| ---------------- | ------------------------------- |
-| OutlineCurrent   | Current symbol under cursor     |
-| OutlineGuides    | Guide markers in the outline    |
-| OutlineDetails   | Symbol details in virtual text  |
-| OutlineLineno    | The Lineno column virtual text  |
+| Highlight            | Description                                          |
+| -------------------- | ---------------------------------------------------- |
+| OutlineCurrent       | Current symbol under cursor                          |
+| OutlineGuides        | Guide markers section in each line of the outline    |
+| OutlineFoldMarker    | Fold markers in the outline                          |
+| OutlineDetails       | Symbol details in virtual text                       |
+| OutlineLineno        | The Lineno column virtual text                       |
 
 You can customize any other highlight groups using `winhl` too, this option is
 passed directly to the `winhl` vim option unprocessed.
