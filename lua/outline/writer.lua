@@ -159,7 +159,9 @@ function M.make_outline(bufnr, items)
     table.insert(flattened, node)
     node.line_in_outline = #flattened
     table.insert(details, node.detail or '')
-    table.insert(linenos, tostring(node.range_start+1))
+    local lineno = tostring(node.range_start+1)
+    local leftpad = string.rep(' ', lineno_max_width-#lineno)
+    table.insert(linenos, leftpad..lineno)
 
     -- Make the guides for the line prefix
     local pref = t_utils.str_to_table(string.rep(' ', node.depth))
@@ -248,12 +250,12 @@ function M.make_outline(bufnr, items)
     -- Line numbers are left padded, right aligned, positioned at the leftmost
     -- column
     for index, value in ipairs(linenos) do
-      local leftpad = string.rep(' ', lineno_max_width-#value)
       vim.api.nvim_buf_set_extmark(bufnr, ns, index - 1, -1, {
-        virt_text = { {leftpad..value, 'OutlineLineno' } },
+        virt_text = { { value, 'OutlineLineno' } },
         virt_text_pos = 'overlay',
         virt_text_win_col = 0,
-        hl_mode = 'combine',
+        virt_text_hide = true,
+        hl_mode = 'replace',
       })
     end
   end
