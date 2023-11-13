@@ -609,6 +609,8 @@ This will be how the outline window looks like when focused:
 
 
 
+
+
 Note that in the first screenshot, `outline_items.show_symbol_lineno` is also
 enabled.
 
