@@ -58,7 +58,7 @@ local function wipe_state()
 end
 
 local function _update_lines()
-  M.state.flattened_outline_items = writer.make_outline(M.view.bufnr, M.state.outline_items)
+  M.state.flattened_outline_items = writer.make_outline(M.view.bufnr, M.state.outline_items, M.state.code_win)
 end
 
 ---@param items outline.SymbolNode[]
@@ -127,7 +127,7 @@ function M._goto_and_close()
 end
 
 ---@param direction "up"|"down"
-function M._move_and_goto(direction)
+function M._move_and_jump(direction)
   local move = direction == 'down' and 1 or -1
   local cur = vim.api.nvim_win_get_cursor(0)
   cur[1] = cur[1] + move
@@ -171,7 +171,7 @@ local function setup_buffer_autocmd()
       callback = require('outline.preview').close,
     })
   end
-  if cfg.o.outline_window.auto_goto then
+  if cfg.o.outline_window.auto_jump then
     vim.api.nvim_create_autocmd('CursorMoved', {
       buffer = 0,
       callback = function()
@@ -327,12 +327,12 @@ local function setup_keymaps(bufnr)
   -- Navigate to corresponding outline location for current code location
   map(cfg.o.keymaps.goto_and_close, M._goto_and_close)
   -- Move down/up in outline and peek that location in code
-  map(cfg.o.keymaps.down_and_goto, function()
-    M._move_and_goto('down')
+  map(cfg.o.keymaps.down_and_jump, function()
+    M._move_and_jump('down')
   end)
   -- Move down/up in outline and peek that location in code
-  map(cfg.o.keymaps.up_and_goto, function()
-    M._move_and_goto('up')
+  map(cfg.o.keymaps.up_and_jump, function()
+    M._move_and_jump('up')
   end)
   -- hover symbol
   map(
@@ -412,7 +412,7 @@ local function handler(response, opts)
   local items = parser.parse(response)
 
   M.state.outline_items = items
-  M.state.flattened_outline_items = writer.make_outline(M.view.bufnr, items)
+  M.state.flattened_outline_items = writer.make_outline(M.view.bufnr, items, M.state.code_win)
 
   M._highlight_current_item(M.state.code_win)
 

@@ -101,10 +101,12 @@ end
 ---@param bufnr integer Nothing is done if is_buffer_outline(bufnr) is not true
 ---@param items outline.SymbolNode[] Tree of symbols after being parsed by parser.parse_result
 ---@return outline.FlatSymbolNode[]? flattened_items No return value if bufnr is invalid
-function M.make_outline(bufnr, items)
+---@param codewin integer code window
+function M.make_outline(bufnr, items, codewin)
   if not M.is_buffer_outline(bufnr) then
     return
   end
+  local codebuf = vim.api.nvim_win_get_buf(codewin)
 
   clear_virt_text(bufnr)
 
@@ -121,7 +123,7 @@ function M.make_outline(bufnr, items)
   -- Find the prefix for each line needed for the lineno space
   local lineno_offset = 0
   local lineno_prefix = ""
-  local lineno_max_width = #tostring(vim.api.nvim_buf_line_count(bufnr) - 1)
+  local lineno_max_width = #tostring(vim.api.nvim_buf_line_count(codebuf) - 1)
   if cfg.o.outline_items.show_symbol_lineno then
     -- Use max width-1 plus 1 space padding.
     -- -1 because if max_width is a power of ten, don't shift the entire lineno
@@ -250,13 +252,19 @@ function M.make_outline(bufnr, items)
   if cfg.o.outline_items.show_symbol_lineno then
     -- Line numbers are left padded, right aligned, positioned at the leftmost
     -- column
+    -- TODO: Fix lineno not appearing if text in line is truncated on the right
+    -- due to narrow window, after nvim fixes virt_text_hide.
     for index, value in ipairs(linenos) do
       vim.api.nvim_buf_set_extmark(bufnr, ns, index - 1, -1, {
         virt_text = { { value, 'OutlineLineno' } },
         virt_text_pos = 'overlay',
         virt_text_win_col = 0,
-        virt_text_hide = true,
-        hl_mode = 'replace',
+        -- When hide_cursor + cursorline enabled, we want the lineno to also
+        -- take on the cursorline background so wherever the cursor is, it
+        -- appears blended. We want 'replace' even for `hide_cursor=false
+        -- cursorline=true` because vim's native line numbers do not get
+        -- highlighted by cursorline.
+        hl_mode = (cfg.o.outline_window.hide_cursor and 'combine') or 'replace',
       })
     end
   end

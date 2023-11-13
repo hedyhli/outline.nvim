@@ -64,12 +64,11 @@ Table of contents
 
 ## Installation
 
-Packer:
-```lua
-use 'hedyhli/outline.nvim'
-```
+- GitHub repo: `"hedyhli/outline.nvim"`
+- Or SourceHut repo: `url = "https://git.sr.ht/~hedy/outline.nvim"` (an
+  equivalent key to `url` for your plugin manager)
 
-Lazy:
+Lazy.nvim example:
 ```lua
 {
   "hedyhli/outline.nvim",
@@ -85,13 +84,13 @@ Lazy:
 },
 ```
 
-Lazy with lazy-loading:
+Lazy.nvim with lazy-loading example:
 ```lua
 {
   "hedyhli/outline.nvim",
+  lazy = true,
   cmd = { "Outline", "OutlineOpen" },
-  keys = {
-    -- Example mapping to toggle outline
+  keys = { -- Example mapping to toggle outline
     { "<leader>tt", "<cmd>Outline<CR>", desc = "Toggle outline" },
   },
   opts = {
@@ -100,7 +99,7 @@ Lazy with lazy-loading:
 },
 ```
 
-This allows Lazy.nvim to lazy load the plugin on commands `Outline`,
+This allows Lazy.nvim to lazy-load the plugin on commands `Outline`,
 `OutlineOpen`, and your keybindings.
 
 
@@ -108,21 +107,25 @@ This allows Lazy.nvim to lazy load the plugin on commands `Outline`,
 
 Call the setup function with your configuration options.
 
-Note that a call to `.setup()` is *required* for this plugin to work
-(simrat39/symbols-outline.nvim#213).
+Note that a call to `.setup()` is **required** for this plugin to work
+(otherwise you might see this error: simrat39/symbols-outline.nvim#213).
 
 ```lua
 require("outline").setup({})
 ```
 
+[Skip to commands](#commands)
+
 ## Configuration
 
 The configuration structure has been heavily improved and refactored in this
-plugin. For details and reasoning, see [breaking changes](#-breaking-changes).
+plugin. If you're migrating from the original symbols-outline, see [#12 on
+github](https://github.com/hedyhli/outline.nvim/issues/12) under "breaking
+changes" section.
 
 ### Terminology
 
-Check this list if you there's any confusion with the terms used in the
+Check this list if you have any confusion with the terms used in the
 configuration.
 
 - **Provider**: Source of the items in the outline view. Could be LSP, CoC, etc.
@@ -133,8 +136,10 @@ configuration.
 - **Peek**: Go to corresponding location in code without leaving outline window
 - **Hover**: Cursor currently on the line of a node
 - **Hover symbol**: Displaying a floating window to show symbol information
-provided by provider.
+  provided by provider.
 - **Focus**: Which window the cursor is in
+
+[Skip to commands](#commands)
 
 ### Default options
 
@@ -165,29 +170,33 @@ Default values are shown:
     -- Auto close the outline window if goto_location is triggered and not for
     -- peek_location
     auto_close = false,
-    -- Automatically go to location in code when navigating outline window.
-    auto_goto = false,
+    -- Automatically scroll to the location in code when navigating outline window.
+    auto_jump = false,
 
     -- Vim options for the outline window
     show_numbers = false,
     show_relative_numbers = false,
+    wrap = false,
 
     show_cursorline = true,
-    -- Enable this when you enabled cursorline so your cursor color can
+    -- Enable this only if you enabled cursorline so your cursor color can
     -- blend with the cursorline, in effect, as if your cursor is hidden
     -- in the outline window.
     -- This is useful because with cursorline, there isn't really a need
     -- to know the vertical column position of the cursor and it may even
     -- be distracting, rendering lineno/guides/icons unreadable.
-    -- This makes your line of cursor look the same as if the cursor wasn't
-    -- focused on the outline window.
+    -- This makes your line of cursor have the same color as if the cursor
+    -- wasn't focused on the outline window.
+    -- This feature is experimental.
     hide_cursor = false,
 
-    -- Whether to wrap long lines, or let them flow off the window
-    wrap = false,
-    -- Whether to focus on the outline window when it is opened.
-    -- Set to false to remain focus on your previous buffer when opening
+    -- Whether to auto-focus on the outline window when it is opened.
+    -- Set to false to *always* retain focus on your previous buffer when opening
     -- outline.
+    -- If you enable this you can still use bangs in :Outline! or :OutlineOpen! to
+    -- retain focus on your code. If this is false, retaining focus will be
+    -- enforced for :Outline/:OutlineOpen and you will not be able to have the
+    -- other behaviour.
     focus_on_open = true,
     -- Winhighlight option for outline window.
     -- See :help 'winhl'
@@ -198,31 +207,33 @@ Default values are shown:
   },
 
   outline_items = {
-    -- Whether to highlight the currently hovered symbol (high cpu usage)
+    -- Whether to highlight the currently hovered symbol and all direct parents
     highlight_hovered_item = true,
-    -- Show extra details with the symbols (lsp dependent)
+    -- Show extra details with the symbols (lsp dependent) as virtual next
     show_symbol_details = true,
-    -- Show line numbers of each symbol next to them.
+    -- Show corresponding line numbers of each symbol on the left column as
+    -- virtual text, for quick navigation when not focused on outline.
     -- Why? See this comment:
     -- https://github.com/simrat39/symbols-outline.nvim/issues/212#issuecomment-1793503563
     show_symbol_lineno = false,
   },
 
-  -- Options for outline guides.
+  -- Options for outline guides which help show tree hierarchy of symbols
   guides = {
     enabled = true,
     markers = {
+      -- It is recommended for bottom and middle markers to use the same number
+      -- of characters to align all child nodes vertically.
       bottom = '└',
       middle = '├',
       vertical = '│',
-      horizontal = '─',
     },
   },
 
   symbol_folding = {
     -- Depth past which nodes will be folded by default
     autofold_depth = nil,
-    -- Automatically unfold hovered symbol
+    -- Automatically unfold currently hovered symbol
     auto_unfold_hover = true,
     markers = { '', '' },
   },
@@ -253,7 +264,8 @@ Default values are shown:
     winblend = 0
   },
 
-  -- These keymaps can be a string or a table for multiple keys
+  -- These keymaps can be a string or a table for multiple keys.
+  -- Set to `{}` to disable. (Using 'nil' will fallback to default keys)
   keymaps = { 
     show_help = '?',
     close = {"<Esc>", "q"},
@@ -265,7 +277,7 @@ Default values are shown:
     peek_location = "o",
     -- Visit location in code and close outline immediately
     goto_and_close = "<S-Cr>"
-    -- Change cursor position of outline window to the current location in code.
+    -- Change cursor position of outline window to match current location in code.
     -- "Opposite" of goto/peek_location.
     restore_location = "<C-g>",
     -- Open LSP/provider-dependent symbol hover information
@@ -287,8 +299,10 @@ Default values are shown:
     unfold_all = "E",
     fold_reset = "R",
     -- Move down/up by one line and peek_location immediately.
-    down_and_goto = "<C-j>",
-    up_and_goto = "<C-k>",
+    -- You can also use outline_window.auto_jump=true to do this for any
+    -- j/k/<down>/<up>.
+    down_and_jump = "<C-j>",
+    up_and_jump = "<C-k>",
   },
 
   providers = {
@@ -304,12 +318,12 @@ Default values are shown:
     blacklist = {},
     -- You can use a custom function that returns the icon for each symbol kind.
     -- This function takes a kind (string) as parameter and should return an
-    -- icon.
+    -- icon as string.
     icon_fetcher = nil,
     -- 3rd party source for fetching icons. Fallback if icon_fetcher returned
     -- empty string. Currently supported values: 'lspkind'
     icon_source = nil,
-    -- The next fall back if both icon_fetcher and icon_source has failed, is
+    -- The next fallback if both icon_fetcher and icon_source has failed, is
     -- the custom mapping of icons specified below. The icons table is also
     -- needed for specifying hl group.
     icons = {
@@ -351,7 +365,7 @@ Default values are shown:
 ```
 
 To find out exactly what some of the options do, please see the
-[recipes](#recipes) section of the readme at the bottom for screen-recordings.
+[recipes](#recipes) section at the bottom for screen-recordings/shots.
 
 The order in which the sources for icons are checked is:
 
@@ -367,13 +381,13 @@ string or a falsey value.
 - **:Outline[!]**
 
   Toggle outline. With bang (`!`) the cursor focus stays in your
-  original window after opening the outline window. Set `focus_on_win = true` to
+  original window after opening the outline window. Set `focus_on_open = true` to
   always use this behaviour.
 
 - **:OutlineOpen[!]**
 
   Open outline. With bang (`!`) the cursor focus stays in your original
-  window after opening the outline window. Set `focus_on_win = true` to always
+  window after opening the outline window. Set `focus_on_open = true` to always
   use this behaviour.
 
 - **:OutlineClose**
@@ -382,7 +396,7 @@ string or a falsey value.
 
 - **:OutlineFocus**
 
-  Toggle focus on outline
+  Toggle focus between outline and code/source window
 
 - **:OutlineFocusOutline**
 
@@ -401,7 +415,7 @@ string or a falsey value.
   Go to corresponding node in outline based on cursor position in code, and
   focus on the outline window.
 
-  With bang, retain focus on the code window.
+  With bang (`!`), retain focus on the code window.
 
   This can be understood as the converse of `goto_location` (see keymaps).
   `goto_location` sets cursor of code window to the position of outline window,
@@ -413,20 +427,17 @@ string or a falsey value.
 
 ## Default keymaps
 
-These mappings are active for the outline window.
+These mappings are active only for the outline window.
 
 | Key        | Action                                             |
 | ---------- | -------------------------------------------------- |
 | Esc / q    | Close outline                                      |
-| ?          | Show help                                          |
 | Enter      | Go to symbol location in code                      |
 | o          | Go to symbol location in code without losing focus |
 | Shift+Enter| Go to symbol location in code and close outline    |
-| Ctrl+k     | Go up and goto location                            |
-| Ctrl+j     | Go down and goto location                          |
 | Ctrl+g     | Update outline window to focus on code location    |
-| Ctrl+Space | Hover current symbol (provider action)             |
 | K          | Toggles the current symbol preview                 |
+| Ctrl+Space | Hover current symbol (provider action)             |
 | r          | Rename symbol                                      |
 | a          | Code actions                                       |
 | h          | Fold symbol or parent symbol                       |
@@ -436,6 +447,9 @@ These mappings are active for the outline window.
 | W          | Fold all symbols                                   |
 | E          | Unfold all symbols                                 |
 | R          | Reset all folding                                  |
+| Ctrl+k     | Go up and peek location                            |
+| Ctrl+j     | Go down and peek location                          |
+| ?          | Show current keymaps as a vim message              |
 
 ## Highlights
 
@@ -607,7 +621,7 @@ location directly and not use the preview window:
 
 ```lua
 outline_window = {
-  auto_goto = true,
+  auto_jump = true,
 },
 ```
 
@@ -616,7 +630,7 @@ This feature was added by @stickperson in an upstream PR 🙌
 https://github.com/hedyhli/outline.nvim/assets/50042066/3d06e342-97ac-400c-8598-97a9235de66c
 
 Or, you can use keys `<C-j>` and `<C-k>` to achieve the same effect, whilst not
-having `auto_goto` on by default.
+having `auto_jump` on by default.
 
 ### Symbol details
 

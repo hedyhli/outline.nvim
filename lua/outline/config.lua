@@ -27,7 +27,7 @@ M.defaults = {
     wrap = false,
     focus_on_open = true,
     auto_close = false,
-    auto_goto = false,
+    auto_jump = false,
     show_numbers = false,
     show_relative_numbers = false,
     show_cursorline = true,
@@ -67,8 +67,8 @@ M.defaults = {
     fold_all = 'W',
     unfold_all = 'E',
     fold_reset = 'R',
-    down_and_goto = '<C-j>',
-    up_and_goto = '<C-k>',
+    down_and_jump = '<C-j>',
+    up_and_jump = '<C-k>',
   },
   providers = {
     lsp = {
@@ -195,21 +195,41 @@ function M.show_help()
   print(vim.inspect(M.o.keymaps))
 end
 
+---Check for inconsistent or mutually exclusive opts. Does not alter the opts
 function M.check_config()
   if M.o.outline_window.hide_cursor and not M.o.outline_window.show_cursorline then
     vim.notify("[outline.config]: hide_cursor enabled WITHOUT cursorline enabled!", vim.log.levels.ERROR)
   end
 end
 
+---Resolve shortcuts and deprecated option conversions
 function M.resolve_config()
   local sc = M.o.outline_window.split_command
-  if not sc then
-    return
+  if sc then
+    -- This should not be needed, nor is it failsafe. But in case user only provides
+    -- the, eg, "topleft", we append the ' vs'.
+    if not sc:find(' vs', 1, true) then
+      M.o.outline_window.split_command = sc..' vs'
+    end
   end
-  -- This should not be needed, nor is it failsafe. But in case user only provides
-  -- the, eg, "topleft", we append the ' vs'.
-  if not sc:find(' vs', 1, true) then
-    M.o.outline_window.split_command = sc..' vs'
+
+  local dg = M.o.keymaps.down_and_goto
+  local ug = M.o.keymaps.up_and_goto
+  if dg then
+    M.o.keymaps.down_and_jump = dg
+    M.o.keymaps.down_and_goto = nil
+  end
+  if ug then
+    M.o.keymaps.up_and_jump = ug
+    M.o.keymaps.up_and_goto = nil
+  end
+  -- if dg or ug then
+  --   vim.notify("[outline.config]: keymaps down/up_and_goto are renamed to down/up_and_jump. Your keymaps for the current session is converted successfully.", vim.log.levels.WARN)
+  -- end
+
+  if M.o.outline_window.auto_goto then
+    M.o.outline_window.auto_jump = M.o.outline_window.auto_goto
+    M.o.outline_window.auto_goto = nil
   end
 end
 
