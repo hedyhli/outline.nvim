@@ -121,8 +121,7 @@ function M.make_outline(bufnr, items)
   -- Find the prefix for each line needed for the lineno space
   local lineno_offset = 0
   local lineno_prefix = ""
-  -- FIXME: Why is the +1 at the end needed? (Otherwise numbers are misaligned)
-  local lineno_max_width = #tostring(vim.api.nvim_buf_line_count(bufnr) - 1) + 1
+  local lineno_max_width = #tostring(vim.api.nvim_buf_line_count(bufnr) - 1)
   if cfg.o.outline_items.show_symbol_lineno then
     -- Use max width-1 plus 1 space padding.
     -- -1 because if max_width is a power of ten, don't shift the entire lineno
