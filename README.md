@@ -674,7 +674,7 @@ outline_window = {
 
 This will be how the outline window looks like when focused:
 
-<img width="40" alt="outline window showing hide_cursor" src="https://github.com/hedyhli/outline.nvim/assets/50042066/1e13c4db-ae51-4e1f-a388-2758871df36a">
+<img width="400" alt="outline window showing hide_cursor" src="https://github.com/hedyhli/outline.nvim/assets/50042066/1e13c4db-ae51-4e1f-a388-2758871df36a">
 
 <br>
 
