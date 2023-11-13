@@ -674,13 +674,7 @@ outline_window = {
 
 This will be how the outline window looks like when focused:
 
-<img width="400" alt="outline window showing hide_cursor" src="https://github.com/hedyhli/outline.nvim/assets/50042066/1e13c4db-ae51-4e1f-a388-2758871df36a">
-
-<br>
-
-<img width="400" alt="outline window showing another example of hide_cursor" src="https://github.com/hedyhli/outline.nvim/assets/50042066/527c567b-a777-4518-a9da-51d8bcb445e7">
-
-Note that in the first screenshot, `outline_items.show_symbol_lineno` is also enabled.
+<img width="500" alt="outline window showing another example of hide_cursor" src="https://github.com/hedyhli/outline.nvim/assets/50042066/527c567b-a777-4518-a9da-51d8bcb445e7">
 
 Some may find this unhelpful, but one may argue that elements in each row of the
 outline becomes more readable this way, hence this is an option.
