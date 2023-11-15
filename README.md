@@ -146,7 +146,7 @@ configuration.
 
 Pass a table to the setup call with your configuration options.
 
-Default values are shown:
+<details><summary>Show defaults</summary>
 
 ```lua
 {
@@ -364,6 +364,8 @@ Default values are shown:
   },
 }
 ```
+
+</details>
 
 To find out exactly what some of the options do, please see the
 [recipes](#recipes) section at the bottom for screen-recordings/shots.
