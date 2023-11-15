@@ -220,11 +220,18 @@ function M.make_outline(bufnr, items, codewin)
       add_fold_hl(total_pref_len - fold_marker_width, total_pref_len + 1)
     end
 
-    local line = lineno_prefix..pref_str..' '..node.icon..' '..node.name
+    local line = lineno_prefix..pref_str
+    local icon_pref = 0
+    if node.icon ~= "" then
+      line = line..' '..node.icon
+      icon_pref = 1
+    end
+    line = line..' '..node.name
 
     -- Highlight for the icon ✨
-    local hl_start = #pref_str + #lineno_prefix + 1  -- Start from icon col
-    local hl_end = hl_start + #node.icon             -- until after icon
+    -- Start from icon col
+    local hl_start = #pref_str + #lineno_prefix + icon_pref
+    local hl_end = hl_start + #node.icon  -- until after icon
     local hl_type = cfg.o.symbols.icons[symbols.kinds[node.kind]].hl
     table.insert(hl, { #flattened, hl_start, hl_end, hl_type })
 

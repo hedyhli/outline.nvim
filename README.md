@@ -51,6 +51,7 @@ Table of contents
   * [Line numbers](#line-numbers)
   * [Blend cursor with cursorline](#blend-cursor-with-cursorline)
   * [Custom icons](#custom-icons)
+  * [Disable icons](#disable-icons)
 * [TODO](#todo)
 * [Related plugins](#related-plugins)
 
@@ -373,8 +374,7 @@ The order in which the sources for icons are checked is:
 2. Icon source (only `lspkind` is supported for this option as of now)
 3. Icons table
 
-A fallback is always used if the previous candidate returned either an empty
-string or a falsey value.
+A fallback is always used if the previous candidate returned a falsey value.
 
 ## Commands
 
@@ -572,8 +572,24 @@ require'outline'
   2. Icon source
   3. Icons table
 
-  A fallback is always used if the previous candidate returned either an empty
-  string or a falsey value.
+  A fallback is always used if the previous candidate returned falsey value.
+
+  You can hide an icon for a specific type by returning `""`.
+
+  Below is an example where icons are disabled for kind 'Package', and for other
+  icons use lspkind.
+
+```lua
+symbols = {
+  icon_fetcher = function(k)
+    if k == 'Package' then
+      return ""
+    end
+    return false
+  end,
+  icon_source = 'lspkind',
+}
+```
 
 - You can customize the split command used for creating the outline window split
   using `outline_window.split_command`, such as `"topleft vsp"`. See `:h windows`
@@ -601,7 +617,7 @@ symbol_folding = {
   auto_unfold_hover = true,
 },
 ```
-<img width="900" alt="outline window showing auto fold depth" src="https://github.com/hedyhli/outline.nvim/assets/50042066/2e0c5f91-a979-4e64-a100-256ad062dce3">
+<div align=center><img width="900" alt="outline window showing auto fold depth" src="https://github.com/hedyhli/outline.nvim/assets/50042066/2e0c5f91-a979-4e64-a100-256ad062dce3"></div>
 
 
 ### Auto-jump
@@ -658,7 +674,7 @@ outline_items = {
 The default highlight group for the line numbers is `LineNr`, you can customize
 it using `outline_window.winhl`: please see [highlights](#outline-window).
 
-<img width="900" alt="outline window showing lineno" src="https://github.com/hedyhli/outline.nvim/assets/50042066/2bbb5833-f40b-4c53-8338-407252d61443">
+<div align=center><img width="900" alt="outline window showing lineno" src="https://github.com/hedyhli/outline.nvim/assets/50042066/2bbb5833-f40b-4c53-8338-407252d61443"></div>
 
 
 ### Blend cursor with cursorline
@@ -674,7 +690,7 @@ outline_window = {
 
 This will be how the outline window looks like when focused:
 
-<img width="500" alt="outline window showing another example of hide_cursor" src="https://github.com/hedyhli/outline.nvim/assets/50042066/527c567b-a777-4518-a9da-51d8bcb445e7">
+<div align=center><img width="500" alt="outline window showing another example of hide_cursor" src="https://github.com/hedyhli/outline.nvim/assets/50042066/527c567b-a777-4518-a9da-51d8bcb445e7"></div>
 
 Some may find this unhelpful, but one may argue that elements in each row of the
 outline becomes more readable this way, hence this is an option.
@@ -696,8 +712,33 @@ symbols = {
 The fetcher function, if provided, is checked first before using `icon_source`
 and `icons` as fallback.
 
-<img width="300" alt="outline with plain text icons" src="https://github.com/hedyhli/outline.nvim/assets/50042066/655b534b-da16-41a7-926e-f14475376a04">
+<div align=center><img width="500" alt="outline with plain text icons" src="https://github.com/hedyhli/outline.nvim/assets/50042066/655b534b-da16-41a7-926e-f14475376a04"></div>
 
+### Disable icons
+
+Disable all icons:
+
+```lua
+symbols = {
+  icon_fetcher = function(_) return "" end,
+}
+```
+
+Disable icons for specific kinds, and for others use lspkind:
+
+```lua
+symbols = {
+  icon_fetcher = function(k)
+    if k == 'String' then
+      return ""
+    end
+    return false
+  end,
+  icon_source = 'lspkind',
+}
+```
+
+<div align=center><img width="500" alt="outline with disabled icon for String" src="https://github.com/hedyhli/outline.nvim/assets/50042066/26d258c6-9530-43d4-b88b-963304e3bf2d"></div>
 
 <!-- panvimdoc-ignore-start -->
 

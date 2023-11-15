@@ -299,7 +299,7 @@ function M._highlight_current_item(winnr)
 
     if
       value.line == hovered_line
-      or (hovered_line > value.range_start and hovered_line < value.range_end)
+      or (hovered_line >= value.range_start and hovered_line <= value.range_end)
     then
       value.hovered = true
       table.insert(parent_nodes, value)

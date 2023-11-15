@@ -51,7 +51,8 @@ function M.icon_from_kind(kind)
 
   if type(cfg.o.symbols.icon_fetcher) == 'function' then
     local icon = cfg.o.symbols.icon_fetcher(kindstr)
-    if icon and icon ~= "" then
+    -- Allow returning empty string
+    if icon then
       return icon
     end
   end
