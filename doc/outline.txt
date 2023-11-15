@@ -1,4 +1,4 @@
-*outline.txt*           For NVIM v0.7.0          Last change: 2023 November 13
+*outline.txt*           For NVIM v0.7.0          Last change: 2023 November 15
 
 ==============================================================================
 Table of Contents                                  *outline-table-of-contents*
@@ -337,8 +337,7 @@ The order in which the sources for icons are checked is:
 2. Icon source (only `lspkind` is supported for this option as of now)
 3. Icons table
 
-A fallback is always used if the previous candidate returned either an empty
-string or a falsey value.
+A fallback is always used if the previous candidate returned a falsey value.
 
 
 COMMANDS                                                    *outline-commands*
@@ -498,8 +497,23 @@ TIPS                                                            *outline-tips*
     1. Icon fetcher function
     2. Icon source
     3. Icons table
-    A fallback is always used if the previous candidate returned either an empty
-    string or a falsey value.
+    A fallback is always used if the previous candidate returned falsey value.
+    You can hide an icon for a specific type by returning `""`.
+    Below is an example where icons are disabled for kind 'Package', and for other
+    icons use lspkind.
+
+>lua
+    symbols = {
+      icon_fetcher = function(k)
+        if k == 'Package' then
+          return ""
+        end
+        return false
+      end,
+      icon_source = 'lspkind',
+    }
+<
+
 - You can customize the split command used for creating the outline window split
     using `outline_window.split_command`, such as `"topleft vsp"`. See |windows|
 - Is the outline window too slow when first opening a file? This is usually due
@@ -527,7 +541,6 @@ Unfold all others except currently hovered item
       auto_unfold_hover = true,
     },
 <
-
 
 
 
@@ -591,7 +604,6 @@ it using `outline_window.winhl`: please see |outline-highlights|.
 
 
 
-
 BLEND CURSOR WITH CURSORLINE ~
 
 'Single' cursorline
@@ -604,7 +616,6 @@ BLEND CURSOR WITH CURSORLINE ~
 <
 
 This will be how the outline window looks like when focused:
-
 
 
 Some may find this unhelpful, but one may argue that elements in each row of
@@ -628,6 +639,31 @@ that simply returns in plain text, the first letter of the given kind.
 The fetcher function, if provided, is checked first before using `icon_source`
 and `icons` as fallback.
 
+
+
+DISABLE ICONS ~
+
+Disable all icons:
+
+>lua
+    symbols = {
+      icon_fetcher = function(_) return "" end,
+    }
+<
+
+Disable icons for specific kinds, and for others use lspkind:
+
+>lua
+    symbols = {
+      icon_fetcher = function(k)
+        if k == 'String' then
+          return ""
+        end
+        return false
+      end,
+      icon_source = 'lspkind',
+    }
+<
 
 
 
