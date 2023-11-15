@@ -527,8 +527,6 @@ function M.open_outline(opts)
     local found = providers.request_symbols(handler, opts)
     if not found then
       vim.notify("[outline]: No providers found for current buffer", vim.log.levels.WARN)
-    -- else
-    --   print("Using provider ".._G._symbols_outline_current_provider.name.."...")
     end
   end
 end
@@ -591,7 +589,7 @@ end
 function M.show_status()
   if M.has_provider() then
     print("Current provider:")
-    print('  ' .. _G._symbols_outline_current_provider.name)
+    print('  ' .. _G._outline_current_provider.name)
     if M.view:is_open() then
       print("Outline window is open.")
     else
@@ -612,9 +610,9 @@ end
 function M.has_provider()
   local winid = vim.fn.win_getid()
   if M.view:is_open() and winid == M.view.winnr then
-    return _G._symbols_outline_current_provider ~= nil
+    return _G._outline_current_provider ~= nil
   end
-  return providers.has_provider() and _G._symbols_outline_current_provider
+  return providers.has_provider() and _G._outline_current_provider
 end
 
 local function setup_commands()

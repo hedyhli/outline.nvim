@@ -234,7 +234,7 @@ function M.resolve_config()
 end
 
 function M.setup(options)
-  vim.g.symbols_outline_loaded = 1
+  vim.g.outline_loaded = 1
   M.o = vim.tbl_deep_extend('force', {}, M.defaults, options or {})
   local guides = M.o.guides
   if type(guides) == 'boolean' and guides then
