@@ -776,7 +776,7 @@ Key:
 
 - Preview / Hover
   - ✅ Configurable winhighlight options for preview window (like nvim-cmp)
-  (simrat39/symbols-outline#128)
+  (simrat39/symbols-outline.nvim#128)
   - ✅ Configurable width and height of preview window (simrat39/symbols-outline.nvim#130)
 
 - View
