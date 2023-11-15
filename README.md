@@ -378,39 +378,62 @@ A fallback is always used if the previous candidate returned a falsey value.
 
 ## Commands
 
-- **:Outline[!]**
+- **:Outline[!]** &nbsp;&nbsp;&nbsp;&nbsp; ✅ bang ✅ mods
 
   Toggle outline. With bang (`!`) the cursor focus stays in your
   original window after opening the outline window. Set `focus_on_open = true` to
   always use this behaviour.
 
-- **:OutlineOpen[!]**
+  You can use command modifiers `topleft`/`aboveleft`/`botright`/`belowright`
+  on this command to control how the outline window split is created. Other
+  modifiers are ignored.
+
+  Example:
+```vim
+" in config: position='right'
+:topleft Outline     " opens with 'topleft vsplit'
+:belowright Outline  " opens with 'belowright vsplit'
+:Outline             " opens with 'botright vsplit'
+```
+
+- **:OutlineOpen[!]** &nbsp;&nbsp;&nbsp;&nbsp; ✅ bang ✅ mods
 
   Open outline. With bang (`!`) the cursor focus stays in your original
   window after opening the outline window. Set `focus_on_open = true` to always
   use this behaviour.
 
-- **:OutlineClose**
+  You can use command modifiers `topleft`/`aboveleft`/`botright`/`belowright`
+  on this command to control how the outline window split is created. Other
+  modifiers are ignored.
+
+```vim
+" in config: position='left'
+:aboveleft OutlineOpen   " opens with 'aboveleft vsplit'
+:belowright OutlineOpen  " opens with 'belowright vsplit'
+:OutlineOpen             " opens with 'topleft vsplit'
+```
+
+- **:OutlineClose** &nbsp;&nbsp;&nbsp;&nbsp; ❌ bang ❌ mods
 
   Close outline
 
-- **:OutlineFocus**
+- **:OutlineFocus** &nbsp;&nbsp;&nbsp;&nbsp; ❌ bang ❌ mods
 
   Toggle focus between outline and code/source window
 
-- **:OutlineFocusOutline**
+- **:OutlineFocusOutline** &nbsp;&nbsp;&nbsp;&nbsp; ❌ bang ❌ mods
 
   Focus on outline
 
-- **:OutlineFocusCode**
+- **:OutlineFocusCode** &nbsp;&nbsp;&nbsp;&nbsp; ❌ bang ❌ mods
 
   Focus on source window
 
-- **:OutlineStatus**
+- **:OutlineStatus** &nbsp;&nbsp;&nbsp;&nbsp; ❌ bang ❌ mods
 
   Display current provider and outline window status in the messages area.
 
-- **:OutlineFollow[!]**
+- **:OutlineFollow[!]** &nbsp;&nbsp;&nbsp;&nbsp; ✅ bang ❌ mods
 
   Go to corresponding node in outline based on cursor position in code, and
   focus on the outline window.

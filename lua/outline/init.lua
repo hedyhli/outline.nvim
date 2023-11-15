@@ -425,7 +425,16 @@ local function handler(response, opts)
 
   M.state.code_win = vim.api.nvim_get_current_win()
 
+  if opts and opts.on_symbols then
+    opts.on_symbols()
+  end
+
   M.view:setup_view()
+
+  if opts and opts.on_outline_setup then
+    opts.on_outline_setup()
+  end
+
   -- clear state when buffer is closed
   vim.api.nvim_buf_attach(M.view.bufnr, false, {
     on_detach = function(_, _)
@@ -449,7 +458,9 @@ local function handler(response, opts)
 end
 
 ---@class outline.OutlineOpts
----@field focus_outline boolean
+---@field focus_outline boolean?
+---@field on_symbols function?
+---@field on_outline_setup function?
 
 ---Set position of outline window to match cursor position in code, return
 ---whether the window is just newly opened (previously not open).
@@ -508,12 +519,29 @@ function M.toggle_outline(opts)
   end
 end
 
--- Used for Outline user command
-local function _cmd_toggle_outline(opts)
-  if opts.bang then
-    M.toggle_outline({ focus_outline = false })
-  else
-    M.toggle_outline({ focus_outline = true })
+local function _cmd_open_with_mods(fn)
+  return function(opts)
+    local old_sc, use_old_sc
+    local split = opts.smods.split
+    if split ~= "" then
+      old_sc = cfg.o.outline_window.split_command
+      use_old_sc = true
+      cfg.o.outline_window.split_command = split .. ' vsplit'
+    end
+
+    local function on_outline_setup()
+      if use_old_sc then
+        cfg.o.outline_window.split_command = old_sc
+        -- the old option should already have been resolved during set up
+      end
+    end
+
+    if opts.bang then
+      fn({ focus_outline = false, on_outline_setup = on_outline_setup })
+    else
+      fn({ focus_outline = true, on_outline_setup = on_outline_setup })
+    end
+
   end
 end
 
@@ -528,14 +556,6 @@ function M.open_outline(opts)
     if not found then
       vim.notify("[outline]: No providers found for current buffer", vim.log.levels.WARN)
     end
-  end
-end
-
-local function _cmd_open_outline(opts)
-  if opts.bang then
-    M.open_outline({ focus_outline = false })
-  else
-    M.open_outline({ focus_outline = true })
   end
 end
 
@@ -620,13 +640,13 @@ local function setup_commands()
     vim.api.nvim_create_user_command('Outline'..n, c, o)
   end
 
-  cmd('', _cmd_toggle_outline, {
+  cmd('', _cmd_open_with_mods(M.toggle_outline), {
     desc = "Toggle the outline window. \
 With bang, keep focus on initial window after opening.",
     nargs = 0,
     bang = true,
   })
-  cmd('Open', _cmd_open_outline, {
+  cmd('Open', _cmd_open_with_mods(M.open_outline), {
     desc = "With bang, keep focus on initial window after opening.",
     nargs = 0,
     bang = true,
