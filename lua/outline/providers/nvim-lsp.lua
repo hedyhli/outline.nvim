@@ -2,50 +2,63 @@ local config = require 'outline.config'
 local lsp_utils = require 'outline.utils.lsp_utils'
 local jsx = require 'outline.utils.jsx'
 
-local M = {}
+local M = {
+  name = 'lsp',
+  ---@type vim.lsp.client
+  client = nil,
+}
 
-local function getParams()
+function M.get_status()
+  if not M.client then
+    return "No clients"
+  end
+  return "client: "..M.client.name
+end
+
+local function get_params()
   return { textDocument = vim.lsp.util.make_text_document_params() }
 end
 
 function M.hover_info(bufnr, params, on_info)
-  local clients = vim.lsp.buf_get_clients(bufnr)
-  local used_client
+  local clients = vim.lsp.get_active_clients({ bufnr = bufnr })
+  local use_client
 
-  for id, client in pairs(clients) do
-    if config.is_client_blacklisted(id) then
+  for _, client in ipairs(clients) do
+    if config.is_client_blacklisted(client) then
       goto continue
     else
       if client.server_capabilities.hoverProvider then
-        used_client = client
+        use_client = client
+        M.client = client
         break
       end
     end
     ::continue::
   end
 
-  if not used_client then
+  if not use_client then
     on_info(nil, {
       contents = {
         kind = 'markdown',
-        content = { 'No extra information availaible!' },
+        content = { 'No extra information availaible' },
       },
     })
+    return
   end
 
-  used_client.request('textDocument/hover', params, on_info, bufnr)
+  use_client.request('textDocument/hover', params, on_info, bufnr)
 end
 
--- probably change this
 function M.should_use_provider(bufnr)
-  local clients = vim.lsp.buf_get_clients(bufnr)
+  local clients = vim.lsp.get_active_clients({ bufnr = bufnr })
   local ret = false
 
-  for id, client in pairs(clients) do
-    if config.is_client_blacklisted(id) then
+  for _, client in ipairs(clients) do
+    if config.is_client_blacklisted(client) then
       goto continue
     else
       if client.server_capabilities.documentSymbolProvider then
+        M.client = client
         ret = true
         break
       end
@@ -73,7 +86,7 @@ function M.request_symbols(on_symbols, opts)
   vim.lsp.buf_request_all(
     0,
     'textDocument/documentSymbol',
-    getParams(),
+    get_params(),
     function (response)
       response = M.postprocess_symbols(response)
       on_symbols(response, opts)

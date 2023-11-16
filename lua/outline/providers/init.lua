@@ -1,44 +1,43 @@
-local M = {}
+local cfg = require "outline.config"
 
--- NOTE: There is in fact a markdown LSP that can provide symbols. However on
--- buffer open the LSP may not be attached immediately. Before the LSP is ready
--- if the user opens the outline, our own markdown provider will be used. After
--- refreshing/reopening, the provider will then switch to the LSP (if the user
--- has a markdown LSP).
-local providers = {
-  'outline/providers/nvim-lsp',
-  'outline/providers/coc',
-  'outline/providers/markdown',
-}
+local M = {}
+local import_prefix = "outline/providers/"
 
 _G._outline_current_provider = nil
 
-function M.has_provider()
-  local ret = false
-  for _, value in ipairs(providers) do
-    local provider = require(value)
+
+function M.find_provider()
+  if not M.providers then
+    M.providers = vim.tbl_map(function(p) return import_prefix..p end, cfg.get_providers())
+  end
+  for _, name in ipairs(M.providers) do
+    local provider = require(name)
     if provider.should_use_provider(0) then
-      ret = true
-      break
+      return provider, name
     end
   end
-  return ret
+  return nil, nil
+end
+
+---@return boolean found_provider
+function M.has_provider()
+  return M.find_provider() ~= nil
 end
 
 ---@param on_symbols function
 ---@param opts outline.OutlineOpts?
 ---@return boolean found_provider
 function M.request_symbols(on_symbols, opts)
-  for _, value in ipairs(providers) do
-    local provider = require(value)
-    if provider.should_use_provider(0) then
-      _G._outline_current_provider = provider
-      _G._outline_current_provider.name = value
-      provider.request_symbols(on_symbols, opts)
-      return true
-    end
+  local provider, name = M.find_provider()
+  if not provider then
+    return false
   end
-  return false
+  _G._outline_current_provider = provider
+  if not provider.name then
+    _G._outline_current_provider.name = name
+  end
+  provider.request_symbols(on_symbols, opts)
+  return true
 end
 
 return M

@@ -1,4 +1,7 @@
-local M = {}
+local M = {
+  name = 'coc',
+}
+
 
 function M.should_use_provider(_)
   local not_coc_installed = vim.fn.exists '*CocActionAsync' == 0

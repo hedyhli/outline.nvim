@@ -71,6 +71,7 @@ M.defaults = {
     up_and_jump = '<C-k>',
   },
   providers = {
+    priority = { 'lsp', 'coc', 'markdown' },
     lsp = {
       blacklist_clients = {},
     },
@@ -182,12 +183,33 @@ function M.is_symbol_blacklisted(kind)
   return has_value(M.o.symbols.blacklist, kind)
 end
 
-function M.is_client_blacklisted(client_id)
-  local client = vim.lsp.get_client_by_id(client_id)
+---@param client vim.lsp.client|number
+function M.is_client_blacklisted(client)
   if not client then
     return false
   end
+  if type(client) == 'number' then
+    client = vim.lsp.get_client_by_id(client)
+    if not client then
+      return false
+    end
+  end
   return has_value(M.o.providers.lsp.blacklist_clients, client.name)
+end
+
+function M.get_providers()
+  if M.providers then
+    return M.providers
+  end
+
+  M.providers = {}
+  for _, p in ipairs(M.o.providers.priority) do
+    if p == 'lsp' then
+      p = 'nvim-lsp' -- due to legacy reasons
+    end
+    table.insert(M.providers, p)
+  end
+  return M.providers
 end
 
 function M.show_help()

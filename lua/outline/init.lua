@@ -606,32 +606,50 @@ end
 
 ---Display outline window status in the message area.
 function M.show_status()
-  if M.has_provider() then
-    print("Current provider:")
-    print('  ' .. _G._outline_current_provider.name)
+  -- TODO: Use a floating window instead
+  local p = _G._outline_current_provider
+  if not M.is_active() then
+    p = providers.find_provider()
+  end
+
+  if p ~= nil then
+    print("Current provider: " .. p.name)
+    if p.get_status then
+      print(p.get_status())
+      print()
+    end
+
     if M.view:is_open() then
       print("Outline window is open.")
     else
       print("Outline window is not open.")
     end
+
     if require('outline.preview').has_code_win() then
       print("Code window is active.")
     else
-      print("Warning: code window is either closed or invalid. Please close and reopen the outline window.")
+      print("Code window is either closed or invalid. Please close and reopen the outline window.")
     end
   else
     print("No providers")
   end
 end
 
+function M.is_active()
+  local winid = vim.fn.win_getid()
+  if M.view:is_open() and winid == M.view.winnr then
+    return true
+  end
+  return false
+end
+
 ---Whether there is currently an available provider.
 ---@return boolean has_provider
 function M.has_provider()
-  local winid = vim.fn.win_getid()
-  if M.view:is_open() and winid == M.view.winnr then
+  if M.is_active() then
     return _G._outline_current_provider ~= nil
   end
-  return providers.has_provider() and _G._outline_current_provider
+  return providers.has_provider()
 end
 
 local function setup_commands()

@@ -1,9 +1,20 @@
+-- NOTE
 -- Our own markdown provider is used because legacy symbols-outline considered
 -- the case where markdown does not have an LSP. However, it does, so as of now
 -- this module is kept for use when user opens symbols outline before the
--- markdown LSP is ready. Please also see comment in providers/init.lua
+-- markdown LSP is ready.
+--
+-- On buffer open the LSP may not be attached immediately. Before the LSP is
+-- ready if the user opens the outline, our own markdown provider will be used.
+-- After refreshing/reopening, the provider will then switch to the LSP (if the
+-- user has a markdown LSP). That is, if the user has an applicable markdown LSP.
+--
+-- If they don't this provider will always work as usual.
 
-local M = {}
+local M = {
+  name = 'markdown',
+}
+
 
 ---@return boolean ft_is_markdown
 function M.should_use_provider(bufnr)
