@@ -40,6 +40,7 @@ Table of contents
 * [Configuration](#configuration)
   * [Terminology](#terminology)
   * [Default options](#default-options)
+  * [Symbols table](#symbols-table)
 * [Commands](#commands)
 * [Default keymaps](#default-keymaps)
 * [Highlights](#highlights)
@@ -310,6 +311,7 @@ Pass a table to the setup call with your configuration options.
   },
 
   providers = {
+    priority = { 'lsp', 'coc', 'markdown' },
     lsp = {
       -- Lsp client names to ignore
       blacklist_clients = {},
@@ -317,9 +319,20 @@ Pass a table to the setup call with your configuration options.
   },
 
   symbols = {
-    -- Symbols to ignore.
-    -- Possible values are the Keys in the icons table below.
-    blacklist = {},
+    -- Filter by kinds (string) for symbols in the outline.
+    -- Possible kinds are the Keys in the icons table below.
+    -- A filter list is a string[] with an optional exclude (boolean) field.
+    -- The symbols.filter option takes either a filter list or ft:filterList
+    -- key-value pairs.
+    -- Put  exclude=true  in the string list to filter by excluding the list of
+    -- kinds instead.
+    -- Include all except String and Constant:
+    --   filter = { 'String', 'Constant', exclude = true }
+    -- Only include Package, Module, and Function:
+    --   filter = { 'Package', 'Module', 'Function' }
+    -- See more examples below.
+    filter = nil,
+
     -- You can use a custom function that returns the icon for each symbol kind.
     -- This function takes a kind (string) as parameter and should return an
     -- icon as string.
@@ -372,6 +385,38 @@ Pass a table to the setup call with your configuration options.
 
 To find out exactly what some of the options do, please see the
 [recipes](#recipes) section at the bottom for screen-recordings/shots.
+
+### Symbols table
+
+**filter**
+
+Include all symbols except kinds String and Variable:
+```lua
+symbols.filter = { 'String', 'Variable', exclude=true }
+```
+
+Include only Function symbols:
+```lua
+symbols.filter = { 'Function' }
+```
+
+Per-filetype filtering example:
+- For python, only include function and class
+- For other file types, include all but string
+```lua
+symbols.filter = {
+  ['*'] = { 'String', exclude=true },
+  python = { 'Function', 'Class' },
+}
+```
+
+Note how the python filter list and the default filter list is NOT merged.
+
+Setting any filter list to `nil` or `false` means include all symbols, where a
+filter list is an array of strings with an optional `exclude` field.
+
+
+**icons**
 
 The order in which the sources for icons are checked is:
 
