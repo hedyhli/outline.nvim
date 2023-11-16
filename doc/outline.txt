@@ -342,7 +342,7 @@ A fallback is always used if the previous candidate returned a falsey value.
 
 COMMANDS                                                    *outline-commands*
 
-- **:Outline[!]**      ✅ bang ✅ mods
+- **:Outline[!]** (✓ bang ✓ mods)
     Toggle outline. With bang (`!`) the cursor focus stays in your original window
     after opening the outline window. Set `focus_on_open = true` to always use this
     behaviour.
@@ -356,7 +356,7 @@ COMMANDS                                                    *outline-commands*
         :belowright Outline  " opens with 'belowright vsplit'
         :Outline             " opens with 'botright vsplit'
     <
-- **:OutlineOpen[!]**      ✅ bang ✅ mods
+- **:OutlineOpen[!]** (✓ bang ✓ mods)
     Open outline. With bang (`!`) the cursor focus stays in your original window
     after opening the outline window. Set `focus_on_open = true` to always use this
     behaviour.
@@ -371,17 +371,13 @@ COMMANDS                                                    *outline-commands*
     :OutlineOpen             " opens with 'topleft vsplit'
 <
 
-- **:OutlineClose**      ❌ bang ❌ mods
-    Close outline
-- **:OutlineFocus**      ❌ bang ❌ mods
-    Toggle focus between outline and code/source window
-- **:OutlineFocusOutline**      ❌ bang ❌ mods
-    Focus on outline
-- **:OutlineFocusCode**      ❌ bang ❌ mods
-    Focus on source window
-- **:OutlineStatus**      ❌ bang ❌ mods
-    Display current provider and outline window status in the messages area.
-- **:OutlineFollow[!]**      ✅ bang ❌ mods
+- **:OutlineClose**: Close outline
+- **:OutlineFocus**: Toggle focus between outline and code/source window
+- **:OutlineFocusOutline**: Focus on outline
+- **:OutlineFocusCode**: Focus on source window
+- **:OutlineStatus**: Display current provider and outline window status in the
+    messages area
+- **:OutlineFollow[!]** (✓ bang × mods)
     Go to corresponding node in outline based on cursor position in code, and focus
     on the outline window.
     With bang (`!`), retain focus on the code window.
@@ -389,7 +385,7 @@ COMMANDS                                                    *outline-commands*
     `goto_location` sets cursor of code window to the position of outline window,
     whereas this command sets position in outline window to the cursor position of
     code window.
-    With bang, it can be understood as the converse of `focus_location`.
+    With bang, it can be understood as the converse of `peek_location`.
 
 
 DEFAULT KEYMAPS                                      *outline-default-keymaps*
