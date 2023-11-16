@@ -32,6 +32,7 @@ M.defaults = {
     show_cursorline = true,
     hide_cursor = false,
     winhl = "OutlineDetails:Comment,OutlineLineno:LineNr",
+    jump_highlight_duration = 500,
   },
   preview_window = {
     auto_preview = false,

@@ -46,6 +46,7 @@ Table of contents
 * [Highlights](#highlights)
   * [Outline window](#outline-window)
   * [Preview window](#preview-window)
+  * [Other highlight groups](#other-highlight-groups)
 * [Lua API](#lua-api)
 * [Tips](#tips)
 * [Recipes](#recipes)
@@ -177,6 +178,9 @@ Pass a table to the setup call with your configuration options.
     auto_close = false,
     -- Automatically scroll to the location in code when navigating outline window.
     auto_jump = false,
+    -- boolean or integer for milliseconds duration to apply a temporary highlight
+    -- when jumping. false to disable.
+    jump_highlight_duration = 300,
 
     -- Vim options for the outline window
     show_numbers = false,
@@ -526,7 +530,7 @@ outline_window = {
 },
 ```
 
-Possible highlight groups provided by outline.nvim to customize:
+Possible highlight groups for the outline window:
 
 | Highlight            | Description                                          |
 | -------------------- | ---------------------------------------------------- |
@@ -549,6 +553,15 @@ preview_window = {
   winhl = "",
 },
 ```
+
+### Other highlight groups
+
+| Highlight            | Description                                                |
+| -------------------- | ---------------------------------------------------------- |
+| OutlineJumpHighlight | Used for indicating cursor position when jumping/focusing  |
+
+You can also use `outline_window.jump_highlight_duration` to customize in milliseconds,
+how long the highlight is applied for.
 
 ## Lua API
 

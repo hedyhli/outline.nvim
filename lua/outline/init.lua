@@ -105,7 +105,17 @@ function M.__goto_location(change_focus)
     M.state.code_win,
     { node.line + 1, node.character }
   )
-  utils.flash_highlight(M.state.code_win, node.line + 1, true)
+
+  if vim.fn.hlexists('OutlineJumpHighlight') == 0 then
+    vim.api.nvim_set_hl(0, 'OutlineJumpHighlight', { link = 'Visual' })
+  end
+  utils.flash_highlight(
+    M.state.code_win,
+    node.line + 1,
+    cfg.o.outline_window.jump_highlight_duration,
+    'OutlineJumpHighlight'
+  )
+
   if change_focus then
     vim.fn.win_gotoid(M.state.code_win)
   end

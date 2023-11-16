@@ -111,9 +111,12 @@ function M.merge_items_rec(new_node, old_node, index, parent)
 end
 
 function M.flash_highlight(winnr, lnum, durationMs, hl_group)
+  if durationMs == false then
+    return
+  end
   hl_group = hl_group or "Visual"
   if durationMs == true or durationMs == 1 then
-    durationMs = 300
+    durationMs = 500
   end
   local bufnr = vim.api.nvim_win_get_buf(winnr)
   local ns = vim.api.nvim_buf_add_highlight(bufnr, 0, hl_group, lnum - 1, 0, -1)
