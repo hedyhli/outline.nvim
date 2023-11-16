@@ -1,24 +1,27 @@
 <!-- panvimdoc-ignore-start -->
 
-**A note on fork status**
+# Fork status
 
-This is a fork of the original symbols-outline.nvim which fixes a lot of bugs
-from the original repo, and also adds many more features ([see #12 on
-github](https://github.com/hedyhli/outline.nvim/issues/12)).
+This is a fork of the original symbols-outline.nvim which fixed a lot of bugs
+from the original repo, and also added many more features.
+
+You can see all the changes from the original plugin before v1.0.0 in [#12 on
+github](https://github.com/hedyhli/outline.nvim/issues/12).
 
 It started out as a personal fork which I maintain for my personal use-cases,
 soon more and more features found their way in and I started introducing
-significant changes. However, due to simrat's status with the original plugin,
-I eventually decided to rename and detach the fork, starting to work on this
-as a new plugin.
+significant changes.
 
-You can see all the changes from the original plugin before fork detach in [#12
-on github](https://github.com/hedyhli/outline.nvim/issues/12).
+However, due to simrat's status with the original plugin, I eventually decided
+to rename and detach the fork, starting to work on this as a new plugin.
+
+## Migrating from symbols-outline.nvim
+
+If you have existing setup opts for symbols-outline.nvim, you can convert it to
+be usable for outline.nvim using this script: [scripts/convert-symbols-outline-opts.lua](scripts/convert-symbols-outline-opts.lua).
 
 
 ---
-
-<!-- panvimdoc-ignore-start -->
 
 # outline.nvim
 
