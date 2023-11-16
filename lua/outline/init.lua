@@ -497,9 +497,8 @@ end
 
 function M._map_follow_cursor()
   if not M.follow_cursor({ focus_outline = true }) then
-    vim.notify(
-      "Code window no longer active. Try closing and reopening the outline.",
-      vim.log.levels.ERROR
+    utils.echo(
+      "Code window no longer active. Try closing and reopening the outline."
     )
   end
 end
@@ -554,7 +553,7 @@ function M.open_outline(opts)
   if not M.view:is_open() then
     local found = providers.request_symbols(handler, opts)
     if not found then
-      vim.notify("[outline]: No providers found for current buffer", vim.log.levels.WARN)
+      utils.echo("No providers found for current buffer")
     end
   end
 end

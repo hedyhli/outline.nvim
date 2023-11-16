@@ -1,4 +1,4 @@
-local vim = vim
+local utils = require('outline.utils')
 
 local M = {}
 
@@ -198,7 +198,7 @@ end
 ---Check for inconsistent or mutually exclusive opts. Does not alter the opts
 function M.check_config()
   if M.o.outline_window.hide_cursor and not M.o.outline_window.show_cursorline then
-    vim.notify("[outline.config]: hide_cursor enabled WITHOUT cursorline enabled!", vim.log.levels.ERROR)
+    utils.echo("config", "hide_cursor enabled without cursorline enabled!")
   end
 end
 

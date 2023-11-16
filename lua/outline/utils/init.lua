@@ -55,7 +55,7 @@ end
 ---@param old_node table Old node
 ---@param index? number Index of old_item in parent
 ---@param parent? table Parent of old_item
-M.merge_items_rec = function(new_node, old_node, index, parent)
+function M.merge_items_rec(new_node, old_node, index, parent)
   local failed = false
 
   if not new_node or not old_node then
@@ -110,7 +110,7 @@ M.merge_items_rec = function(new_node, old_node, index, parent)
   end
 end
 
-M.flash_highlight = function(winnr, lnum, durationMs, hl_group)
+function M.flash_highlight(winnr, lnum, durationMs, hl_group)
   hl_group = hl_group or "Visual"
   if durationMs == true or durationMs == 1 then
     durationMs = 300
@@ -121,6 +121,22 @@ M.flash_highlight = function(winnr, lnum, durationMs, hl_group)
     pcall(vim.api.nvim_buf_clear_namespace, bufnr, ns, 0, -1)
   end
   vim.defer_fn(remove_highlight, durationMs)
+end
+
+---@param module string   Used as message if second param omitted
+---@param message string?
+function M.echo(module, message)
+  if not message then
+    message = module
+    module = ""
+  end
+  local prefix = "outline"
+  if module ~= "" then
+    prefix = prefix.."."..module
+  end
+  local prefix_chunk = { '('..prefix..') ', "WarningMsg" }
+  -- For now we don't echo much, so add all to history
+  vim.api.nvim_echo({ prefix_chunk, { message } }, true, {})
 end
 
 return M
