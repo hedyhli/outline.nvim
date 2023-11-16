@@ -1,4 +1,4 @@
-local so = require 'outline'
+local outline = require 'outline'
 
 local M = {}
 
@@ -14,10 +14,10 @@ local function get_rename_params(node, winnr)
 end
 
 function M.rename()
-  local current_line = vim.api.nvim_win_get_cursor(so.view.winnr)[1]
-  local node = so.state.flattened_outline_items[current_line]
+  local current_line = vim.api.nvim_win_get_cursor(outline.view.winnr)[1]
+  local node = outline.state.flattened_outline_items[current_line]
 
-  local params = get_rename_params(node, so.state.code_win)
+  local params = get_rename_params(node, outline.state.code_win)
 
   local new_name = vim.fn.input({ prompt = 'New Name: ', default = node.name })
   if not new_name or new_name == '' or new_name == node.name then

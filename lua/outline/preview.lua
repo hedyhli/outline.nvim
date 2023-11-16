@@ -1,4 +1,4 @@
-local so = require 'outline'
+local outline = require 'outline'
 local cfg = require 'outline.config'
 local hover = require 'outline.hover'
 
@@ -11,15 +11,15 @@ local state = {
 
 local function is_current_win_outline()
   local curwin = vim.api.nvim_get_current_win()
-  return curwin == so.view.winnr
+  return curwin == outline.view.winnr
 end
 
 local function has_code_win()
-  local isWinValid = vim.api.nvim_win_is_valid(so.state.code_win)
+  local isWinValid = vim.api.nvim_win_is_valid(outline.state.code_win)
   if not isWinValid then
     return false
   end
-  local bufnr = vim.api.nvim_win_get_buf(so.state.code_win)
+  local bufnr = vim.api.nvim_win_get_buf(outline.state.code_win)
   local isBufValid = vim.api.nvim_buf_is_valid(bufnr)
   return isBufValid
 end
@@ -28,7 +28,7 @@ M.has_code_win = has_code_win
 
 local function get_width_offset()
   ---@type integer
-  local outline_winnr = so.view.winnr
+  local outline_winnr = outline.view.winnr
   local width = cfg.get_preview_width() + 3
   local has_numbers = vim.api.nvim_win_get_option(outline_winnr, "number")
   has_numbers = has_numbers or vim.api.nvim_win_get_option(outline_winnr, "relativenumber")
@@ -51,13 +51,13 @@ local function get_height()
 end
 
 local function get_hovered_node()
-  local hovered_line = vim.api.nvim_win_get_cursor(so.view.winnr)[1]
-  local node = so.state.flattened_outline_items[hovered_line]
+  local hovered_line = vim.api.nvim_win_get_cursor(outline.view.winnr)[1]
+  local node = outline.state.flattened_outline_items[hovered_line]
   return node
 end
 
 local function update_preview(code_buf)
-  code_buf = code_buf or vim.api.nvim_win_get_buf(so.state.code_win)
+  code_buf = code_buf or vim.api.nvim_win_get_buf(outline.state.code_win)
 
   local node = get_hovered_node()
   if not node then
@@ -75,7 +75,7 @@ local function update_preview(code_buf)
 end
 
 local function setup_preview_buf()
-  local code_buf = vim.api.nvim_win_get_buf(so.state.code_win)
+  local code_buf = vim.api.nvim_win_get_buf(outline.state.code_win)
   local ft = vim.api.nvim_buf_get_option(code_buf, 'filetype')
 
   local function treesitter_attach()

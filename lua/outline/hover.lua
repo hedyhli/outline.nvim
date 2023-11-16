@@ -1,4 +1,4 @@
-local so = require 'outline'
+local outline = require 'outline'
 local cfg = require 'outline.config'
 local util = vim.lsp.util
 
@@ -17,10 +17,10 @@ end
 
 -- handler yoinked from the default implementation
 function M.show_hover()
-  local current_line = vim.api.nvim_win_get_cursor(so.view.winnr)[1]
-  local node = so.state.flattened_outline_items[current_line]
+  local current_line = vim.api.nvim_win_get_cursor(outline.view.winnr)[1]
+  local node = outline.state.flattened_outline_items[current_line]
 
-  local hover_params = get_hover_params(node, so.state.code_win)
+  local hover_params = get_hover_params(node, outline.state.code_win)
 
   vim.lsp.buf_request(
     hover_params.bufnr,
