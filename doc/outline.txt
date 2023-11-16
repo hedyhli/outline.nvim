@@ -109,7 +109,7 @@ DEFAULT OPTIONS ~
 
 Pass a table to the setup call with your configuration options.
 
-Default values are shown:
+Show defaults ~
 
 >lua
     {
