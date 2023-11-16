@@ -7,23 +7,6 @@ local folding = require 'outline.folding'
 
 local M = {}
 
----@class outline.SymbolNode
----@field name string
----@field depth integer
----@field parent outline.SymbolNode
----@field deprecated boolean
----@field kind integer|string
----@field icon string
----@field detail string
----@field line integer
----@field character integer
----@field range_start integer
----@field range_end integer
----@field isLast boolean
----@field hierarchy boolean
----@field children? outline.SymbolNode[]
----@field traversal_child integer
-
 ---Parses result from LSP into a reorganized tree of symbols (not flattened,
 -- simply reoganized by merging each property table from the arguments into a
 -- table for each symbol)
@@ -31,12 +14,14 @@ local M = {}
 ---@param depth number? The current depth of the symbol in the hierarchy.
 ---@param hierarchy table? A table of booleans which tells if a symbols parent was the last in its group.
 ---@param parent table? A reference to the current symbol's parent in the function's recursion
+---@param bufnr integer The buffer number which the result was from
 ---@return outline.SymbolNode[]
-local function parse_result(result, depth, hierarchy, parent)
+local function parse_result(result, depth, hierarchy, parent, bufnr)
   local ret = {}
 
   for index, value in pairs(result) do
-    if not cfg.is_symbol_blacklisted(symbols.kinds[value.kind]) then
+    -- FIXME: If a parent was excluded, all children will not be considered
+    if cfg.should_include_symbol(symbols.kinds[value.kind], bufnr) then
       -- the hierarchy is basically a table of booleans which
       -- tells whether the parent was the last in its group or
       -- not
@@ -74,7 +59,7 @@ local function parse_result(result, depth, hierarchy, parent)
         -- copy by value because we dont want it messing with the hir table
         local child_hir = t_utils.array_copy(hir)
         table.insert(child_hir, isLast)
-        children = parse_result(value.children, level + 1, child_hir, node)
+        children = parse_result(value.children, level + 1, child_hir, node, bufnr)
       else
         value.children = {}
       end
@@ -89,11 +74,12 @@ end
 --'textDocument/documentSymbol', buf_request_all.
 ---Used when refreshing and setting up new symbols
 ---@param response table The result from buf_request_all
+---@param bufnr integer
 ---@return outline.SymbolNode[]
-function M.parse(response)
+function M.parse(response, bufnr)
   local sorted = lsp_utils.sort_symbols(response)
 
-  return parse_result(sorted, nil, nil)
+  return parse_result(sorted, nil, nil, nil, bufnr)
 end
 
 ---Iterator that traverses the tree parent first before children, returning each node.

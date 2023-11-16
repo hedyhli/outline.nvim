@@ -78,10 +78,10 @@ local function __refresh()
         return
       end
 
-      local items = parser.parse(response)
-      _merge_items(items)
-
       M.state.code_win = vim.api.nvim_get_current_win()
+
+      local items = parser.parse(response, vim.api.nvim_get_current_buf())
+      _merge_items(items)
 
       _update_lines()
     end
@@ -445,7 +445,7 @@ local function handler(response, opts)
   setup_keymaps(M.view.bufnr)
   setup_buffer_autocmd()
 
-  local items = parser.parse(response)
+  local items = parser.parse(response, vim.api.nvim_win_get_buf(M.state.code_win))
 
   M.state.outline_items = items
   M.state.flattened_outline_items = writer.make_outline(M.view.bufnr, items, M.state.code_win)
@@ -456,11 +456,6 @@ local function handler(response, opts)
     vim.fn.win_gotoid(M.state.code_win)
   end
 end
-
----@class outline.OutlineOpts
----@field focus_outline boolean?
----@field on_symbols function?
----@field on_outline_setup function?
 
 ---Set position of outline window to match cursor position in code, return
 ---whether the window is just newly opened (previously not open).

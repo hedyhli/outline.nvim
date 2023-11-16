@@ -73,27 +73,6 @@ function M.add_hover_highlights (bufnr, nodes)
   end
 end
 
----@class outline.FlatSymbolNode
----@field name string
----@field depth integer
----@field parent outline.SymbolNode
----@field deprecated boolean
----@field kind integer|string
----@field icon string
----@field detail string
----@field line integer
----@field character integer
----@field range_start integer
----@field range_end integer
----@field isLast boolean
----@field hierarchy boolean
----@field children? outline.SymbolNode[]
----@field traversal_child integer
----@field line_in_outline integer
----@field prefix_length integer
----@field hovered boolean
----@field folded boolean
-
 ---The quintessential function of this entire plugin. Clears virtual text,
 -- parses each node and replaces old lines with new lines to be written for the
 -- outline buffer.

@@ -33,14 +33,15 @@ local your_new_opts = --[[put the cursor on this line]] {
 ---------------------------------------------------------------------
 ----- BEGIN SCRIPT --------------------------------------------------
 ---------------------------------------------------------------------
-local newopts = {}
+local newopts = { symbols = {} }
 
-if opts.symbols or opts.symbol_blacklist then
-  newopts.symbols = {
-    icons = opts.symbols,
-    blacklist = opts.symbol_blacklist,
-  }
+if opts.symbols then
+  newopts.symbols.icons = opts.symbols
   opts.symbols = nil
+end
+if opts.symbol_blacklist then
+  newopts.symbols.filter = opts.symbol_blacklist
+  newopts.symbols.filter.exclude = true
   opts.symbol_blacklist = nil
 end
 
@@ -109,7 +110,7 @@ if opts and next(opts) ~= nil then
   end
 end
 
-for _, v in ipairs({'outline_items', 'outline_window', 'preview_window'}) do
+for _, v in ipairs({'outline_items', 'outline_window', 'preview_window', 'symbols'}) do
   if newopts[v] and next(newopts[v]) == nil then
     newopts[v] = nil
   end
