@@ -383,7 +383,7 @@ A fallback is always used if the previous candidate returned a falsey value.
 
 ## Commands
 
-- **:Outline[!]** &nbsp;&nbsp;&nbsp;&nbsp; ✅ bang ✅ mods
+- **:Outline[!]** (✓ bang ✓ mods)
 
   Toggle outline. With bang (`!`) the cursor focus stays in your
   original window after opening the outline window. Set `focus_on_open = true` to
@@ -401,7 +401,7 @@ A fallback is always used if the previous candidate returned a falsey value.
 :Outline             " opens with 'botright vsplit'
 ```
 
-- **:OutlineOpen[!]** &nbsp;&nbsp;&nbsp;&nbsp; ✅ bang ✅ mods
+- **:OutlineOpen[!]** (✓ bang ✓ mods)
 
   Open outline. With bang (`!`) the cursor focus stays in your original
   window after opening the outline window. Set `focus_on_open = true` to always
@@ -418,27 +418,17 @@ A fallback is always used if the previous candidate returned a falsey value.
 :OutlineOpen             " opens with 'topleft vsplit'
 ```
 
-- **:OutlineClose** &nbsp;&nbsp;&nbsp;&nbsp; ❌ bang ❌ mods
+- **:OutlineClose**: Close outline
 
-  Close outline
+- **:OutlineFocus**: Toggle focus between outline and code/source window
 
-- **:OutlineFocus** &nbsp;&nbsp;&nbsp;&nbsp; ❌ bang ❌ mods
+- **:OutlineFocusOutline**: Focus on outline
 
-  Toggle focus between outline and code/source window
+- **:OutlineFocusCode**: Focus on source window
 
-- **:OutlineFocusOutline** &nbsp;&nbsp;&nbsp;&nbsp; ❌ bang ❌ mods
+- **:OutlineStatus**: Display current provider and outline window status in the messages area
 
-  Focus on outline
-
-- **:OutlineFocusCode** &nbsp;&nbsp;&nbsp;&nbsp; ❌ bang ❌ mods
-
-  Focus on source window
-
-- **:OutlineStatus** &nbsp;&nbsp;&nbsp;&nbsp; ❌ bang ❌ mods
-
-  Display current provider and outline window status in the messages area.
-
-- **:OutlineFollow[!]** &nbsp;&nbsp;&nbsp;&nbsp; ✅ bang ❌ mods
+- **:OutlineFollow[!]** (✓ bang × mods)
 
   Go to corresponding node in outline based on cursor position in code, and
   focus on the outline window.
@@ -450,7 +440,7 @@ A fallback is always used if the previous candidate returned a falsey value.
   whereas this command sets position in outline window to the cursor position of
   code window.
 
-  With bang, it can be understood as the converse of `focus_location`.
+  With bang, it can be understood as the converse of `peek_location`.
 
 
 ## Default keymaps
