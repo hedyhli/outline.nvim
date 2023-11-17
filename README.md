@@ -277,41 +277,41 @@ Pass a table to the setup call with your configuration options.
   -- Set to `{}` to disable. (Using 'nil' will fallback to default keys)
   keymaps = { 
     show_help = '?',
-    close = {"<Esc>", "q"},
+    close = {'<Esc>', 'q'},
     -- Jump to symbol under cursor.
     -- It can auto close the outline window when triggered, see
     -- 'auto_close' option above.
-    goto_location = "<Cr>",
+    goto_location = '<Cr>',
     -- Jump to symbol under cursor but keep focus on outline window.
-    peek_location = "o",
+    peek_location = 'o',
     -- Visit location in code and close outline immediately
-    goto_and_close = "<S-Cr>"
+    goto_and_close = '<S-Cr>'
     -- Change cursor position of outline window to match current location in code.
-    -- "Opposite" of goto/peek_location.
-    restore_location = "<C-g>",
+    -- 'Opposite' of goto/peek_location.
+    restore_location = '<C-g>',
     -- Open LSP/provider-dependent symbol hover information
-    hover_symbol = "<C-space>",
+    hover_symbol = '<C-space>',
     -- Preview location code of the symbol under cursor
-    toggle_preview = "K",
+    toggle_preview = 'K',
     -- Symbol actions
-    rename_symbol = "r",
-    code_actions = "a",
+    rename_symbol = 'r',
+    code_actions = 'a',
     -- These fold actions are collapsing tree nodes, not code folding
-    fold = "h",
-    unfold = "l",
-    fold_toggle = "<Tab>",
+    fold = 'h',
+    unfold = 'l',
+    fold_toggle = '<Tab>',
     -- Toggle folds for all nodes.
     -- If at least one node is folded, this action will fold all nodes.
     -- If all nodes are folded, this action will unfold all nodes.
-    fold_toggle_all = "<S-Tab>",
-    fold_all = "W",
-    unfold_all = "E",
-    fold_reset = "R",
+    fold_toggle_all = '<S-Tab>',
+    fold_all = 'W',
+    unfold_all = 'E',
+    fold_reset = 'R',
     -- Move down/up by one line and peek_location immediately.
     -- You can also use outline_window.auto_jump=true to do this for any
     -- j/k/<down>/<up>.
-    down_and_jump = "<C-j>",
-    up_and_jump = "<C-k>",
+    down_and_jump = '<C-j>',
+    up_and_jump = '<C-k>',
   },
 
   providers = {
@@ -348,34 +348,34 @@ Pass a table to the setup call with your configuration options.
     -- the custom mapping of icons specified below. The icons table is also
     -- needed for specifying hl group.
     icons = {
-      File = { icon = "󰈔", hl = "@text.uri" },
-      Module = { icon = "󰆧", hl = "@namespace" },
-      Namespace = { icon = "󰅪", hl = "@namespace" },
-      Package = { icon = "󰏗", hl = "@namespace" },
-      Class = { icon = "𝓒", hl = "@type" },
-      Method = { icon = "ƒ", hl = "@method" },
-      Property = { icon = "", hl = "@method" },
-      Field = { icon = "󰆨", hl = "@field" },
-      Constructor = { icon = "", hl = "@constructor" },
-      Enum = { icon = "ℰ", hl = "@type" },
-      Interface = { icon = "󰜰", hl = "@type" },
-      Function = { icon = "", hl = "@function" },
-      Variable = { icon = "", hl = "@constant" },
-      Constant = { icon = "", hl = "@constant" },
-      String = { icon = "𝓐", hl = "@string" },
-      Number = { icon = "#", hl = "@number" },
-      Boolean = { icon = "⊨", hl = "@boolean" },
-      Array = { icon = "󰅪", hl = "@constant" },
-      Object = { icon = "⦿", hl = "@type" },
-      Key = { icon = "🔐", hl = "@type" },
-      Null = { icon = "NULL", hl = "@type" },
-      EnumMember = { icon = "", hl = "@field" },
-      Struct = { icon = "𝓢", hl = "@type" },
-      Event = { icon = "🗲", hl = "@type" },
-      Operator = { icon = "+", hl = "@operator" },
-      TypeParameter = { icon = "𝙏", hl = "@parameter" },
-      Component = { icon = "󰅴", hl = "@function" },
-      Fragment = { icon = "󰅴", hl = "@constant" },
+      File = { icon = '󰈔', hl = '@text.uri' },
+      Module = { icon = '󰆧', hl = '@namespace' },
+      Namespace = { icon = '󰅪', hl = '@namespace' },
+      Package = { icon = '󰏗', hl = '@namespace' },
+      Class = { icon = '𝓒', hl = '@type' },
+      Method = { icon = 'ƒ', hl = '@method' },
+      Property = { icon = '', hl = '@method' },
+      Field = { icon = '󰆨', hl = '@field' },
+      Constructor = { icon = '', hl = '@constructor' },
+      Enum = { icon = 'ℰ', hl = '@type' },
+      Interface = { icon = '󰜰', hl = '@type' },
+      Function = { icon = '', hl = '@function' },
+      Variable = { icon = '', hl = '@constant' },
+      Constant = { icon = '', hl = '@constant' },
+      String = { icon = '𝓐', hl = '@string' },
+      Number = { icon = '#', hl = '@number' },
+      Boolean = { icon = '⊨', hl = '@boolean' },
+      Array = { icon = '󰅪', hl = '@constant' },
+      Object = { icon = '⦿', hl = '@type' },
+      Key = { icon = '🔐', hl = '@type' },
+      Null = { icon = 'NULL', hl = '@type' },
+      EnumMember = { icon = '', hl = '@field' },
+      Struct = { icon = '𝓢', hl = '@type' },
+      Event = { icon = '🗲', hl = '@type' },
+      Operator = { icon = '+', hl = '@operator' },
+      TypeParameter = { icon = '𝙏', hl = '@parameter' },
+      Component = { icon = '󰅴', hl = '@function' },
+      Fragment = { icon = '󰅴', hl = '@constant' },
       TypeAlias =  { icon = ' ', hl = '@type' },
       Parameter = { icon = ' ', hl = '@parameter' },
       StaticMethod = { icon = ' ', hl = '@function' },
@@ -864,6 +864,7 @@ Key:
 
 ## Related plugins
 
+- Aerial.nvim
 - nvim-navic
 - nvim-navbuddy
 - dropdown.nvim
