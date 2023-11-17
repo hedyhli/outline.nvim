@@ -285,7 +285,7 @@ Pass a table to the setup call with your configuration options.
     -- Jump to symbol under cursor but keep focus on outline window.
     peek_location = "o",
     -- Visit location in code and close outline immediately
-    goto_and_close = "<S-Cr>"
+    goto_and_close = "<S-Cr>",
     -- Change cursor position of outline window to match current location in code.
     -- "Opposite" of goto/peek_location.
     restore_location = "<C-g>",
