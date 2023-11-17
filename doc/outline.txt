@@ -1,4 +1,4 @@
-*outline.txt*           For NVIM v0.7.0          Last change: 2023 November 16
+*outline.txt*           For NVIM v0.7.0          Last change: 2023 November 17
 
 ==============================================================================
 Table of Contents                                  *outline-table-of-contents*
@@ -243,7 +243,7 @@ Show defaults ~
         -- Jump to symbol under cursor but keep focus on outline window.
         peek_location = "o",
         -- Visit location in code and close outline immediately
-        goto_and_close = "<S-Cr>"
+        goto_and_close = "<S-Cr>",
         -- Change cursor position of outline window to match current location in code.
         -- "Opposite" of goto/peek_location.
         restore_location = "<C-g>",
