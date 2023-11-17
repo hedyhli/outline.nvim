@@ -181,6 +181,9 @@ Pass a table to the setup call with your configuration options.
     -- boolean or integer for milliseconds duration to apply a temporary highlight
     -- when jumping. false to disable.
     jump_highlight_duration = 300,
+    -- Whether to center the cursor line vertically in the screen when
+    -- jumping/focusing. Runs zz.
+    center_on_jump = true,
 
     -- Vim options for the outline window
     show_numbers = false,

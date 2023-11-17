@@ -102,6 +102,9 @@ end
 function M.__goto_location(change_focus)
   local node = M._current_node()
   vim.api.nvim_win_set_cursor(M.state.code_win, { node.line + 1, node.character })
+  if cfg.o.outline_window.center_on_jump then
+    vim.fn.win_execute(M.state.code_win, "normal! zz")
+  end
 
   if vim.fn.hlexists('OutlineJumpHighlight') == 0 then
     vim.api.nvim_set_hl(0, 'OutlineJumpHighlight', { link = 'Visual' })
