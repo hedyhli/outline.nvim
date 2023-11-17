@@ -5,7 +5,7 @@ local SYMBOL_FRAGMENT = 28
 
 local function get_open_tag(node)
   if node:type() == 'jsx_element' then
-    for _, outer in ipairs(node:field 'open_tag') do
+    for _, outer in ipairs(node:field('open_tag')) do
       if outer:type() == 'jsx_opening_element' then
         return outer
       end
@@ -18,7 +18,7 @@ end
 local function jsx_node_detail(node, buf)
   node = get_open_tag(node) or node
 
-  local param_nodes = node:field 'attribute'
+  local param_nodes = node:field('attribute')
   if #param_nodes == 0 then
     return nil
   end
@@ -42,7 +42,7 @@ local function jsx_node_tagname(node, buf)
 
   local identifier = nil
 
-  for _, val in ipairs(tagnode:field 'name') do
+  for _, val in ipairs(tagnode:field('name')) do
     if val:type() == 'identifier' then
       identifier = val
     end
@@ -66,8 +66,7 @@ local function convert_ts(child, children, bufnr)
   }
 
   local converted = {
-    name = (not is_frag and (jsx_node_tagname(child, bufnr) or '<unknown>'))
-      or 'fragment',
+    name = (not is_frag and (jsx_node_tagname(child, bufnr) or '<unknown>')) or 'fragment',
     children = (#children > 0 and children) or nil,
     kind = (is_frag and SYMBOL_FRAGMENT) or SYMBOL_COMPONENT,
     detail = jsx_node_detail(child, bufnr),
@@ -82,12 +81,7 @@ function M.parse_ts(root, children, bufnr)
   children = children or {}
 
   for child in root:iter_children() do
-    if
-      vim.tbl_contains(
-        { 'jsx_element', 'jsx_self_closing_element' },
-        child:type()
-      )
-    then
+    if vim.tbl_contains({ 'jsx_element', 'jsx_self_closing_element' }, child:type()) then
       local new_children = {}
 
       M.parse_ts(child, new_children, bufnr)

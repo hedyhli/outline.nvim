@@ -1,9 +1,9 @@
-local symbols = require 'outline.symbols'
-local ui = require 'outline.ui'
-local cfg = require 'outline.config'
-local t_utils = require 'outline.utils.table'
-local lsp_utils = require 'outline.utils.lsp_utils'
-local folding = require 'outline.folding'
+local cfg = require('outline.config')
+local folding = require('outline.folding')
+local lsp_utils = require('outline.utils.lsp_utils')
+local symbols = require('outline.symbols')
+local t_utils = require('outline.utils.table')
+local ui = require('outline.ui')
 
 local M = {}
 
@@ -106,7 +106,8 @@ function M.preorder_iter(items, children_check)
       end
 
       if
-        node.children and node.traversal_child <= #node.children
+        node.children
+        and node.traversal_child <= #node.children
         and (node.is_root or children_check(node))
       then
         prev = node

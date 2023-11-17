@@ -9,12 +9,7 @@ function M.nmap(bufnr, keys, action)
   end
 
   for _, lhs in ipairs(keys) do
-    vim.keymap.set(
-      'n',
-      lhs,
-      action,
-      { silent = true, noremap = true, buffer = bufnr }
-    )
+    vim.keymap.set('n', lhs, action, { silent = true, noremap = true, buffer = bufnr })
   end
 end
 
@@ -114,7 +109,7 @@ function M.flash_highlight(winnr, lnum, durationMs, hl_group)
   if durationMs == false then
     return
   end
-  hl_group = hl_group or "Visual"
+  hl_group = hl_group or 'Visual'
   if durationMs == true or durationMs == 1 then
     durationMs = 500
   end
@@ -131,13 +126,13 @@ end
 function M.echo(module, message)
   if not message then
     message = module
-    module = ""
+    module = ''
   end
-  local prefix = "outline"
-  if module ~= "" then
-    prefix = prefix.."."..module
+  local prefix = 'outline'
+  if module ~= '' then
+    prefix = prefix .. '.' .. module
   end
-  local prefix_chunk = { '('..prefix..') ', "WarningMsg" }
+  local prefix_chunk = { '(' .. prefix .. ') ', 'WarningMsg' }
   -- For now we don't echo much, so add all to history
   vim.api.nvim_echo({ prefix_chunk, { message } }, true, {})
 end

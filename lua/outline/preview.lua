@@ -1,6 +1,6 @@
-local outline = require 'outline'
-local cfg = require 'outline.config'
-local hover = require 'outline.hover'
+local cfg = require('outline.config')
+local hover = require('outline.hover')
+local outline = require('outline')
 
 local M = {}
 
@@ -30,8 +30,8 @@ local function get_width_offset()
   ---@type integer
   local outline_winnr = outline.view.winnr
   local width = cfg.get_preview_width() + 3
-  local has_numbers = vim.api.nvim_win_get_option(outline_winnr, "number")
-  has_numbers = has_numbers or vim.api.nvim_win_get_option(outline_winnr, "relativenumber")
+  local has_numbers = vim.api.nvim_win_get_option(outline_winnr, 'number')
+  has_numbers = has_numbers or vim.api.nvim_win_get_option(outline_winnr, 'relativenumber')
 
   if has_numbers then
     width = width + 4
@@ -67,10 +67,7 @@ local function update_preview(code_buf)
 
   if state.preview_buf ~= nil then
     vim.api.nvim_buf_set_lines(state.preview_buf, 0, -1, 0, lines)
-    vim.api.nvim_win_set_cursor(
-      state.preview_win,
-      { node.line + 1, node.character }
-    )
+    vim.api.nvim_win_set_cursor(state.preview_win, { node.line + 1, node.character })
   end
 end
 
@@ -79,7 +76,7 @@ local function setup_preview_buf()
   local ft = vim.api.nvim_buf_get_option(code_buf, 'filetype')
 
   local function treesitter_attach()
-    local ts_highlight = require 'nvim-treesitter.highlight'
+    local ts_highlight = require('nvim-treesitter.highlight')
 
     ts_highlight.attach(state.preview_buf, ft)
   end
@@ -139,14 +136,10 @@ end
 
 function M.close()
   if has_code_win() then
-    if
-      state.preview_win ~= nil and vim.api.nvim_win_is_valid(state.preview_win)
-    then
+    if state.preview_win ~= nil and vim.api.nvim_win_is_valid(state.preview_win) then
       vim.api.nvim_win_close(state.preview_win, true)
     end
-    if
-      state.hover_win ~= nil and vim.api.nvim_win_is_valid(state.hover_win)
-    then
+    if state.hover_win ~= nil and vim.api.nvim_win_is_valid(state.hover_win) then
       vim.api.nvim_win_close(state.hover_win, true)
     end
   end

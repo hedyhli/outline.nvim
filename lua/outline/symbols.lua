@@ -1,4 +1,4 @@
-local cfg = require 'outline.config'
+local cfg = require('outline.config')
 
 local M = {}
 
@@ -60,10 +60,13 @@ function M.icon_from_kind(kind)
   if cfg.o.symbols.icon_source == 'lspkind' then
     local has_lspkind, lspkind = pcall(require, 'lspkind')
     if not has_lspkind then
-      vim.notify("[outline]: icon_source set to lspkind but failed to require lspkind!", vim.log.levels.ERROR)
+      vim.notify(
+        '[outline]: icon_source set to lspkind but failed to require lspkind!',
+        vim.log.levels.ERROR
+      )
     else
       local icon = lspkind.symbolic(kindstr, { with_text = false })
-      if icon and icon ~= "" then
+      if icon and icon ~= '' then
         return icon
       end
     end

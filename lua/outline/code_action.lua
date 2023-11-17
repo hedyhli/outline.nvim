@@ -1,4 +1,4 @@
-local main = require 'outline'
+local main = require('outline')
 
 local M = {}
 

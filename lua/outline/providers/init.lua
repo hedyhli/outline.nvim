@@ -1,14 +1,15 @@
-local cfg = require "outline.config"
+local cfg = require('outline.config')
 
 local M = {}
-local import_prefix = "outline/providers/"
+local import_prefix = 'outline/providers/'
 
 _G._outline_current_provider = nil
 
-
 function M.find_provider()
   if not M.providers then
-    M.providers = vim.tbl_map(function(p) return import_prefix..p end, cfg.get_providers())
+    M.providers = vim.tbl_map(function(p)
+      return import_prefix .. p
+    end, cfg.get_providers())
   end
   for _, name in ipairs(M.providers) do
     local provider = require(name)

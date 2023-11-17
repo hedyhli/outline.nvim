@@ -1,0 +1,12 @@
+column_width = 100
+line_endings = 'Unix'
+indent_type = 'Spaces'
+indent_width = 2
+# Not very good looking in general, but faster to type
+quote_style = 'AutoPreferSingle'
+# Since there are ambiguities sometimes let's just not use this shortcut
+# alltogether
+call_parentheses = 'Always'
+
+[sort_requires]
+enabled = true

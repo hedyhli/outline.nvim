@@ -1,18 +1,16 @@
-local parser = require 'outline.parser'
-local providers = require 'outline.providers.init'
-local ui = require 'outline.ui'
-local writer = require 'outline.writer'
-local cfg = require 'outline.config'
-local utils = require 'outline.utils.init'
-local View = require 'outline.view'
-local folding = require 'outline.folding'
+local View = require('outline.view')
+local cfg = require('outline.config')
+local folding = require('outline.folding')
+local parser = require('outline.parser')
+local providers = require('outline.providers.init')
+local ui = require('outline.ui')
+local utils = require('outline.utils.init')
+local writer = require('outline.writer')
 
 local M = {}
 
 local function setup_global_autocmd()
-  if
-    cfg.o.outline_items.highlight_hovered_item or cfg.o.symbol_folding.auto_unfold_hover
-  then
+  if cfg.o.outline_items.highlight_hovered_item or cfg.o.symbol_folding.auto_unfold_hover then
     vim.api.nvim_create_autocmd('CursorHold', {
       pattern = '*',
       callback = function()
@@ -54,24 +52,26 @@ M.state = {
 }
 
 local function wipe_state()
-  M.state = { outline_items = {}, flattened_outline_items = {}, code_win = 0, opts = {} }
+  M.state = {
+    outline_items = {},
+    flattened_outline_items = {},
+    code_win = 0,
+    opts = {},
+  }
 end
 
 local function _update_lines()
-  M.state.flattened_outline_items = writer.make_outline(M.view.bufnr, M.state.outline_items, M.state.code_win)
+  M.state.flattened_outline_items =
+    writer.make_outline(M.view.bufnr, M.state.outline_items, M.state.code_win)
 end
 
 ---@param items outline.SymbolNode[]
 local function _merge_items(items)
-  utils.merge_items_rec(
-    { children = items },
-    { children = M.state.outline_items }
-  )
+  utils.merge_items_rec({ children = items }, { children = M.state.outline_items })
 end
 
 local function __refresh()
-  local current_buffer_is_outline = M.view.bufnr
-    == vim.api.nvim_get_current_buf()
+  local current_buffer_is_outline = M.view.bufnr == vim.api.nvim_get_current_buf()
   if M.view:is_open() and not current_buffer_is_outline then
     local function refresh_handler(response)
       if response == nil or type(response) ~= 'table' then
@@ -101,10 +101,7 @@ end
 ---@param change_focus boolean
 function M.__goto_location(change_focus)
   local node = M._current_node()
-  vim.api.nvim_win_set_cursor(
-    M.state.code_win,
-    { node.line + 1, node.character }
-  )
+  vim.api.nvim_win_set_cursor(M.state.code_win, { node.line + 1, node.character })
 
   if vim.fn.hlexists('OutlineJumpHighlight') == 0 then
     vim.api.nvim_set_hl(0, 'OutlineJumpHighlight', { link = 'Visual' })
@@ -159,8 +156,8 @@ end
 local function hide_cursor()
   -- Set cursor color to CursorLine in normal mode
   M.state.original_cursor = vim.o.guicursor
-  local cur = vim.o.guicursor:match("n.-:(.-)[-,]")
-  vim.opt.guicursor:append("n:"..cur.."-Cursorline")
+  local cur = vim.o.guicursor:match('n.-:(.-)[-,]')
+  vim.opt.guicursor:append('n:' .. cur .. '-Cursorline')
 end
 
 local function unhide_cursor()
@@ -187,7 +184,7 @@ local function setup_buffer_autocmd()
       callback = function()
         -- Don't use _goto_location because we don't want to auto-close
         M.__goto_location(false)
-      end
+      end,
     })
   end
   if cfg.o.outline_window.hide_cursor then
@@ -196,11 +193,11 @@ local function setup_buffer_autocmd()
     hide_cursor()
     vim.api.nvim_create_autocmd('BufEnter', {
       buffer = 0,
-      callback = hide_cursor
+      callback = hide_cursor,
     })
     vim.api.nvim_create_autocmd('BufLeave', {
       buffer = 0,
-      callback = unhide_cursor
+      callback = unhide_cursor,
     })
   end
 end
@@ -221,15 +218,10 @@ function M._set_folded(folded, move_cursor, node_index)
 
     _update_lines()
   elseif node.parent then
-    local parent_node =
-      M.state.flattened_outline_items[node.parent.line_in_outline]
+    local parent_node = M.state.flattened_outline_items[node.parent.line_in_outline]
 
     if parent_node then
-      M._set_folded(
-        folded,
-        not parent_node.folded and folded,
-        parent_node.line_in_outline
-      )
+      M._set_folded(folded, not parent_node.folded and folded, parent_node.line_in_outline)
     end
   end
 end
@@ -271,8 +263,7 @@ end
 function M._highlight_current_item(winnr)
   local has_provider = M.has_provider()
   local has_outline_open = M.view:is_open()
-  local current_buffer_is_outline = M.view.bufnr
-    == vim.api.nvim_get_current_buf()
+  local current_buffer_is_outline = M.view.bufnr == vim.api.nvim_get_current_buf()
 
   if not has_provider then
     return
@@ -304,7 +295,11 @@ function M._highlight_current_item(winnr)
 
   -- Must not skip folded nodes so that when user unfolds a parent, they can see the leaf
   -- node highlighted.
-  for value in parser.preorder_iter(M.state.outline_items, function() return true end) do
+  for value in
+    parser.preorder_iter(M.state.outline_items, function()
+      return true
+    end)
+  do
     value.hovered = nil
 
     if
@@ -372,30 +367,15 @@ local function setup_keymaps(bufnr)
     M._move_and_jump('up')
   end)
   -- hover symbol
-  map(
-    cfg.o.keymaps.hover_symbol,
-    require('outline.hover').show_hover
-  )
+  map(cfg.o.keymaps.hover_symbol, require('outline.hover').show_hover)
   -- preview symbol
-  map(
-    cfg.o.keymaps.toggle_preview,
-    require('outline.preview').toggle
-  )
+  map(cfg.o.keymaps.toggle_preview, require('outline.preview').toggle)
   -- rename symbol
-  map(
-    cfg.o.keymaps.rename_symbol,
-    require('outline.rename').rename
-  )
+  map(cfg.o.keymaps.rename_symbol, require('outline.rename').rename)
   -- code actions
-  map(
-    cfg.o.keymaps.code_actions,
-    require('outline.code_action').show_code_actions
-  )
+  map(cfg.o.keymaps.code_actions, require('outline.code_action').show_code_actions)
   -- show help
-  map(
-    cfg.o.keymaps.show_help,
-    require('outline.config').show_help
-  )
+  map(cfg.o.keymaps.show_help, require('outline.config').show_help)
   -- close outline
   map(cfg.o.keymaps.close, function()
     M.view:close()
@@ -502,9 +482,7 @@ end
 
 function M._map_follow_cursor()
   if not M.follow_cursor({ focus_outline = true }) then
-    utils.echo(
-      "Code window no longer active. Try closing and reopening the outline."
-    )
+    utils.echo('Code window no longer active. Try closing and reopening the outline.')
   end
 end
 
@@ -527,7 +505,7 @@ local function _cmd_open_with_mods(fn)
   return function(opts)
     local old_sc, use_old_sc
     local split = opts.smods.split
-    if split ~= "" then
+    if split ~= '' then
       old_sc = cfg.o.outline_window.split_command
       use_old_sc = true
       cfg.o.outline_window.split_command = split .. ' vsplit'
@@ -545,7 +523,6 @@ local function _cmd_open_with_mods(fn)
     else
       fn({ focus_outline = true, on_outline_setup = on_outline_setup })
     end
-
   end
 end
 
@@ -558,7 +535,7 @@ function M.open_outline(opts)
   if not M.view:is_open() then
     local found = providers.request_symbols(handler, opts)
     if not found then
-      utils.echo("No providers found for current buffer")
+      utils.echo('No providers found for current buffer')
     end
   end
 end
@@ -618,25 +595,25 @@ function M.show_status()
   end
 
   if p ~= nil then
-    print("Current provider: " .. p.name)
+    print('Current provider: ' .. p.name)
     if p.get_status then
       print(p.get_status())
       print()
     end
 
     if M.view:is_open() then
-      print("Outline window is open.")
+      print('Outline window is open.')
     else
-      print("Outline window is not open.")
+      print('Outline window is not open.')
     end
 
     if require('outline.preview').has_code_win() then
-      print("Code window is active.")
+      print('Code window is active.')
     else
-      print("Code window is either closed or invalid. Please close and reopen the outline window.")
+      print('Code window is either closed or invalid. Please close and reopen the outline window.')
     end
   else
-    print("No providers")
+    print('No providers')
   end
 end
 
@@ -659,17 +636,17 @@ end
 
 local function setup_commands()
   local cmd = function(n, c, o)
-    vim.api.nvim_create_user_command('Outline'..n, c, o)
+    vim.api.nvim_create_user_command('Outline' .. n, c, o)
   end
 
   cmd('', _cmd_open_with_mods(M.toggle_outline), {
-    desc = "Toggle the outline window. \
-With bang, keep focus on initial window after opening.",
+    desc = 'Toggle the outline window. \
+With bang, keep focus on initial window after opening.',
     nargs = 0,
     bang = true,
   })
   cmd('Open', _cmd_open_with_mods(M.open_outline), {
-    desc = "With bang, keep focus on initial window after opening.",
+    desc = 'With bang, keep focus on initial window after opening.',
     nargs = 0,
     bang = true,
   })
@@ -678,7 +655,7 @@ With bang, keep focus on initial window after opening.",
   cmd('FocusCode', M.focus_code, { nargs = 0 })
   cmd('Focus', M.focus_toggle, { nargs = 0 })
   cmd('Status', M.show_status, {
-    desc = "Show a message about the current status of the outline window.",
+    desc = 'Show a message about the current status of the outline window.',
     nargs = 0,
   })
   cmd('Follow', _cmd_follow_cursor, {

@@ -1,6 +1,6 @@
-local config = require 'outline.config'
-local lsp_utils = require 'outline.utils.lsp_utils'
-local jsx = require 'outline.utils.jsx'
+local config = require('outline.config')
+local jsx = require('outline.utils.jsx')
+local lsp_utils = require('outline.utils.lsp_utils')
 
 local M = {
   name = 'lsp',
@@ -10,9 +10,9 @@ local M = {
 
 function M.get_status()
   if not M.client then
-    return "No clients"
+    return 'No clients'
   end
-  return "client: "..M.client.name
+  return 'client: ' .. M.client.name
 end
 
 local function get_params()
@@ -83,15 +83,10 @@ end
 
 ---@param on_symbols function
 function M.request_symbols(on_symbols, opts)
-  vim.lsp.buf_request_all(
-    0,
-    'textDocument/documentSymbol',
-    get_params(),
-    function (response)
-      response = M.postprocess_symbols(response)
-      on_symbols(response, opts)
-    end
-  )
+  vim.lsp.buf_request_all(0, 'textDocument/documentSymbol', get_params(), function(response)
+    response = M.postprocess_symbols(response)
+    on_symbols(response, opts)
+  end)
 end
 
 return M

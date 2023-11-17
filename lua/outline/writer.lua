@@ -1,18 +1,16 @@
-local symbols = require 'outline.symbols'
-local parser = require 'outline.parser'
-local cfg = require 'outline.config'
-local ui = require 'outline.ui'
-local t_utils = require 'outline.utils.table'
-local folding = require 'outline.folding'
+local cfg = require('outline.config')
+local folding = require('outline.folding')
+local parser = require('outline.parser')
+local symbols = require('outline.symbols')
+local t_utils = require('outline.utils.table')
+local ui = require('outline.ui')
 
 local strlen = vim.fn.strlen
 
-
 local M = {}
 
-local hlns = vim.api.nvim_create_namespace 'outline-icon-highlight'
-local ns = vim.api.nvim_create_namespace 'outline-virt-text'
-
+local hlns = vim.api.nvim_create_namespace('outline-icon-highlight')
+local ns = vim.api.nvim_create_namespace('outline-virt-text')
 
 ---@param bufnr integer
 ---@return boolean
@@ -31,14 +29,7 @@ end
 function M.add_highlights(bufnr, hl_info, nodes)
   for _, line_hl in ipairs(hl_info) do
     local line, hl_start, hl_end, hl_type = unpack(line_hl)
-    vim.api.nvim_buf_add_highlight(
-      bufnr,
-      hlns,
-      hl_type,
-      line - 1,
-      hl_start,
-      hl_end
-    )
+    vim.api.nvim_buf_add_highlight(bufnr, hlns, hl_type, line - 1, hl_start, hl_end)
   end
   M.add_hover_highlights(bufnr, nodes)
 end
@@ -50,7 +41,7 @@ end
 
 ---@param bufnr integer
 ---@param nodes outline.FlatSymbolNode[] flattened nodes
-function M.add_hover_highlights (bufnr, nodes)
+function M.add_hover_highlights(bufnr, nodes)
   if not cfg.o.outline_items.highlight_hovered_item then
     return
   end
@@ -63,11 +54,7 @@ function M.add_hover_highlights (bufnr, nodes)
     end
 
     if node.prefix_length then
-      ui.add_hover_highlight(
-        bufnr,
-        node.line_in_outline - 1,
-        node.prefix_length
-      )
+      ui.add_hover_highlight(bufnr, node.line_in_outline - 1, node.prefix_length)
     end
     ::continue::
   end
@@ -101,7 +88,7 @@ function M.make_outline(bufnr, items, codewin)
 
   -- Find the prefix for each line needed for the lineno space
   local lineno_offset = 0
-  local lineno_prefix = ""
+  local lineno_prefix = ''
   local lineno_max_width = #tostring(vim.api.nvim_buf_line_count(codebuf) - 1)
   if cfg.o.outline_items.show_symbol_lineno then
     -- Use max width-1 plus 1 space padding.
@@ -120,7 +107,7 @@ function M.make_outline(bufnr, items, codewin)
       #flattened,
       from,
       to,
-      "OutlineGuides"
+      'OutlineGuides',
     })
   end
 
@@ -129,7 +116,7 @@ function M.make_outline(bufnr, items, codewin)
       #flattened,
       from,
       to,
-      "OutlineFoldMarker"
+      'OutlineFoldMarker',
     })
   end
 
@@ -147,9 +134,9 @@ function M.make_outline(bufnr, items, codewin)
     table.insert(flattened, node)
     node.line_in_outline = #flattened
     table.insert(details, node.detail or '')
-    local lineno = tostring(node.range_start+1)
-    local leftpad = string.rep(' ', lineno_max_width-#lineno)
-    table.insert(linenos, leftpad..lineno)
+    local lineno = tostring(node.range_start + 1)
+    local leftpad = string.rep(' ', lineno_max_width - #lineno)
+    table.insert(linenos, leftpad .. lineno)
 
     -- Make the guides for the line prefix
     local pref = t_utils.str_to_table(string.rep(' ', node.depth))
@@ -180,7 +167,7 @@ function M.make_outline(bufnr, items, codewin)
     -- ancestor is the entire outline itself, it should not have a vertical
     -- guide).
     local iternode = node
-    for i = node.depth-1, 2, -1 do
+    for i = node.depth - 1, 2, -1 do
       iternode = iternode.parent_node
       if not iternode.isLast then
         pref[i] = guide_markers.vertical
@@ -199,18 +186,18 @@ function M.make_outline(bufnr, items, codewin)
       add_fold_hl(total_pref_len - fold_marker_width, total_pref_len + 1)
     end
 
-    local line = lineno_prefix..pref_str
+    local line = lineno_prefix .. pref_str
     local icon_pref = 0
-    if node.icon ~= "" then
-      line = line..' '..node.icon
+    if node.icon ~= '' then
+      line = line .. ' ' .. node.icon
       icon_pref = 1
     end
-    line = line..' '..node.name
+    line = line .. ' ' .. node.name
 
     -- Highlight for the icon ✨
     -- Start from icon col
     local hl_start = #pref_str + #lineno_prefix + icon_pref
-    local hl_end = hl_start + #node.icon  -- until after icon
+    local hl_end = hl_start + #node.icon -- until after icon
     local hl_type = cfg.o.symbols.icons[symbols.kinds[node.kind]].hl
     table.insert(hl, { #flattened, hl_start, hl_end, hl_type })
 
@@ -219,7 +206,7 @@ function M.make_outline(bufnr, items, codewin)
     node.prefix_length = hl_end + 1
 
     -- lines passed to nvim_buf_set_lines cannot contain newlines in each line
-    line = line:gsub("\n", " ")
+    line = line:gsub('\n', ' ')
     table.insert(lines, line)
   end
 
@@ -277,6 +264,5 @@ end
 -- is the same, only 3 extra tables in memory for (1). Where as for (2) you
 -- have to call nvim_buf_set_lines n times (each line) rather than add lines
 -- all at once, saving only the need of 1 extra table (lines table) in memory.
-
 
 return M

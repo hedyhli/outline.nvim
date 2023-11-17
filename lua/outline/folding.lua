@@ -1,5 +1,5 @@
 local M = {}
-local cfg = require 'outline.config'
+local cfg = require('outline.config')
 
 ---@param node outline.SymbolNode|outline.FlatSymbolNode
 function M.is_foldable(node)

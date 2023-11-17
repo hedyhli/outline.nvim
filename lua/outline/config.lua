@@ -1,7 +1,9 @@
 local utils = require('outline.utils')
 
 local M = {}
-local all_kinds = {'File', 'Module', 'Namespace', 'Package', 'Class', 'Method', 'Property', 'Field', 'Constructor', 'Enum', 'Interface', 'Function', 'Variable', 'Constant', 'String', 'Number', 'Boolean', 'Array', 'Object', 'Key', 'Null', 'EnumMember', 'Struct', 'Event', 'Operator', 'TypeParameter', 'Component', 'Fragment', 'TypeAlias', 'Parameter', 'StaticMethod', 'Macro',}
+-- stylua: ignore start
+local all_kinds = {'File', 'Module', 'Namespace', 'Package', 'Class', 'Method', 'Property', 'Field', 'Constructor', 'Enum', 'Interface', 'Function', 'Variable', 'Constant', 'String', 'Number', 'Boolean', 'Array', 'Object', 'Key', 'Null', 'EnumMember', 'Struct', 'Event', 'Operator', 'TypeParameter', 'Component', 'Fragment', 'TypeAlias', 'Parameter', 'StaticMethod', 'Macro'}
+-- stylua: ignore end
 
 M.defaults = {
   guides = {
@@ -31,7 +33,7 @@ M.defaults = {
     show_relative_numbers = false,
     show_cursorline = true,
     hide_cursor = false,
-    winhl = "OutlineDetails:Comment,OutlineLineno:LineNr",
+    winhl = 'OutlineDetails:Comment,OutlineLineno:LineNr',
     jump_highlight_duration = 500,
   },
   preview_window = {
@@ -55,7 +57,7 @@ M.defaults = {
     goto_location = '<Cr>',
     peek_location = 'o',
     goto_and_close = '<S-Cr>',
-    restore_location = "<C-g>",
+    restore_location = '<C-g>',
     hover_symbol = '<C-space>',
     toggle_preview = 'K',
     rename_symbol = 'r',
@@ -111,7 +113,7 @@ M.defaults = {
       Component = { icon = '󰅴', hl = '@function' },
       Fragment = { icon = '󰅴', hl = '@constant' },
       -- ccls
-      TypeAlias =  { icon = ' ', hl = '@type' },
+      TypeAlias = { icon = ' ', hl = '@type' },
       Parameter = { icon = ' ', hl = '@parameter' },
       StaticMethod = { icon = ' ', hl = '@function' },
       Macro = { icon = ' ', hl = '@macro' },
@@ -248,7 +250,7 @@ function M.get_providers()
 end
 
 function M.show_help()
-  print 'Current keymaps:'
+  print('Current keymaps:')
   print(vim.inspect(M.o.keymaps))
 end
 
@@ -256,7 +258,7 @@ end
 -- Does not alter the opts. Might show messages.
 function M.check_config()
   if M.o.outline_window.hide_cursor and not M.o.outline_window.show_cursorline then
-    utils.echo("config", "Warning: hide_cursor enabled without cursorline enabled")
+    utils.echo('config', 'Warning: hide_cursor enabled without cursorline enabled')
   end
 end
 
@@ -277,7 +279,7 @@ function M.resolve_config()
     -- This should not be needed, nor is it failsafe. But in case user only provides
     -- the, eg, "topleft", we append the ' vs'.
     if not sc:find(' vs', 1, true) then
-      M.o.outline_window.split_command = sc..' vs'
+      M.o.outline_window.split_command = sc .. ' vs'
     end
   end
   ----- COMPAT (renaming) -----
@@ -307,10 +309,16 @@ end
 ---@return T
 local function validate_filter_list(l, name)
   if type(l) == 'boolean' and l then
-    utils.echo("config", ("Setting %s to true is undefined behaviour. Defaulting to nil."):format(name))
+    utils.echo(
+      'config',
+      ('Setting %s to true is undefined behaviour. Defaulting to nil.'):format(name)
+    )
     l = nil
   elseif l and type(l) ~= 'table' and type(l) ~= 'boolean' then
-    utils.echo("config", ("%s must either be a table, false, or nil. Defaulting to nil."):format(name))
+    utils.echo(
+      'config',
+      ('%s must either be a table, false, or nil. Defaulting to nil.'):format(name)
+    )
     l = nil
   end
   return l
@@ -321,7 +329,7 @@ end
 function M.resolve_filter_config()
   ---@type outline.FilterConfig
   local tmp = M.o.symbols.filter
-  tmp = validate_filter_list(tmp, "symbols.filter")
+  tmp = validate_filter_list(tmp, 'symbols.filter')
 
   ---- legacy form -> ft filter list ----
   if table_has_content(M.o.symbols.blacklist) then
@@ -337,7 +345,7 @@ function M.resolve_filter_config()
     if not table_has_content(tmp) then
       tmp = { ['*'] = { exclude = true } }
 
-    -- Lazy filter list -> ft filter list
+      -- Lazy filter list -> ft filter list
     elseif tmp[1] then
       if type(tmp[1]) == 'string' then
         tmp = { ['*'] = vim.deepcopy(tmp) }
@@ -365,7 +373,10 @@ function M.resolve_filter_config()
   -- }
   for ft, list in pairs(filter) do
     if type(ft) ~= 'string' then
-      utils.echo("config", "ft (keys) for symbols.filter table can only be string. Skipping this ft.")
+      utils.echo(
+        'config',
+        'ft (keys) for symbols.filter table can only be string. Skipping this ft.'
+      )
       goto continue
     end
 

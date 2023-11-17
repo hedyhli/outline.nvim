@@ -1,5 +1,5 @@
-local config = require 'outline.config'
-local tbl_utils = require 'outline.utils.table'
+local config = require('outline.config')
+local tbl_utils = require('outline.utils.table')
 
 local M = {}
 
@@ -16,7 +16,7 @@ end
 function M.flatten_response(response)
   local all_results = {}
 
-    -- flatten results to one giant table of symbols
+  -- flatten results to one giant table of symbols
   for client_id, client_response in pairs(response) do
     if config.is_client_blacklisted(client_id) then
       print('skipping client ' .. client_id)
@@ -51,8 +51,8 @@ end
 function M.get_range(token)
   if token == nil then
     return {
-      start={ line=math.huge, character=math.huge },
-      ['end']={ line=-math.huge, character=-math.huge },
+      start = { line = math.huge, character = math.huge },
+      ['end'] = { line = -math.huge, character = -math.huge },
     }
   end
 
@@ -87,10 +87,7 @@ end
 ---Recursively sorts all children of each symbol
 function M.sort_symbols(symbols)
   table.sort(symbols, function(a, b)
-    return range_compare(
-      M.get_range(a).start,
-      M.get_range(b).start
-    )
+    return range_compare(M.get_range(a).start, M.get_range(b).start)
   end)
 
   for _, child in ipairs(symbols) do
@@ -132,15 +129,17 @@ function M.symbol_preorder_iter(symbols)
     return stk[#stk]
   end
 
-  return { next=next, is_empty=is_empty, peek=peek }
+  return { next = next, is_empty = is_empty, peek = peek }
 end
 
 local function merge_symbols_rec(iter1, iter2, ub)
   local res = {}
 
   while not (iter1.is_empty() and iter2.is_empty()) do
-    local bv1 = ((not iter1.is_empty()) and M.get_range(iter1.peek()).start) or { line=math.huge, character=math.huge }
-    local bv2 = ((not iter2.is_empty()) and M.get_range(iter2.peek()).start) or { line=math.huge, character=math.huge }
+    local bv1 = ((not iter1.is_empty()) and M.get_range(iter1.peek()).start)
+      or { line = math.huge, character = math.huge }
+    local bv2 = ((not iter2.is_empty()) and M.get_range(iter2.peek()).start)
+      or { line = math.huge, character = math.huge }
 
     local iter = (range_compare(bv1, bv2) and iter1) or iter2
 
