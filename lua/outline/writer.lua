@@ -66,13 +66,18 @@ end
 -- Handles highlights, virtual text, and of course lines of outline to write
 ---@param bufnr integer Nothing is done if is_buffer_outline(bufnr) is not true
 ---@param items outline.SymbolNode[] Tree of symbols after being parsed by parser.parse_result
----@return outline.FlatSymbolNode[] flattened_items Empty table returned if bufnr is invalid
 ---@param codewin integer code window
-function M.make_outline(bufnr, items, codewin)
+---@param find_node outline.FlatSymbolNode|outline.SymbolNode? Find a given node rather than node matching cursor position in codewin
+---@return outline.FlatSymbolNode[],outline.FlatSymbolNode? flattened_items Empty table returned if bufnr is invalid
+function M.make_outline(bufnr, items, codewin, find_node)
   if not M.is_buffer_outline(bufnr) then
-    return {}
+    return {}, nil
   end
   local codebuf = vim.api.nvim_win_get_buf(codewin)
+  -- 0-indexed
+  local hovered_line = vim.api.nvim_win_get_cursor(codewin)[1] - 1
+  -- Deepest matching node to put cursor on based on hovered line
+  local put_cursor
 
   clear_virt_text(bufnr)
 
@@ -131,6 +136,22 @@ function M.make_outline(bufnr, items, codewin)
   local fold_markers = cfg.o.symbol_folding.markers
 
   for node in parser.preorder_iter(items) do
+    node.hovered = false
+    if
+      node.line == hovered_line
+      or (hovered_line >= node.range_start and hovered_line <= node.range_end)
+    then
+      -- XXX: not setting for children, but it works because when unfold is called
+      -- this function is called again anyway.
+      node.hovered = true
+      if not find_node then
+        put_cursor = node
+      end
+    end
+    if find_node and find_node == node then
+      put_cursor = find_node
+    end
+
     table.insert(flattened, node)
     node.line_in_outline = #flattened
     table.insert(details, node.detail or '')
@@ -249,7 +270,7 @@ function M.make_outline(bufnr, items, codewin)
     end
   end
 
-  return flattened
+  return flattened, put_cursor
 end
 -- XXX: Is the performance tradeoff of calling `nvim_buf_set_lines` on each
 -- iteration worth it in order to put setting of highlights, details, and

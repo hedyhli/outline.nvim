@@ -52,7 +52,8 @@ function View:setup_view()
     vim.api.nvim_win_set_option(self.winnr, 'rnu', true)
   end
 
-  if cfg.o.outline_window.show_cursorline then
+  local cl = cfg.o.outline_window.show_cursorline
+  if cl == true or cl == 'focus_in_outline' then
     vim.api.nvim_win_set_option(self.winnr, 'cursorline', true)
   end
 end

@@ -10,27 +10,12 @@ local writer = require('outline.writer')
 local M = {}
 
 local function setup_global_autocmd()
-  if cfg.o.outline_items.highlight_hovered_item or cfg.o.symbol_folding.auto_unfold_hover then
-    vim.api.nvim_create_autocmd('CursorHold', {
+  if utils.table_has_content(cfg.o.outline_window.auto_update_events.items) then
+    vim.api.nvim_create_autocmd(cfg.o.outline_window.auto_update_events.items, {
       pattern = '*',
-      callback = function()
-        M._highlight_current_item(nil)
-      end,
+      callback = M._refresh,
     })
   end
-
-  vim.api.nvim_create_autocmd({
-    'InsertLeave',
-    'WinEnter',
-    'BufEnter',
-    'BufWinEnter',
-    'TabEnter',
-    'BufWritePost',
-  }, {
-    pattern = '*',
-    callback = M._refresh,
-  })
-
   vim.api.nvim_create_autocmd('WinEnter', {
     pattern = '*',
     callback = require('outline.preview').close,
@@ -41,11 +26,13 @@ end
 -- STATE
 -------------------------
 M.state = {
+  opened_first_outline = false,
   ---@type outline.SymbolNode[]
   outline_items = {},
   ---@type outline.FlatSymbolNode[]
   flattened_outline_items = {},
   code_win = 0,
+  autocmds = {},
   -- In case unhide_cursor was called before hide_cursor for _some_ reason,
   -- this can still be used as a fallback
   original_cursor = vim.o.guicursor,
@@ -56,13 +43,18 @@ local function wipe_state()
     outline_items = {},
     flattened_outline_items = {},
     code_win = 0,
+    autocmds = {},
     opts = {},
   }
 end
 
-local function _update_lines()
-  M.state.flattened_outline_items =
-    writer.make_outline(M.view.bufnr, M.state.outline_items, M.state.code_win)
+local function _update_lines(update_cursor, set_cursor_to_node)
+  local current
+  M.state.flattened_outline_items, current =
+      writer.make_outline(M.view.bufnr, M.state.outline_items, M.state.code_win, set_cursor_to_node)
+  if update_cursor ~= false then
+    M.update_cursor_pos(current)
+  end
 end
 
 ---@param items outline.SymbolNode[]
@@ -78,7 +70,29 @@ local function __refresh()
         return
       end
 
-      M.state.code_win = vim.api.nvim_get_current_win()
+      local curwin = vim.api.nvim_get_current_win()
+
+      if M.state.codewin ~= curwin then
+        if M.state.autocmds[M.state.codewin] then
+          vim.api.nvim_del_autocmd(M.state.autocmds[M.state.codewin])
+        end
+        M.state.codewin = curwin
+      end
+
+      if cfg.o.outline_items.highlight_hovered_item or cfg.o.symbol_folding.auto_unfold_hover then
+        if M.state.autocmds[M.state.code_win] then
+          vim.api.nvim_del_autocmd(M.state.autocmds[M.state.code_win])
+        end
+        if utils.str_or_nonempty_table(cfg.o.outline_window.auto_update_events.cursor) then
+          M.state.autocmds[M.state.code_win] = vim.api.nvim_create_autocmd(
+            cfg.o.outline_window.auto_update_events.cursor,
+            {
+              buffer = vim.api.nvim_win_get_buf(M.state.code_win),
+              callback = function() M._highlight_current_item(nil) end
+            }
+          )
+        end
+      end
 
       local items = parser.parse(response, vim.api.nvim_get_current_buf())
       _merge_items(items)
@@ -156,19 +170,37 @@ function M._toggle_fold(move_cursor, node_index)
   end
 end
 
-local function hide_cursor()
+local function update_cursor_style()
+  local cl = cfg.o.outline_window.show_cursorline
+  -- XXX: Still 'hide' cursor if show_cursorline set to false, because we've
+  -- already warned the user during setup.
+  local hide_cursor = type(cl) ~= 'string'
+
+  if cl == 'focus_in_outline' or cl == 'focus_in_code' then
+    vim.api.nvim_win_set_option(0, "cursorline", cl == 'focus_in_outline')
+    hide_cursor = cl == 'focus_in_outline'
+  end
+
   -- Set cursor color to CursorLine in normal mode
-  M.state.original_cursor = vim.o.guicursor
-  local cur = vim.o.guicursor:match('n.-:(.-)[-,]')
-  vim.opt.guicursor:append('n:' .. cur .. '-Cursorline')
+  if hide_cursor then
+    M.state.original_cursor = vim.o.guicursor
+    local cur = vim.o.guicursor:match('n.-:(.-)[-,]')
+    vim.opt.guicursor:append('n:' .. cur .. '-Cursorline')
+  end
 end
 
-local function unhide_cursor()
+local function reset_cursor_style()
+  local cl = cfg.o.outline_window.show_cursorline
+
+  if cl == 'focus_in_outline' or cl == 'focus_in_code' then
+    vim.api.nvim_win_set_option(0, "cursorline", cl ~= 'focus_in_outline')
+  end
   -- vim.opt doesn't seem to provide a way to remove last item, like a pop()
   -- vim.o.guicursor = vim.o.guicursor:gsub(",n.-:.-$", "")
   vim.o.guicursor = M.state.original_cursor
 end
 
+---Autocmds for the (current) outline buffer
 local function setup_buffer_autocmd()
   if cfg.o.preview_window.auto_preview then
     vim.api.nvim_create_autocmd('CursorMoved', {
@@ -190,17 +222,17 @@ local function setup_buffer_autocmd()
       end,
     })
   end
-  if cfg.o.outline_window.hide_cursor then
+  if cfg.o.outline_window.hide_cursor or type(cfg.o.outline_window.show_cursorline) == 'string' then
     -- Unfortunately guicursor is a global option, so we have to make sure to
     -- set and unset when cursor leaves the outline window.
-    hide_cursor()
+    update_cursor_style()
     vim.api.nvim_create_autocmd('BufEnter', {
       buffer = 0,
-      callback = hide_cursor,
+      callback = update_cursor_style,
     })
     vim.api.nvim_create_autocmd('BufLeave', {
       buffer = 0,
-      callback = unhide_cursor,
+      callback = reset_cursor_style,
     })
   end
 end
@@ -219,7 +251,7 @@ function M._set_folded(folded, move_cursor, node_index)
       vim.api.nvim_win_set_cursor(M.view.winnr, { node_index, 0 })
     end
 
-    _update_lines()
+    _update_lines(false)
   elseif node.parent then
     local parent_node = M.state.flattened_outline_items[node.parent.line_in_outline]
 
@@ -248,6 +280,7 @@ end
 ---@param nodes? outline.SymbolNode[]
 function M._set_all_folded(folded, nodes)
   local stack = { nodes or M.state.outline_items }
+  local current = M._current_node()
 
   while #stack > 0 do
     local current_nodes = table.remove(stack, #stack)
@@ -259,7 +292,7 @@ function M._set_all_folded(folded, nodes)
     end
   end
 
-  _update_lines()
+  _update_lines(true, current)
 end
 
 ---@param winnr? integer Window number of code window
@@ -290,59 +323,9 @@ function M._highlight_current_item(winnr)
   --    parents folded)
   -- In one go
 
-  local win = winnr or vim.api.nvim_get_current_win()
-  local buf = vim.api.nvim_win_get_buf(win)
+  -- XXX: Could current win ~= M.state.codewin here?
 
-  local hovered_line = vim.api.nvim_win_get_cursor(win)[1] - 1
-  local parent_nodes = {}
-
-  -- Must not skip folded nodes so that when user unfolds a parent, they can see the leaf
-  -- node highlighted.
-  for value in
-    parser.preorder_iter(M.state.outline_items, function()
-      return true
-    end)
-  do
-    value.hovered = nil
-
-    if
-      value.line == hovered_line
-      or (hovered_line >= value.range_start and hovered_line <= value.range_end)
-    then
-      value.hovered = true
-      table.insert(parent_nodes, value)
-    end
-  end
-
-  if #parent_nodes == 0 then
-    return
-  end
-
-  -- Probably can't 'just' writer.add_hover_highlights here because we might
-  -- want to auto_unfold_hover
-  _update_lines()
-
-  -- Put cursor on deepest visible match
-  local col = 0
-  if cfg.o.outline_items.show_symbol_lineno then
-    -- Padding area between lineno column and start of guides
-    col = #tostring(vim.api.nvim_buf_line_count(buf) - 1)
-  end
-  local flats = M.state.flattened_outline_items
-  local found = false
-  local find_node
-
-  while #parent_nodes > 0 and not found do
-    find_node = table.remove(parent_nodes, #parent_nodes)
-    -- TODO: Is it feasible to use binary search here?
-    for line, node in ipairs(flats) do
-      if node == find_node then
-        vim.api.nvim_win_set_cursor(M.view.winnr, { line, col })
-        found = true
-        break
-      end
-    end
-  end
+  _update_lines(true)
 end
 
 local function setup_keymaps(bufnr)
@@ -409,6 +392,19 @@ local function setup_keymaps(bufnr)
   end)
 end
 
+---@param current outline.FlatSymbolNode?
+function M.update_cursor_pos(current)
+  local col = 0
+  local buf = vim.api.nvim_win_get_buf(M.state.code_win)
+  if cfg.o.outline_items.show_symbol_lineno then
+    -- Padding area between lineno column and start of guides
+    col = #tostring(vim.api.nvim_buf_line_count(buf) - 1)
+  end
+  if current then -- Don't attempt to set cursor if the matching node is not found
+    vim.api.nvim_win_set_cursor(M.view.winnr, { current.line_in_outline, col })
+  end
+end
+
 ---@param response table?
 ---@param opts outline.OutlineOpts?
 local function handler(response, opts)
@@ -417,6 +413,7 @@ local function handler(response, opts)
   end
 
   M.state.code_win = vim.api.nvim_get_current_win()
+  M.state.opened_first_outline = true
 
   if opts and opts.on_symbols then
     opts.on_symbols()
@@ -426,6 +423,21 @@ local function handler(response, opts)
 
   if opts and opts.on_outline_setup then
     opts.on_outline_setup()
+  end
+
+  if cfg.o.outline_items.highlight_hovered_item or cfg.o.symbol_folding.auto_unfold_hover then
+    if M.state.autocmds[M.state.code_win] then
+      vim.api.nvim_del_autocmd(M.state.autocmds[M.state.code_win])
+    end
+    if utils.str_or_nonempty_table(cfg.o.outline_window.auto_update_events.cursor) then
+      M.state.autocmds[M.state.code_win] = vim.api.nvim_create_autocmd(
+        cfg.o.outline_window.auto_update_events.cursor,
+        {
+          buffer = vim.api.nvim_win_get_buf(M.state.code_win),
+          callback = function() M._highlight_current_item(nil) end
+        }
+      )
+    end
   end
 
   -- clear state when buffer is closed
@@ -441,9 +453,10 @@ local function handler(response, opts)
   local items = parser.parse(response, vim.api.nvim_win_get_buf(M.state.code_win))
 
   M.state.outline_items = items
-  M.state.flattened_outline_items = writer.make_outline(M.view.bufnr, items, M.state.code_win)
+  local current
+  M.state.flattened_outline_items, current = writer.make_outline(M.view.bufnr, items, M.state.code_win)
 
-  M._highlight_current_item(M.state.code_win)
+  M.update_cursor_pos(current)
 
   if not cfg.o.outline_window.focus_on_open or (opts and not opts.focus_outline) then
     vim.fn.win_gotoid(M.state.code_win)
@@ -666,6 +679,10 @@ With bang, keep focus on initial window after opening.',
 With bang, don't switch cursor focus to outline window.",
     nargs = 0,
     bang = true,
+  })
+  cmd('Refresh', __refresh, {
+    desc = "Trigger manual outline refresh of items.",
+    nargs = 0,
   })
 end
 

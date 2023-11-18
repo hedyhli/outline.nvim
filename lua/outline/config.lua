@@ -31,11 +31,16 @@ M.defaults = {
     auto_jump = false,
     show_numbers = false,
     show_relative_numbers = false,
+    ---@type boolean?|string?
     show_cursorline = true,
     hide_cursor = false,
     winhl = 'OutlineDetails:Comment,OutlineLineno:LineNr',
-    jump_highlight_duration = 500,
+    jump_highlight_duration = 400,
     center_on_jump = true,
+    auto_update_events = {
+      cursor = { 'CursorMoved' },
+      items = { 'InsertLeave', 'WinEnter', 'BufEnter', 'BufWinEnter', 'TabEnter', 'BufWritePost' },
+    },
   },
   preview_window = {
     auto_preview = false,

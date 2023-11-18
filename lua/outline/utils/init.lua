@@ -111,7 +111,7 @@ function M.flash_highlight(winnr, lnum, durationMs, hl_group)
   end
   hl_group = hl_group or 'Visual'
   if durationMs == true or durationMs == 1 then
-    durationMs = 500
+    durationMs = 400
   end
   local bufnr = vim.api.nvim_win_get_buf(winnr)
   local ns = vim.api.nvim_buf_add_highlight(bufnr, 0, hl_group, lnum - 1, 0, -1)
@@ -135,6 +135,16 @@ function M.echo(module, message)
   local prefix_chunk = { '(' .. prefix .. ') ', 'WarningMsg' }
   -- For now we don't echo much, so add all to history
   vim.api.nvim_echo({ prefix_chunk, { message } }, true, {})
+end
+
+---@param t table
+function M.table_has_content(t)
+  return t and next(t) ~= nil
+end
+
+---@param t table|string
+function M.str_or_nonempty_table(t)
+  return type(t) == 'string' or M.table_has_content(t)
 end
 
 return M

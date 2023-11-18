@@ -37,6 +37,7 @@ local function get_width_offset()
     width = width + 4
   end
 
+  -- FIXME: use actual window position based on view rather than config
   if cfg.o.outline_window.position == 'right' then
     width = 0 - width
   else
