@@ -51,6 +51,7 @@
   depending on cursor focus. The first option, `focus_in_outline` makes it so
   cursorline is enabled only when focus is in outline. This lessens the visual
   changes due to `auto_set_cursor`, when focus is in code.
+- Floating windows are now used for `show_help` keymap and `:OutlineStatus` command.
 
 ### Fixes
 
@@ -69,6 +70,9 @@
   this did not work if there were horizontal splits below the outline window.
   This also adds a `preview_window.min_height` config option. The preview height
   is half of the outline height, unless smaller than `min_height`.
+- No more obnoxious '}' on the cmdline when using `show_help` keymap. A
+  floating window is used now.
+  ([#19](https://github.com/hedyhli/outline.nvim/issues/19))
 
 ### Performance
 
