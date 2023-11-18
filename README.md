@@ -478,7 +478,7 @@ A fallback is always used if the previous candidate returned a falsey value.
 
 - **:OutlineFocusCode**: Focus on source window
 
-- **:OutlineStatus**: Display current provider and outline window status in the messages area
+- **:OutlineStatus**: Display provider and outline window status in a floating window, similar to `:LspInfo`
 
 - **:OutlineFollow[!]** (✓ bang × mods)
 
@@ -498,6 +498,9 @@ A fallback is always used if the previous candidate returned a falsey value.
 ## Default keymaps
 
 These mappings are active only for the outline window.
+
+You can open a floating window showing the following list of keymaps using the `?`
+key by default from the outline window.
 
 | Key        | Action                                             |
 | ---------- | -------------------------------------------------- |
@@ -519,7 +522,7 @@ These mappings are active only for the outline window.
 | R          | Reset all folding                                  |
 | Ctrl+k     | Go up and peek location                            |
 | Ctrl+j     | Go down and peek location                          |
-| ?          | Show current keymaps as a vim message              |
+| ?          | Show current keymaps in a floating window          |
 
 ## Highlights
 
@@ -609,7 +612,7 @@ require'outline'
 
 - **show_status()**
 
-  Display current provider and outline window status in the messages area.
+  Display provider and outline window status in a floating window.
 
 - **has_provider()**
 
