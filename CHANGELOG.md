@@ -13,8 +13,7 @@
 
 ### Features
 
-- Config option for split command used in creating outline
-- Completely refactored functions that build the outline
+- Config option for split command used in creating outline (`outline_window.split_command`)
 - Added highlight group for fold marker
 - A custom icon fetcher function can be used, which receives a kind as string and should
   return an icon as string. An empty string means no icon for this kind
@@ -22,13 +21,14 @@
 - Outline open/toggle commands now support command modifiers to override the
   config options `position` and `split_command`. Eg: `:leftabove
   Outline`/`:belowright OutlineOpen!`
-- Highlight group and duration of the 'flash' highlight on goto/jump operations can now be customized
+- Highlight group and duration of the 'flash' highlight on goto/jump operations
+  can now be customized
   ([#27](https://github.com/hedyhli/outline.nvim/issues/27))
 - A better config system for symbol filtering: deprecating `symbols.blacklist`
   config. Note that the old option **still works as expected** but may be
-  deprecated in feature releases. This new `symbols.filter` option supports both inclusive filtering
-  and also exclusive filtering, per-filetype filtering is also supported.
-  ([#23](https://github.com/hedyhli/outline.nvim/issues/23))
+  deprecated in feature releases. This new `symbols.filter` option supports both
+  inclusive filtering and also exclusive filtering, per-filetype filtering is
+  also supported. ([#23](https://github.com/hedyhli/outline.nvim/issues/23))
 - Optionally put cursor vertically centered on the screen after a goto/jump
   operation. Configurable via `outline_window.center_on_jump`
 - By default, automatic following of cursor (and highlight hover) when outline
@@ -52,16 +52,23 @@
 
 ### Fixes
 
-- Don't auto-update cursor when focus is in outline ([#7](https://github.com/hedyhli/outline.nvim/issues/7))
+- Don't auto-update cursor when focus is in outline
+  ([#7](https://github.com/hedyhli/outline.nvim/issues/7))
 - Symbol hover is not opened on preview open by default now
 - Incorrect guide highlights
-- Follow cursor can now put the cursor on the parent node if the child is folded and invisible in outline
-- Follow cursor puts the cursor in the first column, and if there is lineno, puts it at the end of the lineno
+- Follow cursor can now put the cursor on the parent node if the child is
+  folded and invisible in outline
+- Follow cursor puts the cursor in the first column, and if there is lineno,
+  puts it at the end of the lineno
+- Markdown headings produced from the built-in markdown provider will now
+  use the `String` kind, like marksman
 
 ### Performance
 
-- Building of outline items (and details/lineno) parsed from symbol tree,
-  functions completely refactored
+- Building of outline items (and details/lineno) parsed from symbol tree
+  functions completely refactored, which reduced redundant code that could have
+  O(N) time complexity, a significant difference for codebase with a lot of
+  symbols.
 - Follow cursor algorithm significantly improved
 - Highlight hovered item and initial opening of outline has been rewritten and
   performance improved
