@@ -10,8 +10,8 @@ local writer = require('outline.writer')
 local M = {}
 
 local function setup_global_autocmd()
-  if utils.table_has_content(cfg.o.outline_window.auto_update_events.items) then
-    vim.api.nvim_create_autocmd(cfg.o.outline_window.auto_update_events.items, {
+  if utils.table_has_content(cfg.o.outline_items.auto_update_events.items) then
+    vim.api.nvim_create_autocmd(cfg.o.outline_items.auto_update_events.items, {
       pattern = '*',
       callback = M._refresh,
     })
@@ -32,6 +32,7 @@ M.state = {
   ---@type outline.FlatSymbolNode[]
   flattened_outline_items = {},
   code_win = 0,
+  code_buf = 0,
   autocmds = {},
   -- In case unhide_cursor was called before hide_cursor for _some_ reason,
   -- this can still be used as a fallback
@@ -43,6 +44,7 @@ local function wipe_state()
     outline_items = {},
     flattened_outline_items = {},
     code_win = 0,
+    code_buf = 0,
     autocmds = {},
     opts = {},
   }
@@ -71,24 +73,27 @@ local function __refresh()
       end
 
       local curwin = vim.api.nvim_get_current_win()
+      local curbuf = vim.api.nvim_get_current_buf()
+      local newbuf = curbuf ~= M.state.code_buf
 
-      if M.state.codewin ~= curwin then
-        if M.state.autocmds[M.state.codewin] then
-          vim.api.nvim_del_autocmd(M.state.autocmds[M.state.codewin])
-        end
-        M.state.codewin = curwin
-      end
-
-      if cfg.o.outline_items.highlight_hovered_item or cfg.o.symbol_folding.auto_unfold_hover then
+      if M.state.code_win ~= curwin then
         if M.state.autocmds[M.state.code_win] then
           vim.api.nvim_del_autocmd(M.state.autocmds[M.state.code_win])
         end
-        if utils.str_or_nonempty_table(cfg.o.outline_window.auto_update_events.cursor) then
-          M.state.autocmds[M.state.code_win] =
-            vim.api.nvim_create_autocmd(cfg.o.outline_window.auto_update_events.cursor, {
-              buffer = vim.api.nvim_win_get_buf(M.state.code_win),
+      end
+      M.state.code_win = curwin
+      M.state.code_buf = curbuf
+
+      if cfg.o.outline_items.highlight_hovered_item or cfg.o.symbol_folding.auto_unfold_hover then
+        if M.state.autocmds[curwin] then
+          vim.api.nvim_del_autocmd(M.state.autocmds[curwin])
+        end
+        if utils.str_or_nonempty_table(cfg.o.outline_items.auto_update_events.follow) then
+          M.state.autocmds[curwin] =
+            vim.api.nvim_create_autocmd(cfg.o.outline_items.auto_update_events.follow, {
+              buffer = curbuf,
               callback = function()
-                M._highlight_current_item(nil)
+                M._highlight_current_item(nil, cfg.o.outline_items.auto_follow_cursor)
               end,
             })
         end
@@ -97,7 +102,8 @@ local function __refresh()
       local items = parser.parse(response, vim.api.nvim_get_current_buf())
       _merge_items(items)
 
-      _update_lines()
+      local update_cursor = newbuf or cfg.o.outline_items.auto_follow_cursor
+      _update_lines(update_cursor)
     end
 
     providers.request_symbols(refresh_handler)
@@ -296,7 +302,8 @@ function M._set_all_folded(folded, nodes)
 end
 
 ---@param winnr? integer Window number of code window
-function M._highlight_current_item(winnr)
+---@param update_cursor? boolean
+function M._highlight_current_item(winnr, update_cursor)
   local has_provider = M.has_provider()
   local has_outline_open = M.view:is_open()
   local current_buffer_is_outline = M.view.bufnr == vim.api.nvim_get_current_buf()
@@ -323,9 +330,9 @@ function M._highlight_current_item(winnr)
   --    parents folded)
   -- In one go
 
-  -- XXX: Could current win ~= M.state.codewin here?
+  -- XXX: Could current win ~= M.state.code_win here?
 
-  _update_lines(true)
+  _update_lines(update_cursor)
 end
 
 local function setup_keymaps(bufnr)
@@ -413,6 +420,7 @@ local function handler(response, opts)
   end
 
   M.state.code_win = vim.api.nvim_get_current_win()
+  M.state.code_buf = vim.api.nvim_get_current_buf()
   M.state.opened_first_outline = true
 
   if opts and opts.on_symbols then
@@ -429,12 +437,12 @@ local function handler(response, opts)
     if M.state.autocmds[M.state.code_win] then
       vim.api.nvim_del_autocmd(M.state.autocmds[M.state.code_win])
     end
-    if utils.str_or_nonempty_table(cfg.o.outline_window.auto_update_events.cursor) then
+    if utils.str_or_nonempty_table(cfg.o.outline_items.auto_update_events.follow) then
       M.state.autocmds[M.state.code_win] =
-        vim.api.nvim_create_autocmd(cfg.o.outline_window.auto_update_events.cursor, {
-          buffer = vim.api.nvim_win_get_buf(M.state.code_win),
+        vim.api.nvim_create_autocmd(cfg.o.outline_items.auto_update_events.follow, {
+          buffer = M.state.code_buf,
           callback = function()
-            M._highlight_current_item(nil)
+            M._highlight_current_item(nil, cfg.o.outline_items.auto_follow_cursor)
           end,
         })
     end
@@ -450,7 +458,7 @@ local function handler(response, opts)
   setup_keymaps(M.view.bufnr)
   setup_buffer_autocmd()
 
-  local items = parser.parse(response, vim.api.nvim_win_get_buf(M.state.code_win))
+  local items = parser.parse(response, M.state.code_buf)
 
   M.state.outline_items = items
   local current
@@ -474,7 +482,7 @@ function M.follow_cursor(opts)
   end
 
   if require('outline.preview').has_code_win() then
-    M._highlight_current_item(M.state.code_win)
+    M._highlight_current_item(M.state.code_win, true)
   else
     return false
   end

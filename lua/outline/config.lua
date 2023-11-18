@@ -18,7 +18,16 @@ M.defaults = {
   outline_items = {
     show_symbol_details = true,
     show_symbol_lineno = false,
+    -- The two below are both for auto_update_events.follow
     highlight_hovered_item = true,
+    -- On open, always followed. This is for auto_update_events.follow, whether
+    -- to auto update cursor position to reflect code location. If false, can
+    -- manually trigger with follow_cursor (API, command, keymap action).
+    auto_follow_cursor = true,
+    auto_update_events = {
+      follow = { 'CursorMoved' },
+      items = { 'InsertLeave', 'WinEnter', 'BufEnter', 'BufWinEnter', 'TabEnter', 'BufWritePost' },
+    },
   },
   outline_window = {
     position = 'right',
@@ -37,10 +46,6 @@ M.defaults = {
     winhl = 'OutlineDetails:Comment,OutlineLineno:LineNr',
     jump_highlight_duration = 400,
     center_on_jump = true,
-    auto_update_events = {
-      cursor = { 'CursorMoved' },
-      items = { 'InsertLeave', 'WinEnter', 'BufEnter', 'BufWinEnter', 'TabEnter', 'BufWritePost' },
-    },
   },
   preview_window = {
     auto_preview = false,
