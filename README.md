@@ -58,6 +58,9 @@ Table of contents
   * [Custom icons](#custom-icons)
   * [Disable icons](#disable-icons)
 * [TODO](#todo)
+* [Limitations](#limitations)
+  * [Preview window](#preview-window-1)
+  * [Many outlines](#many-outlines)
 * [Related plugins](#related-plugins)
 
 <!-- mtoc-end -->
@@ -138,8 +141,9 @@ configuration.
 - **Node**: An item in the outline view
 - **Fold**: Collapse a collapsible node
 - **Location**: Where in the source file a node is from
-- **Preview**: Show the location of a node in code using a floating window
-- **Peek**: Go to corresponding location in code without leaving outline window
+- **Preview**: Show the location of a node in code using a floating window.
+  Syntax highlighting is provided if treesitter is installed.
+- **Jump/Peek**: Go to corresponding location in code without leaving outline window
 - **Hover**: Cursor currently on the line of a node
 - **Hover symbol**: Displaying a floating window to show symbol information
   provided by provider.
@@ -182,7 +186,7 @@ Pass a table to the setup call with your configuration options.
     -- when jumping. false to disable.
     jump_highlight_duration = 300,
     -- Whether to center the cursor line vertically in the screen when
-    -- jumping/focusing. Runs zz.
+    -- jumping/focusing. Executes zz.
     center_on_jump = true,
 
     -- Vim options for the outline window
@@ -190,13 +194,14 @@ Pass a table to the setup call with your configuration options.
     show_relative_numbers = false,
     wrap = false,
 
+    -- true/false/'focus_in_outline'/'focus_in_code'.
+    -- The last two means only show cursorline when the focus is in outline/code.
+    -- 'focus_in_outline' can be used if the outline_items.auto_set_cursor
+    -- operations are too distracting due to visual contrast caused by cursorline.
     show_cursorline = true,
     -- Enable this only if you enabled cursorline so your cursor color can
     -- blend with the cursorline, in effect, as if your cursor is hidden
     -- in the outline window.
-    -- This is useful because with cursorline, there isn't really a need
-    -- to know the vertical column position of the cursor and it may even
-    -- be distracting, rendering lineno/guides/icons unreadable.
     -- This makes your line of cursor have the same color as if the cursor
     -- wasn't focused on the outline window.
     -- This feature is experimental.
@@ -219,8 +224,6 @@ Pass a table to the setup call with your configuration options.
   },
 
   outline_items = {
-    -- Whether to highlight the currently hovered symbol and all direct parents
-    highlight_hovered_item = true,
     -- Show extra details with the symbols (lsp dependent) as virtual next
     show_symbol_details = true,
     -- Show corresponding line numbers of each symbol on the left column as
@@ -228,6 +231,25 @@ Pass a table to the setup call with your configuration options.
     -- Why? See this comment:
     -- https://github.com/simrat39/symbols-outline.nvim/issues/212#issuecomment-1793503563
     show_symbol_lineno = false,
+    -- Whether to highlight the currently hovered symbol and all direct parents
+    highlight_hovered_item = true,
+    -- Whether to automatically set cursor location in outline to match
+    -- location in code when focus is in code. If disabled you can use
+    -- `:OutlineFollow[!]` from any window or `<C-g>` from outline window to
+    -- trigger this manually.
+    auto_set_cursor = true,
+    -- Autocmd events to automatically trigger these operations.
+    auto_update_events = {
+      -- Includes both setting of cursor and highlighting of hovered item.
+      -- The above two options are respected.
+      -- This can be triggered manually through `follow_cursor` lua API,
+      -- :OutlineFollow command, or <C-g>.
+      follow = { 'CursorMoved' },
+      -- Re-request symbols from the provider.
+      -- This can be triggered manually through `refresh_outline` lua API, or
+      -- :OutlineRefresh command.
+      items = { 'InsertLeave', 'WinEnter', 'BufEnter', 'BufWinEnter', 'TabEnter', 'BufWritePost' },
+    },
   },
 
   -- Options for outline guides which help show tree hierarchy of symbols
@@ -296,7 +318,6 @@ Pass a table to the setup call with your configuration options.
     hover_symbol = '<C-space>',
     -- Preview location code of the symbol under cursor
     toggle_preview = 'K',
-    -- Symbol actions
     rename_symbol = 'r',
     code_actions = 'a',
     -- These fold actions are collapsing tree nodes, not code folding
@@ -494,6 +515,19 @@ A fallback is always used if the previous candidate returned a falsey value.
 
   With bang, it can be understood as the converse of `peek_location`.
 
+  This is automatically triggered on events
+  `config.outline_items.auto_update_events.follow`.
+
+  You can also trigger this manually using the `restore_location` keymap
+  (default `<C-g>`) from the outline window.
+
+- **:OutlineRefresh**
+
+  Trigger refresh of symbols from provider and update outline items.
+
+  This is automatically triggered on events
+  `config.outline_items.auto_update_events.refresh`.
+
 
 ## Default keymaps
 
@@ -624,6 +658,20 @@ require'outline'
   focus on the outline window.
 
   With `opts.focus_outline=false`, cursor focus will remain on code window.
+
+  This is automatically called on events
+  `config.outline_items.auto_update_events.follow`.
+
+- **is_focus_in_outline()**
+
+  Return whether outline is open and current focus is in outline.
+
+- **refresh_outline()**
+
+  Re-request symbols from provider and update outline items.
+
+  This is automatically called on events
+  `config.outline_items.auto_update_events.refresh`.
 
 
 ## Tips
@@ -854,19 +902,30 @@ Key:
   buffer is closed.
 
   Maybe it should continue working, so that pressing enter can open a split to
-  the correct location, and pressing `q` can properly close the buffer.
-
-- Preview / Hover
-  - ✅ Configurable winhighlight options for preview window (like nvim-cmp)
-  (simrat39/symbols-outline.nvim#128)
-  - ✅ Configurable width and height of preview window (simrat39/symbols-outline.nvim#130)
-
-- View
-  - ✅ Outline window customizations (simrat39/symbols-outline.nvim#137)
-  - ✅ Option to show line number next to symbols (simrat39/symbols-outline.nvim#212)
-  - ✅ Option to hide cursor in outline window if cursorline enabled
+  the correct location like `NvimTree` does, and pressing `q` can properly
+  close the buffer.
 
 <!-- panvimdoc-ignore-end -->
+
+## Limitations
+
+### Preview window
+
+Sometimes the preview window could be slow in loading. This could be due to the
+code buffer being large. As of now there are no good solutions in circumventing
+this problem — currently the entire code buffer is read, and then put into the
+preview buffer. If only the required portion to preview is read and set
+instead, there would be highlighting issues (say the calculated starting line
+was within a markdown code block, so what was previously not supposed to be
+code is now highlighted as code).
+
+### Many outlines
+
+Outline.nvim does not support having multiple outlines attached to different
+buffers as of now. However, this feature is
+[planned](https://github.com/hedyhli/outline.nvim/issues/26), and for now you
+can use a single outline sidebar and have it auto-update whenever you switch
+buffers.
 
 ## Related plugins
 

@@ -610,7 +610,7 @@ function M.is_open()
   return M.view:is_open()
 end
 
-function M.is_active()
+function M.is_focus_in_outline()
   local winid = vim.fn.win_getid()
   if M.view:is_open() and winid == M.view.winnr then
     return true
@@ -621,7 +621,7 @@ end
 ---Whether there is currently an available provider.
 ---@return boolean has_provider
 function M.has_provider()
-  if M.is_active() then
+  if M.is_focus_in_outline() then
     return _G._outline_current_provider ~= nil
   end
   return providers.has_provider()
@@ -631,7 +631,7 @@ function M.show_status()
   ---@type outline.StatusContext
   local ctx = {}
   local p = _G._outline_current_provider
-  if not M.is_active() then
+  if not M.is_focus_in_outline() then
     p = providers.find_provider()
   end
 

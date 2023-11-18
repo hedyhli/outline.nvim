@@ -52,6 +52,10 @@
   cursorline is enabled only when focus is in outline. This lessens the visual
   changes due to `auto_set_cursor`, when focus is in code.
 - Floating windows are now used for `show_help` keymap and `:OutlineStatus` command.
+- New command `:OutlineRefresh` and corresponding lua API function
+  `refresh_outline()` triggers re-requesting of symbols from provider and
+  updating the outline.
+- New lua API function `is_focus_in_outline()`
 
 ### Fixes
 
