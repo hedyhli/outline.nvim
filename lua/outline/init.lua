@@ -650,6 +650,11 @@ function M.show_status()
   return require('outline.docs').show_status(ctx)
 end
 
+---Re-request symbols from the provider and update the outline accordingly
+function M.refresh_outline()
+  return __refresh()
+end
+
 local function setup_commands()
   local cmd = function(n, c, o)
     vim.api.nvim_create_user_command('Outline' .. n, c, o)
