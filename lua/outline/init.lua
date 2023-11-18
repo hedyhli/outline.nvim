@@ -51,7 +51,7 @@ end
 local function _update_lines(update_cursor, set_cursor_to_node)
   local current
   M.state.flattened_outline_items, current =
-      writer.make_outline(M.view.bufnr, M.state.outline_items, M.state.code_win, set_cursor_to_node)
+    writer.make_outline(M.view.bufnr, M.state.outline_items, M.state.code_win, set_cursor_to_node)
   if update_cursor ~= false then
     M.update_cursor_pos(current)
   end
@@ -84,13 +84,13 @@ local function __refresh()
           vim.api.nvim_del_autocmd(M.state.autocmds[M.state.code_win])
         end
         if utils.str_or_nonempty_table(cfg.o.outline_window.auto_update_events.cursor) then
-          M.state.autocmds[M.state.code_win] = vim.api.nvim_create_autocmd(
-            cfg.o.outline_window.auto_update_events.cursor,
-            {
+          M.state.autocmds[M.state.code_win] =
+            vim.api.nvim_create_autocmd(cfg.o.outline_window.auto_update_events.cursor, {
               buffer = vim.api.nvim_win_get_buf(M.state.code_win),
-              callback = function() M._highlight_current_item(nil) end
-            }
-          )
+              callback = function()
+                M._highlight_current_item(nil)
+              end,
+            })
         end
       end
 
@@ -117,7 +117,7 @@ function M.__goto_location(change_focus)
   local node = M._current_node()
   vim.api.nvim_win_set_cursor(M.state.code_win, { node.line + 1, node.character })
   if cfg.o.outline_window.center_on_jump then
-    vim.fn.win_execute(M.state.code_win, "normal! zz")
+    vim.fn.win_execute(M.state.code_win, 'normal! zz')
   end
 
   if vim.fn.hlexists('OutlineJumpHighlight') == 0 then
@@ -177,7 +177,7 @@ local function update_cursor_style()
   local hide_cursor = type(cl) ~= 'string'
 
   if cl == 'focus_in_outline' or cl == 'focus_in_code' then
-    vim.api.nvim_win_set_option(0, "cursorline", cl == 'focus_in_outline')
+    vim.api.nvim_win_set_option(0, 'cursorline', cl == 'focus_in_outline')
     hide_cursor = cl == 'focus_in_outline'
   end
 
@@ -193,7 +193,7 @@ local function reset_cursor_style()
   local cl = cfg.o.outline_window.show_cursorline
 
   if cl == 'focus_in_outline' or cl == 'focus_in_code' then
-    vim.api.nvim_win_set_option(0, "cursorline", cl ~= 'focus_in_outline')
+    vim.api.nvim_win_set_option(0, 'cursorline', cl ~= 'focus_in_outline')
   end
   -- vim.opt doesn't seem to provide a way to remove last item, like a pop()
   -- vim.o.guicursor = vim.o.guicursor:gsub(",n.-:.-$", "")
@@ -430,13 +430,13 @@ local function handler(response, opts)
       vim.api.nvim_del_autocmd(M.state.autocmds[M.state.code_win])
     end
     if utils.str_or_nonempty_table(cfg.o.outline_window.auto_update_events.cursor) then
-      M.state.autocmds[M.state.code_win] = vim.api.nvim_create_autocmd(
-        cfg.o.outline_window.auto_update_events.cursor,
-        {
+      M.state.autocmds[M.state.code_win] =
+        vim.api.nvim_create_autocmd(cfg.o.outline_window.auto_update_events.cursor, {
           buffer = vim.api.nvim_win_get_buf(M.state.code_win),
-          callback = function() M._highlight_current_item(nil) end
-        }
-      )
+          callback = function()
+            M._highlight_current_item(nil)
+          end,
+        })
     end
   end
 
@@ -454,7 +454,8 @@ local function handler(response, opts)
 
   M.state.outline_items = items
   local current
-  M.state.flattened_outline_items, current = writer.make_outline(M.view.bufnr, items, M.state.code_win)
+  M.state.flattened_outline_items, current =
+    writer.make_outline(M.view.bufnr, items, M.state.code_win)
 
   M.update_cursor_pos(current)
 
@@ -681,7 +682,7 @@ With bang, don't switch cursor focus to outline window.",
     bang = true,
   })
   cmd('Refresh', __refresh, {
-    desc = "Trigger manual outline refresh of items.",
+    desc = 'Trigger manual outline refresh of items.',
     nargs = 0,
   })
 end
