@@ -412,7 +412,7 @@ Per-filetype filtering example:
 - For other file types, include all but string
 ```lua
 symbols.filter = {
-  ['*'] = { 'String', exclude=true },
+  default = { 'String', exclude=true },
   python = { 'Function', 'Class' },
 }
 ```

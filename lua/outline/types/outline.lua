@@ -8,7 +8,7 @@
 -- {
 --   python = { 'Variable', exclude = true },
 --   go = { 'Field', 'Function', 'Method' },
---   ['\*'] = { 'String', exclude = true }
+--   default = { 'String', exclude = true }
 -- }
 ---@alias outline.FilterFtList { [string]: outline.FilterList } A filter list for each file type
 ---@alias outline.FilterConfig outline.FilterFtList|outline.FilterList
@@ -16,7 +16,7 @@
 ---@alias outline.FilterTable { [string]: boolean }  Each kind:include pair where include is boolean, whether to include this kind. Used internally.
 -- {
 --   python = { String = false, Variable = true, ... },
---   ['\*'] = { File = true, Method = true, ... },
+--   default = { File = true, Method = true, ... },
 -- }
 ---@alias outline.FilterFtTable { [string]: outline.FilterTable } A filter table for each file type. Used internally.
 

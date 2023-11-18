@@ -207,7 +207,7 @@ function M.should_include_symbol(kind, bufnr)
   end
 
   local filter_table = M.o.symbols.filter[ft]
-  local default_filter_table = M.o.symbols.filter['*']
+  local default_filter_table = M.o.symbols.filter.default
 
   -- When filter table for a ft is not specified, all symbols are shown
   if not filter_table then
@@ -339,8 +339,8 @@ function M.resolve_filter_config()
 
   ---- legacy form -> ft filter list ----
   if table_has_content(M.o.symbols.blacklist) then
-    tmp = { ['*'] = M.o.symbols.blacklist }
-    tmp['*'].exclude = true
+    tmp = { default = M.o.symbols.blacklist }
+    tmp.default.exclude = true
     M.o.symbols.blacklist = nil
   else
     ---- nil or {} -> include all symbols ----
@@ -349,14 +349,14 @@ function M.resolve_filter_config()
     -- through the plugin manager); so we let filter = {} denote filter = nil
     -- (or false), meaning include all symbols.
     if not table_has_content(tmp) then
-      tmp = { ['*'] = { exclude = true } }
+      tmp = { default = { exclude = true } }
 
       -- Lazy filter list -> ft filter list
     elseif tmp[1] then
       if type(tmp[1]) == 'string' then
-        tmp = { ['*'] = vim.deepcopy(tmp) }
+        tmp = { default = vim.deepcopy(tmp) }
       else
-        tmp['*'] = vim.deepcopy(tmp[1])
+        tmp.default = vim.deepcopy(tmp[1])
         tmp[1] = nil
       end
     end
@@ -375,7 +375,7 @@ function M.resolve_filter_config()
   -- filetype.
   -- {
   --   python = { String = false, Variable = true, ... },
-  --   ['*'] = { File = true, Method = true, ... },
+  --   default = { File = true, Method = true, ... },
   -- }
   for ft, list in pairs(filter) do
     if type(ft) ~= 'string' then
