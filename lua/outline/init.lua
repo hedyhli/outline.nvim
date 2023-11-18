@@ -40,6 +40,12 @@ M.state = {
 }
 
 local function wipe_state()
+  for _, code_win in ipairs(M.state.autocmds) do
+    if vim.api.nvim_win_is_valid(code_win) and M.state.autocmds[code_win] then
+      vim.api.nvim_del_autocmd(M.state.autocmds[code_win])
+    end
+  end
+
   M.state = {
     outline_items = {},
     flattened_outline_items = {},
