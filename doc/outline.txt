@@ -458,13 +458,13 @@ COMMANDS                                                    *outline-commands*
     code window.
     With bang, it can be understood as the converse of `peek_location`.
     This is automatically triggered on events
-    `config.outline_items.auto_update_events.follow`.
+    `outline_items.auto_update_events.follow`.
     You can also trigger this manually using the `restore_location` keymap (default
     `<C-g>`) from the outline window.
 - **:OutlineRefresh**
     Trigger refresh of symbols from provider and update outline items.
     This is automatically triggered on events
-    `config.outline_items.auto_update_events.refresh`.
+    `outline_items.auto_update_events.refresh`.
 
 
 DEFAULT KEYMAPS                                      *outline-default-keymaps*
@@ -587,13 +587,13 @@ Outline.nvim provides the following public API for use in lua.
     on the outline window.
     With `opts.focus_outline=false`, cursor focus will remain on code window.
     This is automatically called on events
-    `config.outline_items.auto_update_events.follow`.
+    `outline_items.auto_update_events.follow` from config.
 - **is_focus_in_outline()**
     Return whether outline is open and current focus is in outline.
 - **refresh_outline()**
     Re-request symbols from provider and update outline items.
     This is automatically called on events
-    `config.outline_items.auto_update_events.refresh`.
+    `outline_items.auto_update_events.refresh` from config.
 
 
 TIPS                                                            *outline-tips*
