@@ -2,6 +2,10 @@ local cfg = require('outline.config')
 
 local View = {}
 
+---@class View
+---@field bufnr integer
+---@field winnr integer
+
 function View:new()
   return setmetatable({ bufnr = nil, winnr = nil }, { __index = View })
 end

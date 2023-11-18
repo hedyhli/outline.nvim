@@ -261,11 +261,6 @@ function M.get_providers()
   return M.providers
 end
 
-function M.show_help()
-  print('Current keymaps:')
-  print(vim.inspect(M.o.keymaps))
-end
-
 ---Check for inconsistent or mutually exclusive opts.
 -- Does not alter the opts. Might show messages.
 function M.check_config()

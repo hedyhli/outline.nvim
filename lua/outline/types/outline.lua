@@ -60,6 +60,28 @@
 ---@field hovered boolean
 ---@field folded boolean
 
+-- PROVIDER
+
+---@class outline.Provider
+---@field should_use_provider fun(bufnr:integer):boolean
+---@field hover_info fun(bufnr:integer, params:table, on_info:function)
+---@field request_symbols fun(on_symbols:function, opts:table)
+---@field name string
+---@field get_status? fun():string
+
+-- HELP
+
+---@class outline.HL
+---@field line integer
+---@field from integer
+---@field to integer
+---@field name string
+
+---@class outline.StatusContext
+---@field provider outline.Provider?
+---@field outline_open boolean?
+---@field code_win_active boolean?
+
 -- API
 
 ---@class outline.OutlineOpts

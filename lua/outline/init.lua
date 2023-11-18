@@ -72,26 +72,19 @@ end
 ---@param code_buf integer Must be valid
 local function setup_attached_buffer_autocmd(code_win, code_buf)
   local events = cfg.o.outline_items.auto_update_events
-  if
-    cfg.o.outline_items.highlight_hovered_item
-    or cfg.o.symbol_folding.auto_unfold_hover
-  then
+  if cfg.o.outline_items.highlight_hovered_item or cfg.o.symbol_folding.auto_unfold_hover then
     if M.state.autocmds[code_win] then
       vim.api.nvim_del_autocmd(M.state.autocmds[code_win])
       M.state.autocmds[code_win] = nil
     end
 
     if utils.str_or_nonempty_table(events.follow) then
-      M.state.autocmds[code_win] =
-        vim.api.nvim_create_autocmd(events.follow, {
-          buffer = code_buf,
-          callback = function()
-            M._highlight_current_item(
-              code_win,
-              cfg.o.outline_items.auto_set_cursor
-            )
-          end,
-        })
+      M.state.autocmds[code_win] = vim.api.nvim_create_autocmd(events.follow, {
+        buffer = code_buf,
+        callback = function()
+          M._highlight_current_item(code_win, cfg.o.outline_items.auto_set_cursor)
+        end,
+      })
     end
   end
 end
@@ -398,7 +391,7 @@ local function setup_keymaps(bufnr)
   -- code actions
   map(cfg.o.keymaps.code_actions, require('outline.code_action').show_code_actions)
   -- show help
-  map(cfg.o.keymaps.show_help, require('outline.config').show_help)
+  map(cfg.o.keymaps.show_help, require('outline.docs').show_help)
   -- close outline
   map(cfg.o.keymaps.close, function()
     M.view:close()
@@ -611,37 +604,6 @@ function M.is_open()
   return M.view:is_open()
 end
 
----Display outline window status in the message area.
-function M.show_status()
-  -- TODO: Use a floating window instead
-  local p = _G._outline_current_provider
-  if not M.is_active() then
-    p = providers.find_provider()
-  end
-
-  if p ~= nil then
-    print('Current provider: ' .. p.name)
-    if p.get_status then
-      print(p.get_status())
-      print()
-    end
-
-    if M.view:is_open() then
-      print('Outline window is open.')
-    else
-      print('Outline window is not open.')
-    end
-
-    if require('outline.preview').has_code_win() then
-      print('Code window is active.')
-    else
-      print('Code window is either closed or invalid. Please close and reopen the outline window.')
-    end
-  else
-    print('No providers')
-  end
-end
-
 function M.is_active()
   local winid = vim.fn.win_getid()
   if M.view:is_open() and winid == M.view.winnr then
@@ -657,6 +619,29 @@ function M.has_provider()
     return _G._outline_current_provider ~= nil
   end
   return providers.has_provider()
+end
+
+function M.show_status()
+  ---@type outline.StatusContext
+  local ctx = {}
+  local p = _G._outline_current_provider
+  if not M.is_active() then
+    p = providers.find_provider()
+  end
+
+  if p ~= nil then
+    ctx.provider = p
+    ctx.outline_open = false
+    if M.view and M.view:is_open() then
+      ctx.outline_open = true
+    end
+    ctx.code_win_active = false
+    if require('outline.preview').has_code_win() then
+      ctx.code_win_active = true
+    end
+  end
+
+  return require('outline.docs').show_status(ctx)
 end
 
 local function setup_commands()

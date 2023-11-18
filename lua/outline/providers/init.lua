@@ -3,8 +3,6 @@ local cfg = require('outline.config')
 local M = {}
 local import_prefix = 'outline/providers/'
 
-_G._outline_current_provider = nil
-
 function M.find_provider()
   if not M.providers then
     M.providers = vim.tbl_map(function(p)
