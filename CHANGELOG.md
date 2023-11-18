@@ -64,6 +64,11 @@
   puts it at the end of the lineno
 - Markdown headings produced from the built-in markdown provider will now
   use the `String` kind, like marksman
+- Preview window can now properly vertically center-align and determine its
+  correct height depending on relative position of the outline window. Previously
+  this did not work if there were horizontal splits below the outline window.
+  This also adds a `preview_window.min_height` config option. The preview height
+  is half of the outline height, unless smaller than `min_height`.
 
 ### Performance
 
