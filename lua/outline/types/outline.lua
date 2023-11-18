@@ -42,7 +42,7 @@
 ---@class outline.FlatSymbolNode
 ---@field name string
 ---@field depth integer
----@field parent outline.SymbolNode
+---@field parent outline.FlatSymbolNode
 ---@field deprecated boolean
 ---@field kind integer|string
 ---@field icon string
@@ -53,7 +53,7 @@
 ---@field range_end integer
 ---@field isLast boolean
 ---@field hierarchy boolean
----@field children? outline.SymbolNode[]
+---@field children? outline.FlatSymbolNode[]
 ---@field traversal_child integer
 ---@field line_in_outline integer
 ---@field prefix_length integer
@@ -64,5 +64,4 @@
 
 ---@class outline.OutlineOpts
 ---@field focus_outline boolean?  Whether to focus on outline of after some operation. If nil, defaults to true
----@field on_symbols function?  After symbols have been received, before sidebar window is setup
----@field on_outline_setup function?   After sidebar window is setup
+---@field split_command string?

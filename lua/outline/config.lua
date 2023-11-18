@@ -23,7 +23,7 @@ M.defaults = {
     -- On open, always followed. This is for auto_update_events.follow, whether
     -- to auto update cursor position to reflect code location. If false, can
     -- manually trigger with follow_cursor (API, command, keymap action).
-    auto_follow_cursor = true,
+    auto_set_cursor = true,
     auto_update_events = {
       follow = { 'CursorMoved' },
       items = { 'InsertLeave', 'WinEnter', 'BufEnter', 'BufWinEnter', 'TabEnter', 'BufWritePost' },
@@ -40,7 +40,7 @@ M.defaults = {
     auto_jump = false,
     show_numbers = false,
     show_relative_numbers = false,
-    ---@type boolean?|string?
+    ---@type boolean|string?
     show_cursorline = true,
     hide_cursor = false,
     winhl = 'OutlineDetails:Comment,OutlineLineno:LineNr',
@@ -52,6 +52,7 @@ M.defaults = {
     width = 50,
     min_width = 50,
     relative_width = true,
+    min_height = 10,
     border = 'single',
     open_hover_on_preview = false,
     winhl = '',

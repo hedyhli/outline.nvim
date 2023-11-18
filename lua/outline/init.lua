@@ -50,6 +50,9 @@ local function wipe_state()
   }
 end
 
+---Calls writer.make_outline and then calls M.update_cursor_pos if update_cursor is not false
+---@param update_cursor boolean?
+---@param set_cursor_to_node outline.SymbolNode|outline.FlatSymbolNode?
 local function _update_lines(update_cursor, set_cursor_to_node)
   local current
   M.state.flattened_outline_items, current =
@@ -62,6 +65,35 @@ end
 ---@param items outline.SymbolNode[]
 local function _merge_items(items)
   utils.merge_items_rec({ children = items }, { children = M.state.outline_items })
+end
+
+---Setup autocmds for the buffer that the outline attached to
+---@param code_win integer Must be valid
+---@param code_buf integer Must be valid
+local function setup_attached_buffer_autocmd(code_win, code_buf)
+  local events = cfg.o.outline_items.auto_update_events
+  if
+    cfg.o.outline_items.highlight_hovered_item
+    or cfg.o.symbol_folding.auto_unfold_hover
+  then
+    if M.state.autocmds[code_win] then
+      vim.api.nvim_del_autocmd(M.state.autocmds[code_win])
+      M.state.autocmds[code_win] = nil
+    end
+
+    if utils.str_or_nonempty_table(events.follow) then
+      M.state.autocmds[code_win] =
+        vim.api.nvim_create_autocmd(events.follow, {
+          buffer = code_buf,
+          callback = function()
+            M._highlight_current_item(
+              code_win,
+              cfg.o.outline_items.auto_set_cursor
+            )
+          end,
+        })
+    end
+  end
 end
 
 local function __refresh()
@@ -82,29 +114,16 @@ local function __refresh()
           M.state.autocmds[M.state.code_win] = nil
         end
       end
+
       M.state.code_win = curwin
       M.state.code_buf = curbuf
 
-      if cfg.o.outline_items.highlight_hovered_item or cfg.o.symbol_folding.auto_unfold_hover then
-        if M.state.autocmds[curwin] then
-          vim.api.nvim_del_autocmd(M.state.autocmds[curwin])
-          M.state.autocmds[curwin] = nil
-        end
-        if utils.str_or_nonempty_table(cfg.o.outline_items.auto_update_events.follow) then
-          M.state.autocmds[curwin] =
-            vim.api.nvim_create_autocmd(cfg.o.outline_items.auto_update_events.follow, {
-              buffer = curbuf,
-              callback = function()
-                M._highlight_current_item(nil, cfg.o.outline_items.auto_follow_cursor)
-              end,
-            })
-        end
-      end
+      setup_attached_buffer_autocmd(curwin, curbuf)
 
       local items = parser.parse(response, vim.api.nvim_get_current_buf())
       _merge_items(items)
 
-      local update_cursor = newbuf or cfg.o.outline_items.auto_follow_cursor
+      local update_cursor = newbuf or cfg.o.outline_items.auto_set_cursor
       _update_lines(update_cursor)
     end
 
@@ -326,13 +345,22 @@ function M._highlight_current_item(winnr, update_cursor)
     return
   end
 
-  -- TODO: Find an efficient way to:
-  -- 1) Set highlight for all nodes in range (regardless of visibility)
-  -- 2) Find the line number of the deepest node in range, that is visible (no
-  --    parents folded)
-  -- In one go
+  local valid_code_win = vim.api.nvim_win_is_valid(M.state.code_win)
+  local valid_winnr = winnr and vim.api.nvim_win_is_valid(winnr)
 
-  -- XXX: Could current win ~= M.state.code_win here?
+  if not valid_code_win then
+    -- Definetely don't attempt to update anything if code win is no longer valid
+    return
+  end
+
+  if not valid_winnr then
+    return
+  elseif winnr ~= M.state.code_win then
+    -- Both valid, but given winnr ~= known code_win.
+    -- Best not to handle this situation at all to prevent any unwanted side
+    -- effects
+    return
+  end
 
   _update_lines(update_cursor)
 end
@@ -421,35 +449,16 @@ local function handler(response, opts)
     return
   end
 
+  if not opts then
+    opts = {}
+  end
+
   M.state.code_win = vim.api.nvim_get_current_win()
   M.state.code_buf = vim.api.nvim_get_current_buf()
   M.state.opened_first_outline = true
 
-  if opts and opts.on_symbols then
-    opts.on_symbols()
-  end
-
-  M.view:setup_view()
-
-  if opts and opts.on_outline_setup then
-    opts.on_outline_setup()
-  end
-
-  if cfg.o.outline_items.highlight_hovered_item or cfg.o.symbol_folding.auto_unfold_hover then
-    if M.state.autocmds[M.state.code_win] then
-      vim.api.nvim_del_autocmd(M.state.autocmds[M.state.code_win])
-      M.state.autocmds[M.state.code_win] = nil
-    end
-    if utils.str_or_nonempty_table(cfg.o.outline_items.auto_update_events.follow) then
-      M.state.autocmds[M.state.code_win] =
-        vim.api.nvim_create_autocmd(cfg.o.outline_items.auto_update_events.follow, {
-          buffer = M.state.code_buf,
-          callback = function()
-            M._highlight_current_item(nil, cfg.o.outline_items.auto_follow_cursor)
-          end,
-        })
-    end
-  end
+  local sc = opts.split_command or cfg.get_split_command()
+  M.view:setup_view(sc)
 
   -- clear state when buffer is closed
   vim.api.nvim_buf_attach(M.view.bufnr, false, {
@@ -460,6 +469,7 @@ local function handler(response, opts)
 
   setup_keymaps(M.view.bufnr)
   setup_buffer_autocmd()
+  setup_attached_buffer_autocmd(M.state.code_win, M.state.code_buf)
 
   local items = parser.parse(response, M.state.code_buf)
 
@@ -470,7 +480,7 @@ local function handler(response, opts)
 
   M.update_cursor_pos(current)
 
-  if not cfg.o.outline_window.focus_on_open or (opts and not opts.focus_outline) then
+  if not cfg.o.outline_window.focus_on_open or not opts.focus_outline then
     vim.fn.win_gotoid(M.state.code_win)
   end
 end
@@ -531,26 +541,13 @@ end
 
 local function _cmd_open_with_mods(fn)
   return function(opts)
-    local old_sc, use_old_sc
-    local split = opts.smods.split
-    if split ~= '' then
-      old_sc = cfg.o.outline_window.split_command
-      use_old_sc = true
-      cfg.o.outline_window.split_command = split .. ' vsplit'
+    local fnopts = { focus_outline = not opts.bang }
+    local sc = opts.smods.split
+    if sc ~= '' then
+      fnopts.split_command = sc .. ' vsplit'
     end
 
-    local function on_outline_setup()
-      if use_old_sc then
-        cfg.o.outline_window.split_command = old_sc
-        -- the old option should already have been resolved during set up
-      end
-    end
-
-    if opts.bang then
-      fn({ focus_outline = false, on_outline_setup = on_outline_setup })
-    else
-      fn({ focus_outline = true, on_outline_setup = on_outline_setup })
-    end
+    fn(fnopts)
   end
 end
 

@@ -6,15 +6,17 @@ function View:new()
   return setmetatable({ bufnr = nil, winnr = nil }, { __index = View })
 end
 
----creates the outline window and sets it up
-function View:setup_view()
+---Creates the outline window and sets it up
+---@param split_command string A valid split command that is to be executed in order to create the view.
+function View:setup_view(split_command)
   -- create a scratch unlisted buffer
   self.bufnr = vim.api.nvim_create_buf(false, true)
 
   -- delete buffer when window is closed / buffer is hidden
   vim.api.nvim_buf_set_option(self.bufnr, 'bufhidden', 'delete')
   -- create a split
-  vim.cmd(cfg.get_split_command())
+  vim.cmd(split_command)
+
   -- resize to a % of the current window size
   vim.cmd('vertical resize ' .. cfg.get_window_width())
 

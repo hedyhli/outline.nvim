@@ -36,19 +36,21 @@
   `CursorHold`. This is also configurable now using
   `outline_items.auto_update_events` with key `follow`. The key `items` controls
   the events that should trigger a re-request of symbols from the provider.
-- Config option for cursorline now supports 2 other string values,
-  `focus_in_outline` and `focus_in_code`. These make the cursorline only show up
-  depending on cursor focus. The first option, `focus_in_outline` makes it so
-  cursorline is enabled only when focus is in outline. This lessens the visual
-  changes due to auto follow_cursor.
 - On fold all or unfold all operations, the cursor will now stay on the same
   node, rather than the same line in the outline.
 - Optionally not automatically update cursor position in outline to reflect
   cursor location in code. The auto-update is triggered by events from
-  `outline_items.auto_update_events.follow`, and disabling of follow-cursor can
-  be done through `outline_items.auto_follow_cursor`. Regardless, manual
-  follow-cursor can still be done using `:FollowCursor[!]` or lua API
-  `follow_cursor({ focus_outline = true/false })`.
+  `outline_items.auto_update_events.follow` which controls both highlighting of
+  hovered node and also setting of cursor in outline. To disable the latter,
+  use `outline_items.auto_set_cursor`. Disabling the former can still be done using
+  `outline_items.highlight_hovered_item`. Regardless, manual follow-cursor can
+  still be done using `:FollowCursor[!]` or lua API `follow_cursor({
+  focus_outline = true/false })`.
+- Config option for cursorline now supports 2 other string values,
+  `focus_in_outline` and `focus_in_code`. These make the cursorline only show up
+  depending on cursor focus. The first option, `focus_in_outline` makes it so
+  cursorline is enabled only when focus is in outline. This lessens the visual
+  changes due to `auto_set_cursor`, when focus is in code.
 
 ### Fixes
 

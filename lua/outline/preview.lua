@@ -26,29 +26,37 @@ end
 
 M.has_code_win = has_code_win
 
-local function get_width_offset()
+---Get the correct column to place the floating window based on
+-- Relative positions of the outline and the code window.
+---@param preview_width integer
+local function get_col(preview_width)
   ---@type integer
   local outline_winnr = outline.view.winnr
-  local width = cfg.get_preview_width() + 3
-  local has_numbers = vim.api.nvim_win_get_option(outline_winnr, 'number')
-  has_numbers = has_numbers or vim.api.nvim_win_get_option(outline_winnr, 'relativenumber')
+  local outline_col = vim.api.nvim_win_get_position(outline_winnr)[2]
+  local outline_width = vim.api.nvim_win_get_width(outline_winnr)
+  local code_col = vim.api.nvim_win_get_position(outline.state.code_win)[2]
 
-  if has_numbers then
-    width = width + 4
-  end
+  -- TODO: What if code win is below/above outline instead?
 
-  -- FIXME: use actual window position based on view rather than config
-  if cfg.o.outline_window.position == 'right' then
-    width = 0 - width
+  local col = outline_col
+  if outline_col > code_col then
+    col = col - preview_width - 3
   else
-    width = vim.api.nvim_win_get_width(outline_winnr) + 1
+    col = col + outline_width + 1
   end
 
-  return width
+  return col
+end
+
+---@param preview_height integer
+---@param outline_height integer
+local function get_row(preview_height, outline_height)
+  local offset = math.floor((outline_height - preview_height) / 2) - 1
+  return vim.api.nvim_win_get_position(outline.view.winnr)[1] + offset
 end
 
 local function get_height()
-  return vim.api.nvim_list_uis()[1].height
+  return vim.api.nvim_win_get_height(outline.view.winnr)
 end
 
 local function get_hovered_node()
@@ -106,15 +114,16 @@ local function show_preview()
       end,
     })
     local height = get_height()
-    local winheight = math.ceil(height / 2)
+    local width = cfg.get_preview_width()
+    local winheight = math.max(math.ceil(height / 2), cfg.o.preview_window.min_height)
     state.preview_win = vim.api.nvim_open_win(state.preview_buf, false, {
-      relative = 'win',
+      relative = 'editor',
       height = winheight,
-      width = cfg.get_preview_width(),
+      width = width,
       bufpos = { 0, 0 },
-      col = get_width_offset(),
+      col = get_col(width),
       -- Position preview window middle-aligned vertically
-      row = math.floor((height - winheight) / 2) - 1,
+      row = get_row(winheight, height),
       border = cfg.o.preview_window.border,
     })
     setup_preview_buf()
