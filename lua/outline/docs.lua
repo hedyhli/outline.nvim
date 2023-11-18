@@ -26,6 +26,14 @@ function M.show_help()
         to = #keys + #indent,
         name = key_hl,
       })
+    elseif next(keys) == nil then
+      table.insert(left, '(none)')
+      table.insert(hl, {
+        line = #left + 3,
+        from = #indent,
+        to = #indent + 6,
+        name = 'Comment',
+      })
     else
       local i = #indent
       table.insert(left, table.concat(keys, ' / '))
