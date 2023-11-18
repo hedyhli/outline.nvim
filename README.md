@@ -516,7 +516,7 @@ A fallback is always used if the previous candidate returned a falsey value.
   With bang, it can be understood as the converse of `peek_location`.
 
   This is automatically triggered on events
-  `config.outline_items.auto_update_events.follow`.
+  `outline_items.auto_update_events.follow`.
 
   You can also trigger this manually using the `restore_location` keymap
   (default `<C-g>`) from the outline window.
@@ -526,7 +526,7 @@ A fallback is always used if the previous candidate returned a falsey value.
   Trigger refresh of symbols from provider and update outline items.
 
   This is automatically triggered on events
-  `config.outline_items.auto_update_events.refresh`.
+  `outline_items.auto_update_events.refresh`.
 
 
 ## Default keymaps
@@ -660,7 +660,7 @@ require'outline'
   With `opts.focus_outline=false`, cursor focus will remain on code window.
 
   This is automatically called on events
-  `config.outline_items.auto_update_events.follow`.
+  `outline_items.auto_update_events.follow` from config.
 
 - **is_focus_in_outline()**
 
@@ -671,7 +671,7 @@ require'outline'
   Re-request symbols from provider and update outline items.
 
   This is automatically called on events
-  `config.outline_items.auto_update_events.refresh`.
+  `outline_items.auto_update_events.refresh` from config.
 
 
 ## Tips
