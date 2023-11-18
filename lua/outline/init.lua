@@ -79,6 +79,7 @@ local function __refresh()
       if M.state.code_win ~= curwin then
         if M.state.autocmds[M.state.code_win] then
           vim.api.nvim_del_autocmd(M.state.autocmds[M.state.code_win])
+          M.state.autocmds[M.state.code_win] = nil
         end
       end
       M.state.code_win = curwin
@@ -87,6 +88,7 @@ local function __refresh()
       if cfg.o.outline_items.highlight_hovered_item or cfg.o.symbol_folding.auto_unfold_hover then
         if M.state.autocmds[curwin] then
           vim.api.nvim_del_autocmd(M.state.autocmds[curwin])
+          M.state.autocmds[curwin] = nil
         end
         if utils.str_or_nonempty_table(cfg.o.outline_items.auto_update_events.follow) then
           M.state.autocmds[curwin] =
@@ -436,6 +438,7 @@ local function handler(response, opts)
   if cfg.o.outline_items.highlight_hovered_item or cfg.o.symbol_folding.auto_unfold_hover then
     if M.state.autocmds[M.state.code_win] then
       vim.api.nvim_del_autocmd(M.state.autocmds[M.state.code_win])
+      M.state.autocmds[M.state.code_win] = nil
     end
     if utils.str_or_nonempty_table(cfg.o.outline_items.auto_update_events.follow) then
       M.state.autocmds[M.state.code_win] =
