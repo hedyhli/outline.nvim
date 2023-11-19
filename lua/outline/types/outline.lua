@@ -81,6 +81,10 @@
 ---@field provider outline.Provider?
 ---@field outline_open boolean?
 ---@field code_win_active boolean?
+---@field ft string?
+---@field filter outline.FilterList?
+---@field default_filter outline.FilterList?
+---@field priority string[]?
 
 -- API
 

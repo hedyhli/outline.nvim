@@ -363,6 +363,8 @@ function M.resolve_filter_config()
     end
   end
 
+  M.o.symbols.user_config_filter = vim.deepcopy(tmp)
+
   ---@type outline.FilterFtList
   local filter = tmp
   ---@type outline.FilterFtTable

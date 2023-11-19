@@ -66,6 +66,15 @@ function M.show_help()
   end)
 end
 
+local function get_filter_list_lines(f)
+  if f == nil then
+    return { '(not configured)' }
+  elseif f == false or (f and #f == 0 and f.exclude) then
+    return { '(all symbols included)' }
+  end
+  return vim.split(vim.inspect(f), '\n', { plain = true })
+end
+
 ---Display outline window status in a floating window
 ---@param ctx outline.StatusContext
 function M.show_status(ctx)
@@ -74,8 +83,28 @@ function M.show_status(ctx)
   ---@type outline.HL[]
   local hl = { { line = 0, from = 0, to = #keyhint, name = 'Comment' } }
   local p = ctx.provider
-  local priority = cfg.o.providers.priority
+  ---@type string[]
+  local priority = ctx.priority
   local pref
+  local indent = '    '
+
+  if ctx.ft then
+    table.insert(lines, 'Filetype of current or attached buffer: ' .. ctx.ft)
+    table.insert(lines, 'Symbols filter:')
+    table.insert(lines, '')
+    for _, line in ipairs(get_filter_list_lines(ctx.filter)) do
+      table.insert(lines, indent .. line)
+    end
+    table.insert(lines, '')
+    table.insert(lines, 'Default symbols filter:')
+    table.insert(lines, '')
+    for _, line in ipairs(get_filter_list_lines(ctx.default_filter)) do
+      table.insert(lines, indent .. line)
+    end
+    table.insert(lines, '')
+  else
+    table.insert(lines, 'Buffer number of code was invalid, could not get filetype.')
+  end
 
   if utils.table_has_content(priority) then
     pref = 'Configured providers are: '
@@ -92,8 +121,6 @@ function M.show_status(ctx)
     table.insert(hl, { line = #lines - 1, from = #pref, to = #pref + #content, name = 'ErrorMsg' })
   end
 
-  table.insert(lines, '')
-
   if p ~= nil then
     pref = 'Current provider: '
     table.insert(lines, pref .. p.name)
@@ -102,7 +129,6 @@ function M.show_status(ctx)
       table.insert(lines, 'Provider info:')
       table.insert(lines, '')
       local l = p.get_status()
-      local indent = '    '
       for _, line in ipairs(vim.split(l, '\n', { plain = true, trimempty = false })) do
         table.insert(lines, indent .. line)
       end
@@ -115,8 +141,6 @@ function M.show_status(ctx)
       ('Outline window is %s.'):format((ctx.outline_open and 'open') or 'not open')
     )
 
-    table.insert(lines, '')
-
     if ctx.code_win_active then
       table.insert(lines, 'Code window is active.')
     else
@@ -124,7 +148,7 @@ function M.show_status(ctx)
       table.insert(lines, 'Try closing and reopening the outline.')
     end
   else
-    table.insert(lines, 'No providers.')
+    table.insert(lines, 'No supported providers for current buffer.')
   end
 
   local f = Float:new()

@@ -137,12 +137,12 @@ function M.echo(module, message)
   vim.api.nvim_echo({ prefix_chunk, { message } }, true, {})
 end
 
----@param t table
+---@param t table?
 function M.table_has_content(t)
   return t and next(t) ~= nil
 end
 
----@param t table|string
+---@param t table|string?
 function M.str_or_nonempty_table(t)
   return type(t) == 'string' or M.table_has_content(t)
 end

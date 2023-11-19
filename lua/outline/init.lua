@@ -629,9 +629,16 @@ end
 
 function M.show_status()
   ---@type outline.StatusContext
-  local ctx = {}
+  local ctx = { priority = cfg.o.providers.priority }
+
+  if vim.api.nvim_buf_is_valid(M.state.code_buf) then
+    ctx.ft = vim.api.nvim_buf_get_option(M.state.code_buf, 'ft')
+  end
+  ctx.filter = cfg.o.symbols.user_config_filter[ctx.ft]
+  ctx.default_filter = cfg.o.symbols.user_config_filter.default
+
   local p = _G._outline_current_provider
-  if not M.is_focus_in_outline() then
+  if not M.view or not M.view:is_open() then
     p = providers.find_provider()
   end
 
