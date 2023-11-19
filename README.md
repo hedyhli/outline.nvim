@@ -253,8 +253,14 @@ Pass a table to the setup call with your configuration options.
   symbol_folding = {
     -- Depth past which nodes will be folded by default
     autofold_depth = nil,
-    -- Automatically unfold currently hovered symbol
-    auto_unfold_hover = true,
+    -- When to auto unfold nodes
+    auto_unfold_nodes = {
+      -- Auto unfold currently hovered symbol
+      hovered = true,
+      -- Auto fold when the root level only has this many nodes.
+      -- Set true for 1 node, false for 0.
+      only = true,
+    },
     markers = { '', '' },
   },
 
@@ -725,15 +731,39 @@ unless specified otherwise.
 
 ### Unfold others
 
-Unfold all others except currently hovered item
+Unfold all others except currently hovered item.
 
 ```lua
 symbol_folding = {
   autofold_depth = 1,
-  auto_unfold_hover = true,
+  auto_unfold_nodes = {
+    hovered = true,
+  },
 },
 ```
 <div align=center><img width="900" alt="outline window showing auto fold depth" src="https://github.com/hedyhli/outline.nvim/assets/50042066/2e0c5f91-a979-4e64-a100-256ad062dce3"></div>
+
+### Auto-unfold when there's only two (or any number of) root nodes
+
+```lua
+symbol_folding = {
+  auto_unfold_nodes = {
+    only = 2,
+  },
+},
+```
+
+`auto_unfold_nodes.only = 2`:
+
+https://github.com/hedyhli/outline.nvim/assets/50042066/035fadac-ecee-4427-9ee1-795dac215cea
+
+`auto_unfold_nodes.only = 1`:
+
+https://github.com/hedyhli/outline.nvim/assets/50042066/3a123b7e-ccf6-4278-9a8c-41d2e1865d83
+
+In words "auto unfold nodes when there is only 2 nodes shown in the outline."
+
+For `auto_unfold_nodes.only = true`: "auto unfold nodes when the root node is the only node left visible in the outline."
 
 
 ### Auto-jump
@@ -757,12 +787,11 @@ outline_window = {
 },
 ```
 
-This feature was added by @stickperson in an upstream PR 🙌
-
 https://github.com/hedyhli/outline.nvim/assets/50042066/3d06e342-97ac-400c-8598-97a9235de66c
 
 Or, you can use keys `<C-j>` and `<C-k>` to achieve the same effect, whilst not
 having `auto_jump` on by default.
+
 
 ### Symbol details
 
@@ -795,7 +824,12 @@ it using `outline_window.winhl`: please see [highlights](#outline-window).
 
 ### Blend cursor with cursorline
 
-'Single' cursorline
+Hide the cursor within cursorline. This setting changes the cursor color to be
+that of `Cursorline` when focus is in outline window. As of now `guicursor` is
+a global option, so outline.nvim has to set and reset responsibly hence this
+feature may be unstable. You can inspect
+`require('outline').state.original_cursor` and set `guicursor` accordingly,
+though you should almost never need to do this.
 
 ```lua
 outline_window = {
@@ -811,8 +845,6 @@ This will be how the outline window looks like when focused:
 Some may find this unhelpful, but one may argue that elements in each row of the
 outline becomes more readable this way, hence this is an option.
 
-This feature is newly added in this fork, and is currently experimental (may be
-unstable).
 
 ### Custom icons
 
