@@ -59,7 +59,7 @@
 - New lua API function `is_focus_in_outline()`
 - Auto-unfold root nodes when there is only N nodes. Where N defaults to 1
   (meaning when there is only 1 root node, keep it unfolded). The added config
-  option is `symbol_folding.auto_unfold_depth` with keys `hovered` and `only`.
+  option is `symbol_folding.auto_unfold` with keys `hovered` and `only`.
   Key `hovered` is the successor of the legacy `symbol_folding.auto_unfold_hover`
   option. **The old option would still work as expected.**
 

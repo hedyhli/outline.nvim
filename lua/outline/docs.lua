@@ -1,6 +1,5 @@
 local Float = require('outline.float')
 local cfg = require('outline.config')
-local providers = require('outline.providers')
 local utils = require('outline.utils')
 
 local M = {}

@@ -254,7 +254,7 @@ Pass a table to the setup call with your configuration options.
     -- Depth past which nodes will be folded by default
     autofold_depth = nil,
     -- When to auto unfold nodes
-    auto_unfold_nodes = {
+    auto_unfold = {
       -- Auto unfold currently hovered symbol
       hovered = true,
       -- Auto fold when the root level only has this many nodes.
@@ -736,7 +736,7 @@ Unfold all others except currently hovered item.
 ```lua
 symbol_folding = {
   autofold_depth = 1,
-  auto_unfold_nodes = {
+  auto_unfold = {
     hovered = true,
   },
 },
@@ -747,23 +747,23 @@ symbol_folding = {
 
 ```lua
 symbol_folding = {
-  auto_unfold_nodes = {
+  auto_unfold = {
     only = 2,
   },
 },
 ```
 
-`auto_unfold_nodes.only = 2`:
+`auto_unfold.only = 2`:
 
 https://github.com/hedyhli/outline.nvim/assets/50042066/035fadac-ecee-4427-9ee1-795dac215cea
 
-`auto_unfold_nodes.only = 1`:
+`auto_unfold.only = 1`:
 
 https://github.com/hedyhli/outline.nvim/assets/50042066/3a123b7e-ccf6-4278-9a8c-41d2e1865d83
 
 In words "auto unfold nodes when there is only 2 nodes shown in the outline."
 
-For `auto_unfold_nodes.only = true`: "auto unfold nodes when the root node is the only node left visible in the outline."
+For `auto_unfold.only = true`: "auto unfold nodes when the root node is the only node left visible in the outline."
 
 
 ### Auto-jump

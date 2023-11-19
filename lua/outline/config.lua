@@ -60,7 +60,7 @@ M.defaults = {
   },
   symbol_folding = {
     autofold_depth = nil,
-    auto_unfold_nodes = {
+    auto_unfold = {
       hovered = true,
       ---@type boolean|integer
       only = true,
@@ -311,7 +311,7 @@ function M.resolve_config()
   ----- SYMBOLS FILTER -----
   M.resolve_filter_config()
   ----- AUTO UNFOLD -----
-  local au = M.o.symbol_folding.auto_unfold_nodes
+  local au = M.o.symbol_folding.auto_unfold
   if M.o.symbol_folding.auto_unfold_hover == nil then
     if au.hovered ~= nil then
       M.o.symbol_folding.auto_unfold_hover = au.hovered

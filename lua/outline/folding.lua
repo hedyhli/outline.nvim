@@ -19,7 +19,7 @@ end
 ---@param node outline.SymbolNode|outline.FlatSymbolNode
 function M.is_folded(node)
   local hover = cfg.o.symbol_folding.auto_unfold_hover
-  local only = cfg.o.symbol_folding.auto_unfold_nodes.only
+  local only = cfg.o.symbol_folding.auto_unfold.only
 
   if node.folded ~= nil then
     return node.folded
