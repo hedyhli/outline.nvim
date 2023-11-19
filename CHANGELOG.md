@@ -52,10 +52,16 @@
   cursorline is enabled only when focus is in outline. This lessens the visual
   changes due to `auto_set_cursor`, when focus is in code.
 - Floating windows are now used for `show_help` keymap and `:OutlineStatus` command.
+- `:OutlineStatus` command is now more informative.
 - New command `:OutlineRefresh` and corresponding lua API function
   `refresh_outline()` triggers re-requesting of symbols from provider and
   updating the outline.
 - New lua API function `is_focus_in_outline()`
+- Auto-unfold root nodes when there is only N nodes. Where N defaults to 1
+  (meaning when there is only 1 root node, keep it unfolded). The added config
+  option is `symbol_folding.auto_unfold_depth` with keys `hovered` and `only`.
+  Key `hovered` is the successor of the legacy `symbol_folding.auto_unfold_hover`
+  option. **The old option would still work as expected.**
 
 ### Fixes
 
