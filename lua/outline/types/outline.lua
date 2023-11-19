@@ -69,7 +69,7 @@
 ---@field hover_info fun(bufnr:integer, params:table, on_info:function)
 ---@field request_symbols fun(on_symbols:function, opts:table)
 ---@field name string
----@field get_status? fun():string
+---@field get_status? fun():string[]
 
 -- HELP
 

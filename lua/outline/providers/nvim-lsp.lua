@@ -10,9 +10,9 @@ local M = {
 
 function M.get_status()
   if not M.client then
-    return 'No clients'
+    return { 'No clients' }
   end
-  return 'client: ' .. M.client.name
+  return { 'client: ' .. M.client.name }
 end
 
 local function get_params()

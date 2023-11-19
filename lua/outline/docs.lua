@@ -128,8 +128,7 @@ function M.show_status(ctx)
     if p.get_status then
       table.insert(lines, 'Provider info:')
       table.insert(lines, '')
-      local l = p.get_status()
-      for _, line in ipairs(vim.split(l, '\n', { plain = true, trimempty = false })) do
+      for _, line in ipairs(p.get_status()) do
         table.insert(lines, indent .. line)
       end
     end
