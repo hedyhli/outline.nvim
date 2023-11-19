@@ -28,8 +28,10 @@ be usable for outline.nvim using this script:
 
 **A sidebar with a tree-like outline of symbols from your code, powered by LSP.**
 
+https://github.com/hedyhli/outline.nvim/assets/50042066/88fbb3cf-27c1-4115-8a08-ba2e86c7fe9d
 
-![demo](https://github.com/simrat39/rust-tools-demos/raw/master/symbols-demo.gif)
+<em><small>A note to sourcehut viewers: a GIF version is coming soon!</small></em>
+
 
 Table of contents
 
