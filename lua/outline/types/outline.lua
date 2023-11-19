@@ -38,6 +38,7 @@
 ---@field hierarchy boolean
 ---@field children? outline.SymbolNode[]
 ---@field traversal_child integer Should NOT be modified during iteration using parser.preorder_iter
+---@field is_root boolean?
 
 ---@class outline.FlatSymbolNode
 ---@field name string
@@ -55,6 +56,7 @@
 ---@field hierarchy boolean
 ---@field children? outline.FlatSymbolNode[]
 ---@field traversal_child integer
+---@field is_root boolean?
 ---@field line_in_outline integer
 ---@field prefix_length integer
 ---@field hovered boolean

@@ -60,7 +60,11 @@ M.defaults = {
   },
   symbol_folding = {
     autofold_depth = nil,
-    auto_unfold_hover = true,
+    auto_unfold_nodes = {
+      hovered = true,
+      ---@type boolean|integer
+      only = true,
+    },
     markers = { '', '' },
   },
   keymaps = {
@@ -306,6 +310,16 @@ function M.resolve_config()
   end
   ----- SYMBOLS FILTER -----
   M.resolve_filter_config()
+  ----- AUTO UNFOLD -----
+  local au = M.o.symbol_folding.auto_unfold_nodes
+  if M.o.symbol_folding.auto_unfold_hover == nil then
+    if au.hovered ~= nil then
+      M.o.symbol_folding.auto_unfold_hover = au.hovered
+    end
+  end
+  if type(au.only) ~= 'number' then
+    au.only = (au.only and 1) or 0
+  end
 end
 
 ---Ensure l is either table, false, or nil. If not, print warning using given

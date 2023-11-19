@@ -79,7 +79,7 @@ end
 function M.parse(response, bufnr)
   local sorted = lsp_utils.sort_symbols(response)
 
-  return parse_result(sorted, nil, nil, nil, bufnr)
+  return parse_result(sorted, nil, nil, { is_root = true, child_count = #sorted }, bufnr)
 end
 
 ---Iterator that traverses the tree parent first before children, returning each node.
