@@ -1,10 +1,9 @@
 local config = require('outline.config')
-local tbl_utils = require('outline.utils.table')
 
 local M = {}
 
 function M.is_buf_attached_to_lsp(bufnr)
-  local clients = vim.lsp.buf_get_clients(bufnr or 0)
+  local clients = vim.lsp.get_active_clients({ bufnr = bufnr or 0 })
   return clients ~= nil and #clients > 0
 end
 

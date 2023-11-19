@@ -368,61 +368,42 @@ local function setup_keymaps(bufnr)
   local map = function(...)
     utils.nmap(bufnr, ...)
   end
-  -- goto_location of symbol and focus that window
   map(cfg.o.keymaps.goto_location, function()
     M._goto_location(true)
   end)
-  -- goto_location of symbol but stay in outline
   map(cfg.o.keymaps.peek_location, function()
     M._goto_location(false)
   end)
-  -- Navigate to corresponding outline location for current code location
   map(cfg.o.keymaps.restore_location, M._map_follow_cursor)
-  -- Navigate to corresponding outline location for current code location
   map(cfg.o.keymaps.goto_and_close, M._goto_and_close)
-  -- Move down/up in outline and peek that location in code
   map(cfg.o.keymaps.down_and_jump, function()
     M._move_and_jump('down')
   end)
-  -- Move down/up in outline and peek that location in code
   map(cfg.o.keymaps.up_and_jump, function()
     M._move_and_jump('up')
   end)
-  -- hover symbol
   map(cfg.o.keymaps.hover_symbol, require('outline.hover').show_hover)
-  -- preview symbol
   map(cfg.o.keymaps.toggle_preview, require('outline.preview').toggle)
-  -- rename symbol
   map(cfg.o.keymaps.rename_symbol, require('outline.rename').rename)
-  -- code actions
   map(cfg.o.keymaps.code_actions, require('outline.code_action').show_code_actions)
-  -- show help
   map(cfg.o.keymaps.show_help, require('outline.docs').show_help)
-  -- close outline
   map(cfg.o.keymaps.close, function()
     M.view:close()
   end)
-  -- toggle fold selection
   map(cfg.o.keymaps.fold_toggle, M._toggle_fold)
-  -- fold selection
   map(cfg.o.keymaps.fold, function()
     M._set_folded(true)
   end)
-  -- unfold selection
   map(cfg.o.keymaps.unfold, function()
     M._set_folded(false)
   end)
-  -- toggle fold all
   map(cfg.o.keymaps.fold_toggle_all, M._toggle_all_fold)
-  -- fold all
   map(cfg.o.keymaps.fold_all, function()
     M._set_all_folded(true)
   end)
-  -- unfold all
   map(cfg.o.keymaps.unfold_all, function()
     M._set_all_folded(false)
   end)
-  -- fold reset
   map(cfg.o.keymaps.fold_reset, function()
     M._set_all_folded(nil)
   end)

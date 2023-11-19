@@ -3,7 +3,6 @@ local folding = require('outline.folding')
 local lsp_utils = require('outline.utils.lsp_utils')
 local symbols = require('outline.symbols')
 local t_utils = require('outline.utils.table')
-local ui = require('outline.ui')
 
 local M = {}
 

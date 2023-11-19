@@ -18,7 +18,8 @@ to rename and detach the fork, starting to work on this as a new plugin.
 ## Migrating from symbols-outline.nvim
 
 If you have existing setup opts for symbols-outline.nvim, you can convert it to
-be usable for outline.nvim using this script: [scripts/convert-symbols-outline-opts.lua](scripts/convert-symbols-outline-opts.lua).
+be usable for outline.nvim using this script:
+[scripts/convert-symbols-outline-opts.lua](scripts/convert-symbols-outline-opts.lua).
 
 
 ---
