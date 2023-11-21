@@ -57,6 +57,8 @@ Table of contents
 ## Prerequisites
 
 - Neovim 0.7+
+  - To use modifiers on [commands](#commands), Neovim 0.8 is required.
+    Everything else works with Neovim 0.7.
 - Properly configured Neovim LSP client (otherwise only markdown is supported)
 
 ## Installation
