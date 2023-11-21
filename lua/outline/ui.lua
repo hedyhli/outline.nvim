@@ -10,29 +10,62 @@ function M.add_hover_highlight(bufnr, line, col_start)
   vim.api.nvim_buf_add_highlight(bufnr, M.hovered_hl_ns, 'OutlineCurrent', line, col_start, -1)
 end
 
+local get_hl_by_name
+
+if vim.fn.has('nvim-0.9') == 1 then
+  get_hl_by_name = function(name)
+    local hl = vim.api.nvim_get_hl(0, { name = name, link = false })
+    return { fg = hl.fg, bg = hl.bg, ctermfg = hl.ctermfg, ctermbg = hl.ctermbg }
+  end
+else
+  get_hl_by_name = function(name)
+    ---@diagnostic disable-next-line undefined-field
+    local hlrgb = vim.api.nvim_get_hl_by_name(name, true)
+    ---@diagnostic disable-next-line undefined-field
+    local hl = vim.api.nvim_get_hl_by_name(name, false)
+    return {
+      fg = hlrgb.foreground,
+      bg = hlrgb.background,
+      ctermfg = hl.foreground,
+      ctermbg = hl.background,
+    }
+  end
+end
+
 function M.setup_highlights()
   -- Setup the OutlineCurrent highlight group if it hasn't been done already by
   -- a theme or manually set
   if vim.fn.hlexists('OutlineCurrent') == 0 then
-    -- TODO: Use nvim_get_hl
-    local cline_hl = vim.api.nvim_get_hl_by_name('CursorLine', true)
-    local string_hl = vim.api.nvim_get_hl_by_name('String', true)
+    local cline_hl = get_hl_by_name('CursorLine')
+    local string_hl = get_hl_by_name('String')
 
     vim.api.nvim_set_hl(
       0,
       'OutlineCurrent',
-      { bg = cline_hl.background, fg = string_hl.foreground }
+      {
+        bg = cline_hl.bg,
+        fg = string_hl.fg,
+        ctermbg = cline_hl.ctermbg,
+        ctermfg = string_hl.ctermfg,
+      }
     )
   end
 
-  -- Some colorschemes do some funky things with the comment highlight, most
-  -- notably making them italic, which messes up the outline connector. Fix
-  -- this by copying the foreground color from the comment hl into a new
-  -- highlight.
-  local comment_fg_gui = vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID('Comment')), 'fg', 'gui')
-
+  -- Only inherit fg and bg for OutlineGuides because we do not want the other
+  -- stylings messing up the alignment.
   if vim.fn.hlexists('OutlineGuides') == 0 then
-    vim.cmd(string.format('hi OutlineGuides guifg=%s', comment_fg_gui))
+    vim.api.nvim_set_hl(0, 'OutlineGuides', get_hl_by_name('Comment'))
+  end
+
+  for name, link in pairs({
+    Details = 'Comment',
+    Lineno = 'LineNr',
+    JumpHighlight = 'Visual',
+    FoldMarker = 'Normal',
+  }) do
+    if vim.fn.hlexists('Outline' .. name) == 0 then
+      vim.api.nvim_set_hl(0, 'Outline' .. name, { link = link })
+    end
   end
 end
 

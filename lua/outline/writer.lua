@@ -10,7 +10,7 @@ local strlen = vim.fn.strlen
 local M = {}
 
 local hlns = vim.api.nvim_create_namespace('outline-icon-highlight')
-local ns = vim.api.nvim_create_namespace('outline-virt-text')
+local vtns = vim.api.nvim_create_namespace('outline-virt-text')
 
 ---@param bufnr integer
 ---@return boolean
@@ -36,7 +36,7 @@ end
 
 ---@param bufnr integer
 local function clear_virt_text(bufnr)
-  vim.api.nvim_buf_clear_namespace(bufnr, -1, 0, -1)
+  vim.api.nvim_buf_clear_namespace(bufnr, vtns, 0, -1)
 end
 
 ---@param bufnr integer
@@ -243,7 +243,7 @@ function M.make_outline(bufnr, items, codewin, find_node)
   -- Add details and lineno virtual text.
   if cfg.o.outline_items.show_symbol_details then
     for index, value in ipairs(details) do
-      vim.api.nvim_buf_set_extmark(bufnr, ns, index - 1, -1, {
+      vim.api.nvim_buf_set_extmark(bufnr, vtns, index - 1, -1, {
         virt_text = { { value, 'OutlineDetails' } },
         virt_text_pos = 'eol',
         hl_mode = 'combine',
@@ -256,7 +256,7 @@ function M.make_outline(bufnr, items, codewin, find_node)
     -- TODO: Fix lineno not appearing if text in line is truncated on the right
     -- due to narrow window, after nvim fixes virt_text_hide.
     for index, value in ipairs(linenos) do
-      vim.api.nvim_buf_set_extmark(bufnr, ns, index - 1, -1, {
+      vim.api.nvim_buf_set_extmark(bufnr, vtns, index - 1, -1, {
         virt_text = { { value, 'OutlineLineno' } },
         virt_text_pos = 'overlay',
         virt_text_win_col = 0,

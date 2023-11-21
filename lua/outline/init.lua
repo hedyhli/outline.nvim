@@ -146,9 +146,6 @@ function M.__goto_location(change_focus)
     vim.fn.win_execute(M.state.code_win, 'normal! zz')
   end
 
-  if vim.fn.hlexists('OutlineJumpHighlight') == 0 then
-    vim.api.nvim_set_hl(0, 'OutlineJumpHighlight', { link = 'Visual' })
-  end
   utils.flash_highlight(
     M.state.code_win,
     node.line + 1,
@@ -522,9 +519,11 @@ end
 local function _cmd_open_with_mods(fn)
   return function(opts)
     local fnopts = { focus_outline = not opts.bang }
-    local sc = opts.smods.split
-    if sc ~= '' then
-      fnopts.split_command = sc .. ' vsplit'
+    if _G._outline_nvim_has[8] then
+      local sc = opts.smods.split
+      if sc ~= '' then
+        fnopts.split_command = sc .. ' vsplit'
+      end
     end
 
     fn(fnopts)
@@ -681,6 +680,18 @@ end
 
 ---Set up configuration options for outline.
 function M.setup(opts)
+  local minor = vim.version().minor
+
+  if minor < 7 then
+    vim.notify('outline.nvim requires nvim-0.7 or higher!', vim.log.levels.ERROR)
+    return
+  end
+
+  _G._outline_nvim_has = {
+    [8] = minor >= 8,
+    [9] = minor >= 9,
+  }
+
   cfg.setup(opts)
   ui.setup_highlights()
 

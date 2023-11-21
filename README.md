@@ -205,10 +205,8 @@ Pass a table to the setup call with your configuration options.
     focus_on_open = true,
     -- Winhighlight option for outline window.
     -- See :help 'winhl'
-    -- To change background color to "CustomHl" for example, append "Normal:CustomHl".
-    -- Note that if you're adding highlight changes, you should append to this
-    -- default value, otherwise details/lineno will not have highlights.
-    winhl = "OutlineDetails:Comment,OutlineLineno:LineNr",
+    -- To change background color to "CustomHl" for example, use "Normal:CustomHl".
+    winhl = '',
   },
 
   outline_items = {
@@ -287,7 +285,7 @@ Pass a table to the setup call with your configuration options.
     -- See :help nvim_open_win() and search for "border" option.
     border = 'single',
     -- winhl options for the preview window, see ':h winhl'
-    winhl = '',
+    winhl = 'NormalFloat:',
     -- Pseudo-transparency of the preview window, see ':h winblend'
     winblend = 0
   },
@@ -366,38 +364,38 @@ Pass a table to the setup call with your configuration options.
     -- the custom mapping of icons specified below. The icons table is also
     -- needed for specifying hl group.
     icons = {
-      File = { icon = '󰈔', hl = '@text.uri' },
-      Module = { icon = '󰆧', hl = '@namespace' },
-      Namespace = { icon = '󰅪', hl = '@namespace' },
-      Package = { icon = '󰏗', hl = '@namespace' },
-      Class = { icon = '𝓒', hl = '@type' },
-      Method = { icon = 'ƒ', hl = '@method' },
-      Property = { icon = '', hl = '@method' },
-      Field = { icon = '󰆨', hl = '@field' },
-      Constructor = { icon = '', hl = '@constructor' },
-      Enum = { icon = 'ℰ', hl = '@type' },
-      Interface = { icon = '󰜰', hl = '@type' },
-      Function = { icon = '', hl = '@function' },
-      Variable = { icon = '', hl = '@constant' },
-      Constant = { icon = '', hl = '@constant' },
-      String = { icon = '𝓐', hl = '@string' },
-      Number = { icon = '#', hl = '@number' },
-      Boolean = { icon = '⊨', hl = '@boolean' },
-      Array = { icon = '󰅪', hl = '@constant' },
-      Object = { icon = '⦿', hl = '@type' },
-      Key = { icon = '🔐', hl = '@type' },
-      Null = { icon = 'NULL', hl = '@type' },
-      EnumMember = { icon = '', hl = '@field' },
-      Struct = { icon = '𝓢', hl = '@type' },
-      Event = { icon = '🗲', hl = '@type' },
-      Operator = { icon = '+', hl = '@operator' },
-      TypeParameter = { icon = '𝙏', hl = '@parameter' },
-      Component = { icon = '󰅴', hl = '@function' },
-      Fragment = { icon = '󰅴', hl = '@constant' },
-      TypeAlias =  { icon = ' ', hl = '@type' },
-      Parameter = { icon = ' ', hl = '@parameter' },
-      StaticMethod = { icon = ' ', hl = '@function' },
-      Macro = { icon = ' ', hl = '@macro' },
+      File = { icon = '󰈔', hl = 'Identifier' },
+      Module = { icon = '󰆧', hl = 'Include' },
+      Namespace = { icon = '󰅪', hl = 'Include' },
+      Package = { icon = '󰏗', hl = 'Include' },
+      Class = { icon = '𝓒', hl = 'Type' },
+      Method = { icon = 'ƒ', hl = 'Function' },
+      Property = { icon = '', hl = 'Identifier' },
+      Field = { icon = '󰆨', hl = 'Identifier' },
+      Constructor = { icon = '', hl = 'Special' },
+      Enum = { icon = 'ℰ', hl = 'Type' },
+      Interface = { icon = '󰜰', hl = 'Type' },
+      Function = { icon = '', hl = 'Function' },
+      Variable = { icon = '', hl = 'Constant' },
+      Constant = { icon = '', hl = 'Constant' },
+      String = { icon = '𝓐', hl = 'String' },
+      Number = { icon = '#', hl = 'Number' },
+      Boolean = { icon = '⊨', hl = 'Boolean' },
+      Array = { icon = '󰅪', hl = 'Constant' },
+      Object = { icon = '⦿', hl = 'Type' },
+      Key = { icon = '🔐', hl = 'Type' },
+      Null = { icon = 'NULL', hl = 'Type' },
+      EnumMember = { icon = '', hl = 'Identifier' },
+      Struct = { icon = '𝓢', hl = 'Structure' },
+      Event = { icon = '🗲', hl = 'Type' },
+      Operator = { icon = '+', hl = 'Identifier' },
+      TypeParameter = { icon = '𝙏', hl = 'Identifier' },
+      Component = { icon = '󰅴', hl = 'Function' },
+      Fragment = { icon = '󰅴', hl = 'Constant' },
+      TypeAlias = { icon = ' ', hl = 'Type' },
+      Parameter = { icon = ' ', hl = 'Identifier' },
+      StaticMethod = { icon = ' ', hl = 'Function' },
+      Macro = { icon = ' ', hl = 'Function' },
     },
   },
 }
@@ -560,7 +558,7 @@ Default:
 
 ```lua
 outline_window = {
-  winhl = "OutlineDetails:Comment,OutlineLineno:LineNr",
+  winhl = '',
 },
 ```
 
@@ -574,8 +572,20 @@ Possible highlight groups for the outline window:
 | OutlineDetails       | Symbol details in virtual text                       |
 | OutlineLineno        | The Lineno column virtual text                       |
 
-You can customize any other highlight groups using `winhl` too, this option is
+You can customize any other highlight groups using `winhl`, this option is
 passed directly to the `winhl` vim option unprocessed.
+
+If any of the above highlights have not already been set before outline.setup
+is called (say by a theme), the following links are used:
+
+| Highlight            | Link     |
+| -------------------- | -------- |
+| OutlineGuides        | Comment  |
+| OutlineFoldMarker    | Normal   |
+| OutlineDetails       | Comment  |
+| OutlineLineno        | LineNr   |
+
+For `OutlineCurrent`, foreground is set to String and background CursorLine.
 
 To customize colors of the symbol icons, use the `symbols.icons` table. See
 [config](#configuration).
@@ -584,15 +594,15 @@ To customize colors of the symbol icons, use the `symbols.icons` table. See
 
 ```lua
 preview_window = {
-  winhl = "",
+  winhl = 'NormalFloat:',
 },
 ```
 
 ### Other highlight groups
 
-| Highlight            | Description                                                |
-| -------------------- | ---------------------------------------------------------- |
-| OutlineJumpHighlight | Used for indicating cursor position when jumping/focusing  |
+| Highlight            | Description                                                           |
+| -------------------- | --------------------------------------------------------------------- |
+| OutlineJumpHighlight | Indicating cursor position when jumping/focusing, defaults to Visual  |
 
 You can also use `outline_window.jump_highlight_duration` to customize in milliseconds,
 how long the highlight is applied for.

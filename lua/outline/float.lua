@@ -1,5 +1,3 @@
--- local cfg = require('outline.config')
-
 local Float = {}
 
 ---@class outline.Float
@@ -37,7 +35,7 @@ function Float:open(lines, hl, title, indent)
   local row = math.floor((nvim_height - height) / 2)
   local col = math.floor((nvim_width - width) / 2)
 
-  self.winnr = vim.api.nvim_open_win(self.bufnr, true, {
+  local opts = {
     relative = 'editor',
     width = width,
     height = height,
@@ -45,9 +43,13 @@ function Float:open(lines, hl, title, indent)
     col = col,
     border = 'rounded',
     style = 'minimal',
-    title = title,
-    title_pos = 'center',
-  })
+  }
+  if _G._outline_nvim_has[9] then
+    opts.title = title
+    opts.title_pos = 'center'
+  end
+
+  self.winnr = vim.api.nvim_open_win(self.bufnr, true, opts)
 
   if indent > 0 then
     local pad = string.rep(' ', indent)
@@ -73,13 +75,14 @@ function Float:open(lines, hl, title, indent)
         (h.to ~= -1 and h.to + indent) or -1
       )
     end
-    vim.api.nvim_win_set_hl_ns(self.winnr, self.ns)
   end
 end
 
 function Float:close()
   if self.winnr then
-    vim.api.nvim_buf_clear_namespace(self.bufnr, self.ns, 0, -1)
+    if self.ns then
+      vim.api.nvim_buf_clear_namespace(self.bufnr, self.ns, 0, -1)
+    end
     vim.api.nvim_win_close(self.winnr, true)
     self.winnr = nil
     self.bufnr = nil

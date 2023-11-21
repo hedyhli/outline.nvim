@@ -62,6 +62,17 @@
   option is `symbol_folding.auto_unfold` with keys `hovered` and `only`.
   Key `hovered` is the successor of the legacy `symbol_folding.auto_unfold_hover`
   option. **The old option would still work as expected.**
+- Updated the default symbols icon highlights to not use highlight groups that
+  start with `@`. Everything should still work as expected, most highlights
+  should still be the same. This is to support `nvim-0.7`. The symbols icon
+  highlights is still configurable as before.
+- Highlights used by outline.nvim are now set to default using links if they
+  aren't already defined. Default winhl for outline window is now an empty
+  string, and for preview window, `NormalFloat:` to ensure the preview window
+  looks similar to a normal window (since it displays a preview of the actual
+  code)
+- Highlights will also take into account `ctermfg/bg` when setting default values.
+  This ensures outline.nvim highlights work if `termguicolors` is not enabled
 
 ### Fixes
 
