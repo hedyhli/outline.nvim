@@ -57,7 +57,7 @@ Table of contents
 ## Prerequisites
 
 - Neovim 0.7+
-- Properly configured Neovim LSP client
+- Properly configured Neovim LSP client (otherwise only markdown is supported)
 
 ## Installation
 
