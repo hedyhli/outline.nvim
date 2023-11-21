@@ -96,15 +96,12 @@ function M.parse_ts(root, children, bufnr)
 end
 
 function M.get_symbols(bufnr)
-  local status, parsers = pcall(require, 'nvim-treesitter.parsers')
+  bufnr = bufnr or 0
 
+  local status, parser = pcall(vim.treesitter.get_parser, bufnr)
   if not status then
     return {}
   end
-
-  bufnr = bufnr or 0
-
-  local parser = parsers.get_parser(bufnr)
 
   if parser == nil then
     return {}
