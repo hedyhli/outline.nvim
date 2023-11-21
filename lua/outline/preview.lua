@@ -75,7 +75,7 @@ local function update_preview(code_buf)
   local lines = vim.api.nvim_buf_get_lines(code_buf, 0, -1, false)
 
   if state.preview_buf ~= nil then
-    vim.api.nvim_buf_set_lines(state.preview_buf, 0, -1, 0, lines)
+    vim.api.nvim_buf_set_lines(state.preview_buf, 0, -1, false, lines)
     vim.api.nvim_win_set_cursor(state.preview_win, { node.line + 1, node.character })
   end
 end
@@ -84,16 +84,17 @@ local function setup_preview_buf()
   local code_buf = vim.api.nvim_win_get_buf(outline.state.code_win)
   local ft = vim.api.nvim_buf_get_option(code_buf, 'filetype')
 
-  local function treesitter_attach()
-    local ts_highlight = require('nvim-treesitter.highlight')
-
-    ts_highlight.attach(state.preview_buf, ft)
-  end
-
-  -- user might not have tree sitter installed
-  pcall(treesitter_attach)
-
   vim.api.nvim_buf_set_option(state.preview_buf, 'syntax', ft)
+
+  local ts_highlight_fn = vim.treesitter.start
+  if not _G._outline_nvim_has[8] then
+    local ok, ts_highlight = pcall(require, 'nvim-treesitter.highlight')
+    if ok then
+      ts_highlight_fn = ts_highlight.attach
+    end
+  end
+  pcall(ts_highlight_fn, state.preview_buf, ft)
+
   vim.api.nvim_buf_set_option(state.preview_buf, 'bufhidden', 'delete')
   vim.api.nvim_win_set_option(state.preview_win, 'cursorline', true)
   update_preview(code_buf)
