@@ -51,17 +51,21 @@ function M.setup_highlights()
     )
   end
 
-  -- Only inherit fg and bg for OutlineGuides because we do not want the other
-  -- stylings messing up the alignment.
-  if vim.fn.hlexists('OutlineGuides') == 0 then
-    vim.api.nvim_set_hl(0, 'OutlineGuides', get_hl_by_name('Comment'))
+  -- Only inherit fg for these highlights because we do not want the other
+  -- stylings messing up the alignment, nor the background so that cursorline
+  -- can look normal when on top of it. This can be customized by setting these
+  -- highlights before outline.setup() is called, or using winhl.
+  for name, link in pairs({ Guides = 'Comment', FoldMarker = 'Normal' }) do
+    if vim.fn.hlexists('Outline'..name) == 0 then
+      local h = get_hl_by_name(link)
+      vim.api.nvim_set_hl(0, 'Outline'..name, { fg = h.fg, ctermfg = h.fg })
+    end
   end
 
   for name, link in pairs({
     Details = 'Comment',
     Lineno = 'LineNr',
     JumpHighlight = 'Visual',
-    FoldMarker = 'Normal',
   }) do
     if vim.fn.hlexists('Outline' .. name) == 0 then
       vim.api.nvim_set_hl(0, 'Outline' .. name, { link = link })
