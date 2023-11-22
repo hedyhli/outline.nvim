@@ -1,5 +1,5 @@
 local config = require('outline.config')
-local jsx = require('outline.utils.jsx')
+local jsx = require('outline.providers.jsx')
 local lsp_utils = require('outline.utils.lsp_utils')
 
 local M = {
@@ -49,7 +49,7 @@ function M.hover_info(bufnr, params, on_info)
   use_client.request('textDocument/hover', params, on_info, bufnr)
 end
 
-function M.should_use_provider(bufnr)
+function M.supports_buffer(bufnr)
   local clients = vim.lsp.get_active_clients({ bufnr = bufnr })
   local ret = false
 
@@ -69,7 +69,7 @@ function M.should_use_provider(bufnr)
   return ret
 end
 
-function M.postprocess_symbols(response)
+local function postprocess_symbols(response)
   local symbols = lsp_utils.flatten_response(response)
 
   local jsx_symbols = jsx.get_symbols()
@@ -84,7 +84,7 @@ end
 ---@param on_symbols function
 function M.request_symbols(on_symbols, opts)
   vim.lsp.buf_request_all(0, 'textDocument/documentSymbol', get_params(), function(response)
-    response = M.postprocess_symbols(response)
+    response = postprocess_symbols(response)
     on_symbols(response, opts)
   end)
 end

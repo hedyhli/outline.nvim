@@ -17,7 +17,7 @@ local M = {
 
 
 ---@return boolean ft_is_markdown
-function M.should_use_provider(bufnr)
+function M.supports_buffer(bufnr)
   return vim.api.nvim_buf_get_option(bufnr, 'ft') == 'markdown'
 end
 

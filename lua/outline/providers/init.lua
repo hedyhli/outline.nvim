@@ -11,7 +11,7 @@ function M.find_provider()
   end
   for _, name in ipairs(M.providers) do
     local provider = require(name)
-    if provider.should_use_provider(0) then
+    if provider.supports_buffer(0) then
       return provider, name
     end
   end

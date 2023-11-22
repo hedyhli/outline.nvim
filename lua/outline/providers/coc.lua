@@ -2,7 +2,7 @@ local M = {
   name = 'coc',
 }
 
-function M.should_use_provider(_)
+function M.supports_buffer(_)
   local not_coc_installed = vim.fn.exists('*CocActionAsync') == 0
   local not_coc_service_initialized = vim.g.coc_service_initialized == 0
 
