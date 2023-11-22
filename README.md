@@ -453,7 +453,7 @@ A fallback is always used if the previous candidate returned a falsey value.
 
 The current list of tested providers are:
 1. LSP (requires a suitable LSP server to be configured for the requested buffer)
-  - For JSX support, `javascript` parser for treesitter is required
+   - For JSX support, `javascript` parser for treesitter is required
 1. Markdown (no external requirements)
 1. Norg (requires `norg` parser for treesitter)
 
