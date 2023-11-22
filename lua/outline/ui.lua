@@ -39,16 +39,12 @@ function M.setup_highlights()
     local cline_hl = get_hl_by_name('CursorLine')
     local string_hl = get_hl_by_name('String')
 
-    vim.api.nvim_set_hl(
-      0,
-      'OutlineCurrent',
-      {
-        bg = cline_hl.bg,
-        fg = string_hl.fg,
-        ctermbg = cline_hl.ctermbg,
-        ctermfg = string_hl.ctermfg,
-      }
-    )
+    vim.api.nvim_set_hl(0, 'OutlineCurrent', {
+      bg = cline_hl.bg,
+      fg = string_hl.fg,
+      ctermbg = cline_hl.ctermbg,
+      ctermfg = string_hl.ctermfg,
+    })
   end
 
   -- Only inherit fg for these highlights because we do not want the other
@@ -56,9 +52,9 @@ function M.setup_highlights()
   -- can look normal when on top of it. This can be customized by setting these
   -- highlights before outline.setup() is called, or using winhl.
   for name, link in pairs({ Guides = 'Comment', FoldMarker = 'Normal' }) do
-    if vim.fn.hlexists('Outline'..name) == 0 then
+    if vim.fn.hlexists('Outline' .. name) == 0 then
       local h = get_hl_by_name(link)
-      vim.api.nvim_set_hl(0, 'Outline'..name, { fg = h.fg, ctermfg = h.fg })
+      vim.api.nvim_set_hl(0, 'Outline' .. name, { fg = h.fg, ctermfg = h.fg })
     end
   end
 
