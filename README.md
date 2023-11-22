@@ -41,6 +41,7 @@ Table of contents
 * [Installation](#installation)
 * [Setup](#setup)
 * [Configuration](#configuration)
+* [Providers](#providers)
 * [Commands](#commands)
 * [Default keymaps](#default-keymaps)
 * [Highlights](#highlights)
@@ -59,7 +60,7 @@ Table of contents
 - Neovim 0.7+
   - To use modifiers on [commands](#commands), Neovim 0.8 is required.
     Everything else works with Neovim 0.7.
-- Properly configured Neovim LSP client (otherwise only markdown is supported)
+- To use outline.nvim with LSP, a properly configured LSP client is required.
 
 ## Installation
 
@@ -333,7 +334,7 @@ Pass a table to the setup call with your configuration options.
   },
 
   providers = {
-    priority = { 'lsp', 'coc', 'markdown' },
+    priority = { 'lsp', 'coc', 'markdown', 'norg' },
     lsp = {
       -- Lsp client names to ignore
       blacklist_clients = {},
@@ -447,6 +448,64 @@ The order in which the sources for icons are checked is:
 3. Icons table
 
 A fallback is always used if the previous candidate returned a falsey value.
+
+## Providers
+
+The current list of tested providers are:
+1. LSP (requires a suitable LSP server to be configured for the requested buffer)
+  - For JSX support, `javascript` parser for treesitter is required
+1. Markdown (no external requirements)
+1. Norg (requires `norg` parser for treesitter)
+
+### External providers
+
+External providers can be appended to the `providers.priority` list. Each
+item in the list is appended to `"outline.providers.<item>"` to form an import
+path, for use as a provider.
+
+External providers from plugins should define the provider module at
+`lua/outline/providers/<name>.lua` with these functions:
+
+- `supports_buffer(bufnr: integer) -> boolean`
+
+  This function could check buffer filetype, existence of required modules, etc.
+
+- `get_status() -> string[]` (optional)
+
+  Return a list of lines to be included in `:OutlineStatus` as supplementary
+  information when this provider is active.
+
+  See an example of this function in the
+  [LSP](./lua/outline/providers/nvim-lsp.lua) provider.
+
+- `request_symbols(callback: function, opts: table)`
+
+  - param `callback` is a function that receives a list of symbols and the
+  `opts` table.
+  - param `opts` can be passed to `callback` without processing
+
+  Each symbol table in the list of symbols should these fields:
+  - name: string
+  - kind: integer
+  - selectionRange: table with fields `start` and `end`, each have fields
+  `line` and `character`, each integers
+  - range: table with fields `start` and `end`, each have fields `line` and
+  `character`, each integers
+  - children: list of table of symbols
+  - detail: (optional) string, shown as `outline_items.show_symbol_details`
+
+The built-in [markdown](./lua/outline/providers/markdown.lua) provider is a
+good example of a very simple outline-provider module which parses raw buffer
+lines and uses regex; the built-in [norg](./lua/outline/providers/norg.lua)
+provider is an example which uses treesitter.
+
+All providers should support at least nvim 0.7. You can make use of
+`_G._outline_nvim_has` with fields `[8]` and `[9]` equivalent to
+`vim.fn.has('nvim-0.8) == 1` and  `vim.fn.has('nvim-0.9) == 1` respectively.
+
+If a higher nvim version is required, it is recommended to check for this
+requirement in the `supports_buffer` function.
+
 
 ## Commands
 

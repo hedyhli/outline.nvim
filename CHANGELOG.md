@@ -73,6 +73,8 @@
   code)
 - Highlights will also take into account `ctermfg/bg` when setting default values.
   This ensures outline.nvim highlights work if `termguicolors` is not enabled
+- A built-in provider for `norg` files that displays headings in the outline is now
+  provided. This requires `norg` parser to be installed for treesitter
 
 ### Fixes
 

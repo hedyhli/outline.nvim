@@ -89,7 +89,7 @@ M.defaults = {
     up_and_jump = '<C-k>',
   },
   providers = {
-    priority = { 'lsp', 'coc', 'markdown' },
+    priority = { 'lsp', 'coc', 'markdown', 'norg' },
     lsp = {
       blacklist_clients = {},
     },
@@ -211,8 +211,8 @@ end
 ---@return boolean include
 function M.should_include_symbol(kind, bufnr)
   local ft = vim.api.nvim_buf_get_option(bufnr, 'ft')
-  -- There can only be one kind in markdown as of now
-  if ft == 'markdown' or kind == nil then
+  -- There can only be one kind in markdown and norg as of now
+  if ft == 'markdown' or ft == 'norg' or kind == nil then
     return true
   end
 
