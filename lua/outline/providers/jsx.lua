@@ -59,6 +59,12 @@ end
 local function convert_ts(child, children, bufnr)
   local is_frag = (child:type() == 'jsx_fragment')
 
+  -- jsx_fragment (<></>) was removed in July 2023. Now we treat all
+  -- jsx_opening_element's that do not have a name field to be 'Fragment', same
+  -- capitalization as if imported from react rather than using the shorthand.
+  local name = is_frag and 'Fragment' or jsx_node_tagname(child, bufnr)
+  name = name or 'Fragment'
+
   local a, b, c, d = child:range()
   local range = {
     start = { line = a, character = b },
@@ -66,7 +72,7 @@ local function convert_ts(child, children, bufnr)
   }
 
   local converted = {
-    name = (not is_frag and (jsx_node_tagname(child, bufnr) or '<unknown>')) or 'fragment',
+    name = name,
     children = (#children > 0 and children) or nil,
     kind = (is_frag and SYMBOL_FRAGMENT) or SYMBOL_COMPONENT,
     detail = jsx_node_detail(child, bufnr),
@@ -81,7 +87,9 @@ function M.parse_ts(root, children, bufnr)
   children = children or {}
 
   for child in root:iter_children() do
-    if vim.tbl_contains({ 'jsx_element', 'jsx_self_closing_element' }, child:type()) then
+    if
+      vim.tbl_contains({ 'jsx_element', 'jsx_self_closing_element', 'jsx_fragment' }, child:type())
+    then
       local new_children = {}
 
       M.parse_ts(child, new_children, bufnr)
