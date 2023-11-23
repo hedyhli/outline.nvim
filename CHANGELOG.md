@@ -96,6 +96,8 @@
 - No more obnoxious '}' on the cmdline when using `show_help` keymap. A
   floating window is used now.
   ([#19](https://github.com/hedyhli/outline.nvim/issues/19))
+- Fixed display of JSX Fragments due to recent update from `javascript` TS
+  parser
 
 ### Performance
 
