@@ -1,4 +1,4 @@
-*outline.txt*           For NVIM v0.7.0          Last change: 2023 November 22
+*outline.txt*           For NVIM v0.7.0          Last change: 2023 November 23
 
 ==============================================================================
 Table of Contents                                  *outline-table-of-contents*
