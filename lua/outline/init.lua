@@ -130,6 +130,11 @@ function M.open_outline(opts)
   return sidebar:open(opts)
 end
 
+---@return boolean? has_focus Nil when no outline opened yet, otherwise returns whether cursor is in outline window.
+function M.is_focus_in_outline()
+  return M._sidebar_do('has_focus')
+end
+
 ---Handle follow cursor command with bang
 local function _cmd_follow_cursor(opts)
   M.follow_cursor({ focus_outline = not opts.bang })
