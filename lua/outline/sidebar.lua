@@ -132,7 +132,7 @@ function Sidebar:setup_keymaps()
     toggle_preview = { require('outline.preview').toggle, {} },
     rename_symbol = { require('outline.rename').rename, {} },
     code_actions = { require('outline.code_action').show_code_actions, {} },
-    show_help = { require('outline.docs').show_help, {} },
+    show_help = { require('outline.help').show_keymap_help, {} },
     close = { function() self.view:close() end, {} },
     fold_toggle = { '_toggle_fold', {} },
     fold = { '_set_folded', { true } },

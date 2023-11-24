@@ -176,7 +176,7 @@ function M.show_status()
   if vim.api.nvim_buf_is_valid(buf) then
     ctx.ft = vim.api.nvim_buf_get_option(buf, 'ft')
     ctx.filter = cfg.o.symbols.user_config_filter[ctx.ft]
-    -- 'else' is handled in docs.lua
+    -- 'else' is handled in help.lua
   end
 
   ctx.default_filter = cfg.o.symbols.user_config_filter.default
@@ -197,7 +197,7 @@ function M.show_status()
     end
   end
 
-  return require('outline.docs').show_status(ctx)
+  return require('outline.help').show_status(ctx)
 end
 
 local function setup_commands()

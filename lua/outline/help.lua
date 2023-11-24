@@ -4,7 +4,7 @@ local utils = require('outline.utils')
 
 local M = {}
 
-function M.show_help()
+function M.show_keymap_help()
   local keyhint = 'Press q or <Esc> to close this window.'
   local title = 'Current keymaps:'
   local lines = { keyhint, '', title, '' }
@@ -90,7 +90,7 @@ function M.show_status(ctx)
   if ctx.ft then
     pref = 'Filetype of current or attached buffer: '
     table.insert(lines, pref .. ctx.ft)
-    table.insert(hl, { line = #lines - 1, from = #pref, to = -1, name = 'OutlineStatusFt'})
+    table.insert(hl, { line = #lines - 1, from = #pref, to = -1, name = 'OutlineStatusFt' })
     table.insert(lines, 'Symbols filter:')
     table.insert(lines, '')
     for _, line in ipairs(get_filter_list_lines(ctx.filter)) do
@@ -117,14 +117,20 @@ function M.show_status(ctx)
     table.insert(lines, pref .. table.concat(priority, ', ') .. '.')
     local i = #pref
     for _, name in ipairs(priority) do
-      table.insert(hl, { line = #lines - 1, from = i, to = i + #name, name = 'OutlineStatusProvider' })
+      table.insert(
+        hl,
+        { line = #lines - 1, from = i, to = i + #name, name = 'OutlineStatusProvider' }
+      )
       i = i + #name + 2
     end
   else
     pref = 'config '
     local content = 'providers.priority'
     table.insert(lines, pref .. content .. ' is an empty list!')
-    table.insert(hl, { line = #lines - 1, from = #pref, to = #pref + #content, name = 'OutlineStatusError' })
+    table.insert(
+      hl,
+      { line = #lines - 1, from = #pref, to = #pref + #content, name = 'OutlineStatusError' }
+    )
   end
 
   if p ~= nil then
