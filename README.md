@@ -33,7 +33,7 @@ https://github.com/hedyhli/outline.nvim/assets/50042066/88fbb3cf-27c1-4115-8a08-
 **Features**
 
 - Auto-updates items and highlight for current symbol as the cursor moves
-- Supports **JSX** (treesitter), **markdown**, **Norg** (treesitter), in
+- Supports **JSX** (treesitter), **Markdown**, **Norg** (treesitter), in
   addition to LSP, with other treesitter support coming soon
 - Outline window opened for each tabpage
 - Symbol hierarchy UI with collapsible nodes and automatic collapsing based on
