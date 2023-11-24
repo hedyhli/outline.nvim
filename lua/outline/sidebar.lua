@@ -176,11 +176,15 @@ function Sidebar:setup_buffer_autocmd()
     self:update_cursor_style()
     vim.api.nvim_create_autocmd('BufEnter', {
       buffer = 0,
-      callback = function() self:update_cursor_style() end,
+      callback = function()
+        self:update_cursor_style()
+      end,
     })
     vim.api.nvim_create_autocmd('BufLeave', {
       buffer = 0,
-      callback = function() self:reset_cursor_style() end,
+      callback = function()
+        self:reset_cursor_style()
+      end,
     })
   end
 end
@@ -190,10 +194,7 @@ function Sidebar:setup_attached_buffer_autocmd()
   local code_win, code_buf = self.code.win, self.code.buf
   local events = cfg.o.outline_items.auto_update_events
 
-  if
-    cfg.o.outline_items.highlight_hovered_item
-    or cfg.o.symbol_folding.auto_unfold_hover
-  then
+  if cfg.o.outline_items.highlight_hovered_item or cfg.o.symbol_folding.auto_unfold_hover then
     if self.autocmds[code_win] then
       vim.api.nvim_del_autocmd(self.autocmds[code_win])
       self.autocmds[code_win] = nil
@@ -260,12 +261,8 @@ end
 ---@param set_cursor_to_node outline.SymbolNode|outline.FlatSymbolNode?
 function Sidebar:_update_lines(update_cursor, set_cursor_to_node)
   local current
-  self.flats, current = writer.make_outline(
-    self.view.bufnr,
-    self.items,
-    self.code.win,
-    set_cursor_to_node
-  )
+  self.flats, current =
+    writer.make_outline(self.view.bufnr, self.items, self.code.win, set_cursor_to_node)
   if update_cursor ~= false then
     self:update_cursor_pos(current)
   end
@@ -309,12 +306,16 @@ end
 function Sidebar:__refresh()
   local focused_outline = self.view.bufnr == vim.api.nvim_get_current_buf()
   if self.view:is_open() and not focused_outline then
-    providers.request_symbols(function(res) self:refresh_handler(res) end)
+    providers.request_symbols(function(res)
+      self:refresh_handler(res)
+    end)
   end
 end
 
 function Sidebar:_refresh()
-  (utils.debounce(function() self:__refresh() end, 100))()
+  (utils.debounce(function()
+    self:__refresh()
+  end, 100))()
 end
 
 ---@return outline.FlatSymbolNode
@@ -398,11 +399,7 @@ function Sidebar:_set_folded(folded, move_cursor, node_index)
     local parent_node = self.flats[node.parent.line_in_outline]
 
     if parent_node then
-      self:_set_folded(
-        folded,
-        not parent_node.folded and folded,
-        parent_node.line_in_outline
-      )
+      self:_set_folded(folded, not parent_node.folded and folded, parent_node.line_in_outline)
     end
   end
 end
@@ -492,10 +489,9 @@ function Sidebar:open(opts)
   end
 
   if not self.view:is_open() then
-    local found = providers.request_symbols(
-      function(...) self:initial_handler(...) end,
-      opts
-    )
+    local found = providers.request_symbols(function(...)
+      self:initial_handler(...)
+    end, opts)
     if not found then
       utils.echo('No providers found for current buffer')
     end

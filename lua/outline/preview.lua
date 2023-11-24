@@ -19,8 +19,7 @@ local function has_code_win(winnr)
     return false
   end
   winnr = winnr or outline.current.code.win
-  return vim.api.nvim_win_is_valid(winnr)
-    and vim.api.nvim_buf_is_valid(outline.current.code.buf)
+  return vim.api.nvim_win_is_valid(winnr) and vim.api.nvim_buf_is_valid(outline.current.code.buf)
 end
 
 M.has_code_win = has_code_win

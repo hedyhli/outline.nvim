@@ -1,6 +1,6 @@
+local Sidebar = require('outline.sidebar')
 local cfg = require('outline.config')
 local providers = require('outline.providers.init')
-local Sidebar = require('outline.sidebar')
 local ui = require('outline.ui')
 local utils = require('outline.utils.init')
 
@@ -15,7 +15,9 @@ local function setup_global_autocmd()
   if utils.table_has_content(cfg.o.outline_items.auto_update_events.items) then
     vim.api.nvim_create_autocmd(cfg.o.outline_items.auto_update_events.items, {
       pattern = '*',
-      callback = function() M._sidebar_do('_refresh') end,
+      callback = function()
+        M._sidebar_do('_refresh')
+      end,
     })
   end
   vim.api.nvim_create_autocmd('WinEnter', {

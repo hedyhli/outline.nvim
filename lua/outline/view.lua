@@ -48,7 +48,7 @@ function View:setup_view(split_command)
   vim.api.nvim_win_set_option(self.winnr, 'showbreak', '      ') -- only has effect when wrap=true.
   -- buffer stuff
   local tab = vim.api.nvim_get_current_tabpage()
-  vim.api.nvim_buf_set_name(self.bufnr, 'OUTLINE_'..tostring(tab))
+  vim.api.nvim_buf_set_name(self.bufnr, 'OUTLINE_' .. tostring(tab))
   vim.api.nvim_buf_set_option(self.bufnr, 'filetype', 'Outline')
   vim.api.nvim_buf_set_option(self.bufnr, 'modifiable', false)
 
