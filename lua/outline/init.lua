@@ -1,7 +1,7 @@
 local Sidebar = require('outline.sidebar')
 local cfg = require('outline.config')
+local highlight = require('outline.highlight')
 local providers = require('outline.providers.init')
-local ui = require('outline.ui')
 local utils = require('outline.utils.init')
 
 local M = {
@@ -242,7 +242,7 @@ function M.setup(opts)
   }
 
   cfg.setup(opts)
-  ui.setup_highlights()
+  highlight.setup_highlights()
 
   setup_global_autocmd()
   setup_commands()

@@ -1,9 +1,9 @@
 local cfg = require('outline.config')
 local folding = require('outline.folding')
+local highlight = require('outline.highlight')
 local parser = require('outline.parser')
 local symbols = require('outline.symbols')
 local t_utils = require('outline.utils.table')
-local ui = require('outline.ui')
 
 local strlen = vim.fn.strlen
 
@@ -47,14 +47,14 @@ function M.add_hover_highlights(bufnr, nodes)
   end
 
   -- clear old highlight
-  ui.clear_hover_highlight(bufnr)
+  highlight.clear_hover_highlight(bufnr)
   for _, node in ipairs(nodes) do
     if not node.hovered then
       goto continue
     end
 
     if node.prefix_length then
-      ui.add_hover_highlight(bufnr, node.line_in_outline - 1, node.prefix_length)
+      highlight.add_hover_highlight(bufnr, node.line_in_outline - 1, node.prefix_length)
     end
     ::continue::
   end
