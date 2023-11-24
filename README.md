@@ -28,8 +28,6 @@ be usable for outline.nvim using this script:
 
 https://github.com/hedyhli/outline.nvim/assets/50042066/88fbb3cf-27c1-4115-8a08-ba2e86c7fe9d
 
-<!-- panvimdoc-ignore-end -->
-
 **Features**
 
 - Auto-updates items and highlight for current symbol as the cursor moves
@@ -47,6 +45,8 @@ https://github.com/hedyhli/outline.nvim/assets/50042066/88fbb3cf-27c1-4115-8a08-
 - Preview symbol location without visiting it
 - Neovim command modifiers on where to open outline (see `:h mods`)
 
+
+<!-- panvimdoc-ignore-end -->
 
 ## Prerequisites
 
