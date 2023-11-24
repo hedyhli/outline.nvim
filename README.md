@@ -1012,11 +1012,11 @@ code is now highlighted as code).
 
 ### Many outlines
 
-Outline.nvim does not support having multiple outlines attached to different
-buffers as of now. However, this feature is
-[planned](https://github.com/hedyhli/outline.nvim/issues/26), and for now you
-can use a single outline sidebar and have it auto-update whenever you switch
-buffers.
+Outline.nvim does not support multiple outline windows in the same tabpage as
+of now However, this feature is
+[planned](https://github.com/hedyhli/outline.nvim/issues/26), and you can use a
+single outline that auto-updates on buffer switches. Per-tabpage outline is
+supported.
 
 ## Related plugins
 
