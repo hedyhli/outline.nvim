@@ -102,6 +102,11 @@ function M.request_symbols(callback, opts)
     local current = {
       kind = 15,
       name = title,
+      -- Treesitter includes the last newline in the end range which spans
+      -- until the next heading, so we -1
+      -- TODO: This fix can be removed when we let highlight_hovered_item
+      -- account for current column position in addition to the line.
+      -- FIXME: By the way the end character should be the EOL
       selectionRange = {
         start = { character = col1, line = row1 },
         ['end'] = { character = col2, line = row2 - 1 },

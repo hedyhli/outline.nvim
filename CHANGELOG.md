@@ -76,6 +76,7 @@
 - A built-in provider for `norg` files that displays headings in the outline is now
   provided. This requires `norg` parser to be installed for treesitter
 - Outline.nvim now supports per-tabpage outlines
+  ([#37](https://github.com/hedyhli/outline.nvim/issues/37))
 
 ### Fixes
 
@@ -99,6 +100,10 @@
   ([#19](https://github.com/hedyhli/outline.nvim/issues/19))
 - Fixed display of JSX Fragments due to recent update from `javascript` TS
   parser
+- Markdown parser included the next heading when setting the end range for
+  previous heading. So when cursor was on the next heading, the previous heading
+  would also be highlighted in the outline. This is now fixed, but marksman LSP
+  would still do this. A "fix" is to add marksman into lsp client blacklist.
 
 ### Performance
 

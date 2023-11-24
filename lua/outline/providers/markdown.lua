@@ -80,8 +80,11 @@ function M.handle_markdown()
 
     for i = depth, max_level do
       if level_symbols[i] ~= nil then
-        level_symbols[i].selectionRange['end'].line = line - 1
-        level_symbols[i].range['end'].line = line - 1
+        -- -1 for 0-index, -1 to not include current line
+        -- TODO: This fix can be removed when we let highlight_hovered_item
+        -- account for current column position in addition to the line
+        level_symbols[i].selectionRange['end'].line = line - 2
+        level_symbols[i].range['end'].line = line - 2
         level_symbols[i] = nil
       end
     end
@@ -104,13 +107,6 @@ function M.handle_markdown()
     parent[#parent + 1] = entry
     level_symbols[depth] = entry
     ::nextline::
-  end
-
-  for i = 2, max_level do
-    if level_symbols[i] ~= nil then
-      level_symbols[i].selectionRange['end'].line = #lines
-      level_symbols[i].range['end'].line = #lines
-    end
   end
 
   return level_symbols[1].children
