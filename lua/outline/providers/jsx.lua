@@ -1,7 +1,11 @@
+-- This is not a real provider. It is used by nvim-lsp to obtain JSX symbols
+-- using treesitter to be merged to symbols from javascript/typescript language
+-- servers
+
 local M = {}
 
-local SYMBOL_COMPONENT = 27
-local SYMBOL_FRAGMENT = 28
+local KIND_COMPONENT = 27
+local KIND_FRAGMENT = 28
 
 local function get_open_tag(node)
   if node:type() == 'jsx_element' then
@@ -58,12 +62,15 @@ end
 
 local function convert_ts(child, children, bufnr)
   local is_frag = (child:type() == 'jsx_fragment')
+  local name = jsx_node_tagname(child, bufnr)
 
   -- jsx_fragment (<></>) was removed in July 2023. Now we treat all
   -- jsx_opening_element's that do not have a name field to be 'Fragment', same
   -- capitalization as if imported from react rather than using the shorthand.
-  local name = is_frag and 'Fragment' or jsx_node_tagname(child, bufnr)
-  name = name or 'Fragment'
+  if is_frag or not name then
+    is_frag = true
+    name = 'Fragment'
+  end
 
   local a, b, c, d = child:range()
   local range = {
@@ -74,7 +81,7 @@ local function convert_ts(child, children, bufnr)
   local converted = {
     name = name,
     children = (#children > 0 and children) or nil,
-    kind = (is_frag and SYMBOL_FRAGMENT) or SYMBOL_COMPONENT,
+    kind = (is_frag and KIND_FRAGMENT) or KIND_COMPONENT,
     detail = jsx_node_detail(child, bufnr),
     range = range,
     selectionRange = range,
