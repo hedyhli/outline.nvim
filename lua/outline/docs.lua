@@ -88,22 +88,29 @@ function M.show_status(ctx)
   local indent = '    '
 
   if ctx.ft then
-    table.insert(lines, 'Filetype of current or attached buffer: ' .. ctx.ft)
+    pref = 'Filetype of current or attached buffer: '
+    table.insert(lines, pref .. ctx.ft)
+    table.insert(hl, { line = #lines - 1, from = #pref, to = -1, name = 'Type' })
     table.insert(lines, 'Symbols filter:')
     table.insert(lines, '')
     for _, line in ipairs(get_filter_list_lines(ctx.filter)) do
       table.insert(lines, indent .. line)
     end
     table.insert(lines, '')
-    table.insert(lines, 'Default symbols filter:')
-    table.insert(lines, '')
-    for _, line in ipairs(get_filter_list_lines(ctx.default_filter)) do
-      table.insert(lines, indent .. line)
-    end
-    table.insert(lines, '')
   else
-    table.insert(lines, 'Buffer number of code was invalid, could not get filetype.')
+    table.insert(lines, 'Filetype of current or attached buffer: N/A')
+    table.insert(lines, 'Symbols filter: N/A')
+    table.insert(lines, 'Buffer number of code was invalid, could not get filetype!')
+    table.insert(hl, { line = #lines - 1, from = 0, to = -1, name = 'ErrorMsg' })
+    table.insert(lines, '')
   end
+
+  table.insert(lines, 'Default symbols filter:')
+  table.insert(lines, '')
+  for _, line in ipairs(get_filter_list_lines(ctx.default_filter)) do
+    table.insert(lines, indent .. line)
+  end
+  table.insert(lines, '')
 
   if utils.table_has_content(priority) then
     pref = 'Configured providers are: '
@@ -144,6 +151,8 @@ function M.show_status(ctx)
     else
       table.insert(lines, 'Code window is not active!')
       table.insert(lines, 'Try closing and reopening the outline.')
+      table.insert(hl, { line = #lines - 2, from = 0, to = -1, name = 'ErrorMsg' })
+      table.insert(hl, { line = #lines - 1, from = 0, to = -1, name = 'ErrorMsg' })
     end
   else
     table.insert(lines, 'No supported providers for current buffer.')
