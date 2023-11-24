@@ -109,6 +109,13 @@ function M.handle_markdown()
     ::nextline::
   end
 
+  for i = 2, max_level do
+    if level_symbols[i] ~= nil then
+      level_symbols[i].selectionRange['end'].line = #lines
+      level_symbols[i].range['end'].line = #lines
+    end
+  end
+
   return level_symbols[1].children
 end
 
