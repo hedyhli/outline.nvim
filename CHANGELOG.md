@@ -75,6 +75,7 @@
   This ensures outline.nvim highlights work if `termguicolors` is not enabled
 - A built-in provider for `norg` files that displays headings in the outline is now
   provided. This requires `norg` parser to be installed for treesitter
+- Outline.nvim now supports per-tabpage outlines
 
 ### Fixes
 

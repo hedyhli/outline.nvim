@@ -1,8 +1,9 @@
 local cfg = require('outline.config')
 
+---@class outline.View
 local View = {}
 
----@class View
+---@class outline.View
 ---@field bufnr integer
 ---@field winnr integer
 
@@ -46,7 +47,8 @@ function View:setup_view(split_command)
   --  mess with other theme/user settings. So just use empty spaces for now.
   vim.api.nvim_win_set_option(self.winnr, 'showbreak', '      ') -- only has effect when wrap=true.
   -- buffer stuff
-  vim.api.nvim_buf_set_name(self.bufnr, 'OUTLINE')
+  local tab = vim.api.nvim_get_current_tabpage()
+  vim.api.nvim_buf_set_name(self.bufnr, 'OUTLINE_'..tostring(tab))
   vim.api.nvim_buf_set_option(self.bufnr, 'filetype', 'Outline')
   vim.api.nvim_buf_set_option(self.bufnr, 'modifiable', false)
 

@@ -26,7 +26,7 @@ M.defaults = {
     auto_set_cursor = true,
     auto_update_events = {
       follow = { 'CursorMoved' },
-      items = { 'InsertLeave', 'WinEnter', 'BufEnter', 'BufWinEnter', 'TabEnter', 'BufWritePost' },
+      items = { 'InsertLeave', 'WinEnter', 'BufEnter', 'BufWinEnter', 'BufWritePost' },
     },
   },
   outline_window = {

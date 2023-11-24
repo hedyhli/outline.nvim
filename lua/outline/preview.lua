@@ -11,17 +11,16 @@ local state = {
 
 local function is_current_win_outline()
   local curwin = vim.api.nvim_get_current_win()
-  return curwin == outline.view.winnr
+  return curwin == outline.current.view.winnr
 end
 
-local function has_code_win()
-  local isWinValid = vim.api.nvim_win_is_valid(outline.state.code_win)
-  if not isWinValid then
+local function has_code_win(winnr)
+  if not outline.current then
     return false
   end
-  local bufnr = vim.api.nvim_win_get_buf(outline.state.code_win)
-  local isBufValid = vim.api.nvim_buf_is_valid(bufnr)
-  return isBufValid
+  winnr = winnr or outline.current.code.win
+  return vim.api.nvim_win_is_valid(winnr)
+    and vim.api.nvim_buf_is_valid(outline.current.code.buf)
 end
 
 M.has_code_win = has_code_win
@@ -31,10 +30,10 @@ M.has_code_win = has_code_win
 ---@param preview_width integer
 local function get_col(preview_width)
   ---@type integer
-  local outline_winnr = outline.view.winnr
+  local outline_winnr = outline.current.view.winnr
   local outline_col = vim.api.nvim_win_get_position(outline_winnr)[2]
   local outline_width = vim.api.nvim_win_get_width(outline_winnr)
-  local code_col = vim.api.nvim_win_get_position(outline.state.code_win)[2]
+  local code_col = vim.api.nvim_win_get_position(outline.current.code.win)[2]
 
   -- TODO: What if code win is below/above outline instead?
 
@@ -52,21 +51,21 @@ end
 ---@param outline_height integer
 local function get_row(preview_height, outline_height)
   local offset = math.floor((outline_height - preview_height) / 2) - 1
-  return vim.api.nvim_win_get_position(outline.view.winnr)[1] + offset
+  return vim.api.nvim_win_get_position(outline.current.view.winnr)[1] + offset
 end
 
 local function get_height()
-  return vim.api.nvim_win_get_height(outline.view.winnr)
+  return vim.api.nvim_win_get_height(outline.current.view.winnr)
 end
 
 local function get_hovered_node()
-  local hovered_line = vim.api.nvim_win_get_cursor(outline.view.winnr)[1]
-  local node = outline.state.flattened_outline_items[hovered_line]
+  local hovered_line = vim.api.nvim_win_get_cursor(outline.current.view.winnr)[1]
+  local node = outline.current.flats[hovered_line]
   return node
 end
 
 local function update_preview(code_buf)
-  code_buf = code_buf or vim.api.nvim_win_get_buf(outline.state.code_win)
+  code_buf = code_buf or outline.current.code.buf
 
   local node = get_hovered_node()
   if not node then
@@ -81,7 +80,7 @@ local function update_preview(code_buf)
 end
 
 local function setup_preview_buf()
-  local code_buf = vim.api.nvim_win_get_buf(outline.state.code_win)
+  local code_buf = outline.current.code.buf
   local ft = vim.api.nvim_buf_get_option(code_buf, 'filetype')
 
   vim.api.nvim_buf_set_option(state.preview_buf, 'syntax', ft)
