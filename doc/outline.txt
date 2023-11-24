@@ -1,4 +1,4 @@
-*outline.txt*           For NVIM v0.7.0          Last change: 2023 November 23
+*outline.txt*           For NVIM v0.7.0          Last change: 2023 November 24
 
 ==============================================================================
 Table of Contents                                  *outline-table-of-contents*
@@ -16,6 +16,23 @@ Table of Contents                                  *outline-table-of-contents*
   - Recipes                                                  |outline-recipes|
   - Limitations                                          |outline-limitations|
   - Related plugins                                  |outline-related-plugins|
+------------------------------------------------------------------------------
+**Features**
+
+- Auto-updates items and highlight for current symbol as the cursor moves
+- Supports **JSX** (treesitter), **markdown**, **Norg** (treesitter), in
+    addition to LSP, with other treesitter support coming soon
+- Outline window opened for each tabpage
+- Symbol hierarchy UI with collapsible nodes and automatic collapsing based on
+    cursor movements
+- Custom symbol icon function, mapping, or use LspKind (see |outline-custom-function| and |outline-config|)
+- Dynamically set cursorline and cursor colors in outline (see
+    |outline-screenshot|)
+- Extra symbol details and line numbers of symbols (see
+    |outline-screenshot|)
+- Preview symbol location without visiting it
+- Neovim command modifiers on where to open outline (see |mods|)
+
 
 PREREQUISITES                                          *outline-prerequisites*
 
@@ -38,7 +55,7 @@ Lazy.nvim example:
       "hedyhli/outline.nvim",
       config = function()
         -- Example mapping to toggle outline
-        vim.keymap.set("n", "<leader>tt", "<cmd>Outline<CR>",
+        vim.keymap.set("n", "<leader>o", "<cmd>Outline<CR>",
           { desc = "Toggle Outline" })
     
         require("outline").setup {
@@ -56,7 +73,7 @@ Lazy.nvim with lazy-loading example:
       lazy = true,
       cmd = { "Outline", "OutlineOpen" },
       keys = { -- Example mapping to toggle outline
-        { "<leader>tt", "<cmd>Outline<CR>", desc = "Toggle outline" },
+        { "<leader>o", "<cmd>Outline<CR>", desc = "Toggle outline" },
       },
       opts = {
         -- Your setup opts here
@@ -106,6 +123,8 @@ configuration.
 - **Hover symbol**: Displaying a floating window to show symbol information
     provided by provider.
 - **Focus**: Which window the cursor is in
+- **Follow**: Update hover highlight and cursor position in outline to match
+    position in code. Opposite of 'jump'.
 
 |outline-skip-to-commands|
 
@@ -553,6 +572,25 @@ You can open a floating window showing the following list of keymaps using the
   Ctrl+k        Go up and peek location
   Ctrl+j        Go down and peek location
   ?             Show current keymaps in a floating window
+If you frequently use horizontal splits and need `<C-k/j>` to navigate them,
+you may want to remap:
+
+>lua
+    keymaps = {
+      up_and_jump = '<C-p>',
+      down_and_jump = '<C-n>',
+    }
+<
+
+Or if you never use arrow keys to move around, you can use:
+
+>lua
+    keymaps = {
+      up_and_jump = '<up>',
+      down_and_jump = '<down>',
+    }
+<
+
 
 HIGHLIGHTS                                                *outline-highlights*
 
@@ -607,6 +645,20 @@ PREVIEW WINDOW ~
       winhl = 'NormalFloat:',
     },
 <
+
+
+HELP WINDOWS ~
+
+  Highlight                   Link
+  --------------------------- ----------
+  OutlineHelpTip              Comment
+  OutlineStatusFt             Type
+  OutlineStatusError          ErrorMsg
+  OutlineStatusProvider       Special
+  OutlineKeymapHelpKey        Special
+  OutlineKeymapHelpDisabled   Comment
+Help windows include: 1. the keymap help from pressing `?` in the outline
+window 1. `:OutlineStatus`
 
 
 OTHER HIGHLIGHT GROUPS ~
@@ -900,10 +952,10 @@ code is now highlighted as code).
 
 MANY OUTLINES ~
 
-Outline.nvim does not support having multiple outlines attached to different
-buffers as of now. However, this feature is planned
-<https://github.com/hedyhli/outline.nvim/issues/26>, and for now you can use a
-single outline sidebar and have it auto-update whenever you switch buffers.
+Outline.nvim does not support multiple outline windows in the same tabpage as
+of now However, this feature is planned
+<https://github.com/hedyhli/outline.nvim/issues/26>, and you can use a single
+outline that auto-updates on buffer switches. Per-tabpage outline is supported.
 
 
 RELATED PLUGINS                                      *outline-related-plugins*
