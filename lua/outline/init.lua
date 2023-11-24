@@ -163,11 +163,16 @@ function M.show_status()
   end
 
   ---@type outline.StatusContext
-  local ctx = { priority = cfg.o.providers.priority }
+  local ctx = {
+    priority = cfg.o.providers.priority,
+    outline_open = is_open,
+  }
 
   if vim.api.nvim_buf_is_valid(buf) then
     ctx.ft = vim.api.nvim_buf_get_option(buf, 'ft')
+    -- TODO: else?
   end
+
   ctx.filter = cfg.o.symbols.user_config_filter[ctx.ft]
   ctx.default_filter = cfg.o.symbols.user_config_filter.default
 
@@ -178,13 +183,12 @@ function M.show_status()
 
   if p ~= nil then
     ctx.provider = p
-    ctx.outline_open = false
-    if is_open then
-      ctx.outline_open = true
-    end
-    ctx.code_win_active = false
-    if require('outline.preview').has_code_win(win) then
+    -- Just show code window is active when the first outline in this tabpage
+    -- has not yet been opened.
+    if not sidebar then
       ctx.code_win_active = true
+    else
+      ctx.code_win_active = require('outline.preview').has_code_win(win)
     end
   end
 
