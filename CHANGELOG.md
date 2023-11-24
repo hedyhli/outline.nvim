@@ -45,17 +45,17 @@
   use `outline_items.auto_set_cursor`. Disabling the former can still be done using
   `outline_items.highlight_hovered_item`. Regardless, manual follow-cursor can
   still be done using `:FollowCursor[!]` or lua API `follow_cursor({
-  focus_outline = true/false })`.
+  focus_outline = true/false })`
 - Config option for cursorline now supports 2 other string values,
   `focus_in_outline` and `focus_in_code`. These make the cursorline only show up
   depending on cursor focus. The first option, `focus_in_outline` makes it so
   cursorline is enabled only when focus is in outline. This lessens the visual
-  changes due to `auto_set_cursor`, when focus is in code.
-- Floating windows are now used for `show_help` keymap and `:OutlineStatus` command.
-- `:OutlineStatus` command is now more informative.
+  changes due to `auto_set_cursor`, when focus is in code
+- Floating windows are now used for `show_help` keymap and `:OutlineStatus` command
+- `:OutlineStatus` command is now more informative (and prettier!)
 - New command `:OutlineRefresh` and corresponding lua API function
   `refresh_outline()` triggers re-requesting of symbols from provider and
-  updating the outline.
+  updating the outline
 - New lua API function `is_focus_in_outline()`
 - Auto-unfold root nodes when there is only N nodes. Where N defaults to 1
   (meaning when there is only 1 root node, keep it unfolded). The added config
@@ -65,7 +65,7 @@
 - Updated the default symbols icon highlights to not use highlight groups that
   start with `@`. Everything should still work as expected, most highlights
   should still be the same. This is to support `nvim-0.7`. The symbols icon
-  highlights is still configurable as before.
+  highlights is still configurable as before
 - Highlights used by outline.nvim are now set to default using links if they
   aren't already defined. Default winhl for outline window is now an empty
   string, and for preview window, `NormalFloat:` to ensure the preview window

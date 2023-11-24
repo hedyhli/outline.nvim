@@ -2,18 +2,13 @@
 
 # Fork status
 
-This is a fork of the original symbols-outline.nvim which fixed a lot of bugs
-from the original repo, and also added many more features.
+This is a fork of the original **symbols-outline.nvim** which fixed a lot of
+bugs from the original repo, and also added many more features.
 
-You can see all the changes from the original plugin before v1.0.0 in [#12 on
-github](https://github.com/hedyhli/outline.nvim/issues/12).
+You can see all the changes from the original plugin before v1.0.0 in [#12
+on github](https://github.com/hedyhli/outline.nvim/issues/12) and afterwards in
+the [changelog](./CHANGELOG.md).
 
-It started out as a personal fork which I maintain for my personal use-cases,
-soon more and more features found their way in and I started introducing
-significant changes.
-
-However, due to simrat's status with the original plugin, I eventually decided
-to rename and detach the fork, starting to work on this as a new plugin.
 
 ## Migrating from symbols-outline.nvim
 
@@ -21,23 +16,51 @@ If you have existing setup opts for symbols-outline.nvim, you can convert it to
 be usable for outline.nvim using this script:
 [scripts/convert-symbols-outline-opts.lua](scripts/convert-symbols-outline-opts.lua).
 
+<!-- panvimdoc-ignore-end -->
 
 ---
 
+<!-- panvimdoc-ignore-start -->
+
 # outline.nvim
 
-**A sidebar with a tree-like outline of symbols from your code, powered by LSP.**
+> *A sidebar with a tree-like outline of symbols from your code, powered by LSP.*
 
 https://github.com/hedyhli/outline.nvim/assets/50042066/88fbb3cf-27c1-4115-8a08-ba2e86c7fe9d
 
-<em><small>A note to sourcehut viewers: a GIF version is coming soon!</small></em>
+<!-- panvimdoc-ignore-end -->
+
+**Features**
+
+- Auto-updates items and highlight for current symbol as the cursor moves
+- Supports **JSX** (treesitter), **markdown**, **Norg** (treesitter), in
+  addition to LSP, with other treesitter support coming soon
+- Outline window opened for each tabpage
+- Symbol hierarchy UI with collapsible nodes and automatic collapsing based on
+  cursor movements
+- Custom symbol icon function, mapping, or use LspKind (see [custom
+  function](#custom-icons) and [config](#symbols-table))
+- Dynamically set cursorline and cursor colors in outline (see
+  [screenshot](#blend-cursor-with-cursorline))
+- Extra symbol details and line numbers of symbols (see
+  [screenshot](#blend-cursor-with-cursorline))
+- Preview symbol location without visiting it
+- Neovim command modifiers on where to open outline (see `:h mods`)
 
 
-Table of contents
+## Prerequisites
+
+- Neovim 0.7+
+  - To use modifiers on [commands](#commands), Neovim 0.8 is required.
+    Everything else works with Neovim 0.7.
+- To use outline.nvim with LSP, a properly configured LSP client is required.
+
+<!-- panvimdoc-ignore-start -->
+
+## Contents
 
 <!-- mtoc-start -->
 
-* [Prerequisites](#prerequisites)
 * [Installation](#installation)
 * [Setup](#setup)
 * [Configuration](#configuration)
@@ -55,13 +78,6 @@ Table of contents
 <!-- mtoc-end -->
 <!-- panvimdoc-ignore-end -->
 
-## Prerequisites
-
-- Neovim 0.7+
-  - To use modifiers on [commands](#commands), Neovim 0.8 is required.
-    Everything else works with Neovim 0.7.
-- To use outline.nvim with LSP, a properly configured LSP client is required.
-
 ## Installation
 
 - GitHub repo: `"hedyhli/outline.nvim"`
@@ -74,7 +90,7 @@ Lazy.nvim example:
   "hedyhli/outline.nvim",
   config = function()
     -- Example mapping to toggle outline
-    vim.keymap.set("n", "<leader>tt", "<cmd>Outline<CR>",
+    vim.keymap.set("n", "<leader>o", "<cmd>Outline<CR>",
       { desc = "Toggle Outline" })
 
     require("outline").setup {
@@ -91,7 +107,7 @@ Lazy.nvim with lazy-loading example:
   lazy = true,
   cmd = { "Outline", "OutlineOpen" },
   keys = { -- Example mapping to toggle outline
-    { "<leader>tt", "<cmd>Outline<CR>", desc = "Toggle outline" },
+    { "<leader>o", "<cmd>Outline<CR>", desc = "Toggle outline" },
   },
   opts = {
     -- Your setup opts here
@@ -139,6 +155,8 @@ configuration.
 - **Hover symbol**: Displaying a floating window to show symbol information
   provided by provider.
 - **Focus**: Which window the cursor is in
+- **Follow**: Update hover highlight and cursor position in outline to match
+  position in code. Opposite of 'jump'.
 
 [Skip to commands](#commands)
 
@@ -610,6 +628,24 @@ key by default from the outline window.
 | Ctrl+k     | Go up and peek location                            |
 | Ctrl+j     | Go down and peek location                          |
 | ?          | Show current keymaps in a floating window          |
+
+
+If you frequently use horizontal splits and need `<C-k/j>` to navigate them,
+you may want to remap:
+```lua
+keymaps = {
+  up_and_jump = '<C-p>',
+  down_and_jump = '<C-n>',
+}
+```
+
+Or if you never use arrow keys to move around, you can use:
+```lua
+keymaps = {
+  up_and_jump = '<up>',
+  down_and_jump = '<down>',
+}
+```
 
 ## Highlights
 
