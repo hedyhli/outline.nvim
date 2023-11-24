@@ -62,6 +62,12 @@ function M.setup_highlights()
     Details = 'Comment',
     Lineno = 'LineNr',
     JumpHighlight = 'Visual',
+    HelpTip = 'Comment',
+    StatusFt = 'Type',
+    StatusProvider = 'Special',
+    StatusError = 'ErrorMsg',
+    KeymapHelpKey = 'Special',
+    KeymapHelpDisabled = 'Comment',
   }) do
     if vim.fn.hlexists('Outline' .. name) == 0 then
       vim.api.nvim_set_hl(0, 'Outline' .. name, { link = link })

@@ -1,3 +1,4 @@
+---@class outline.Float
 local Float = {}
 
 ---@class outline.Float
@@ -9,6 +10,7 @@ function Float:new()
   return setmetatable({ bufnr = nil, winnr = nil, ns = nil }, { __index = Float })
 end
 
+---Set up a floating window with OutlineHelp ft
 ---@param lines string[]
 ---@param hl outline.HL[]
 ---@param title string

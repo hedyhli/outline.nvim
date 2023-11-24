@@ -659,6 +659,22 @@ preview_window = {
 },
 ```
 
+### Help windows
+
+| Highlight                 | Link     |
+| ------------------------- | -------- |
+| OutlineHelpTip            | Comment  |
+| OutlineStatusFt           | Type     |
+| OutlineStatusError        | ErrorMsg |
+| OutlineStatusProvider     | Special  |
+| OutlineKeymapHelpKey      | Special  |
+| OutlineKeymapHelpDisabled | Comment  |
+
+Help windows include:
+1. the keymap help from pressing `?` in the outline window
+1. `:OutlineStatus`
+
+
 ### Other highlight groups
 
 | Highlight            | Description                                                           |

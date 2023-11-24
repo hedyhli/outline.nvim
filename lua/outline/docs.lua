@@ -9,12 +9,12 @@ function M.show_help()
   local title = 'Current keymaps:'
   local lines = { keyhint, '', title, '' }
   ---@type outline.HL[]
-  local hl = { { line = 0, from = 0, to = #keyhint, name = 'Comment' } }
+  local hl = { { line = 0, from = 0, to = #keyhint, name = 'OutlineHelpTip' } }
   local left = {}
   local right = {}
   local max_left_width = 0
   local indent = '    '
-  local key_hl = 'Special'
+  local key_hl = 'OutlineKeymapHelpKey'
 
   for action, keys in pairs(cfg.o.keymaps) do
     if type(keys) == 'string' then
@@ -30,8 +30,8 @@ function M.show_help()
       table.insert(hl, {
         line = #left + 3,
         from = #indent,
+        name = 'OutlineKeymapHelpDisabled',
         to = #indent + 6,
-        name = 'Comment',
       })
     else
       local i = #indent
@@ -80,7 +80,7 @@ function M.show_status(ctx)
   local keyhint = 'Press q or <Esc> to close this window.'
   local lines = { keyhint, '' }
   ---@type outline.HL[]
-  local hl = { { line = 0, from = 0, to = #keyhint, name = 'Comment' } }
+  local hl = { { line = 0, from = 0, to = #keyhint, name = 'OutlineHelpTip' } }
   local p = ctx.provider
   ---@type string[]
   local priority = ctx.priority
@@ -90,7 +90,7 @@ function M.show_status(ctx)
   if ctx.ft then
     pref = 'Filetype of current or attached buffer: '
     table.insert(lines, pref .. ctx.ft)
-    table.insert(hl, { line = #lines - 1, from = #pref, to = -1, name = 'Type' })
+    table.insert(hl, { line = #lines - 1, from = #pref, to = -1, name = 'OutlineStatusFt'})
     table.insert(lines, 'Symbols filter:')
     table.insert(lines, '')
     for _, line in ipairs(get_filter_list_lines(ctx.filter)) do
@@ -101,7 +101,7 @@ function M.show_status(ctx)
     table.insert(lines, 'Filetype of current or attached buffer: N/A')
     table.insert(lines, 'Symbols filter: N/A')
     table.insert(lines, 'Buffer number of code was invalid, could not get filetype!')
-    table.insert(hl, { line = #lines - 1, from = 0, to = -1, name = 'ErrorMsg' })
+    table.insert(hl, { line = #lines - 1, from = 0, to = -1, name = 'OutlineStatusError' })
     table.insert(lines, '')
   end
 
@@ -117,20 +117,20 @@ function M.show_status(ctx)
     table.insert(lines, pref .. table.concat(priority, ', ') .. '.')
     local i = #pref
     for _, name in ipairs(priority) do
-      table.insert(hl, { line = #lines - 1, from = i, to = i + #name, name = 'Special' })
+      table.insert(hl, { line = #lines - 1, from = i, to = i + #name, name = 'OutlineStatusProvider' })
       i = i + #name + 2
     end
   else
     pref = 'config '
     local content = 'providers.priority'
     table.insert(lines, pref .. content .. ' is an empty list!')
-    table.insert(hl, { line = #lines - 1, from = #pref, to = #pref + #content, name = 'ErrorMsg' })
+    table.insert(hl, { line = #lines - 1, from = #pref, to = #pref + #content, name = 'OutlineStatusError' })
   end
 
   if p ~= nil then
     pref = 'Current provider: '
     table.insert(lines, pref .. p.name)
-    table.insert(hl, { line = #lines - 1, from = #pref, to = -1, name = 'Special' })
+    table.insert(hl, { line = #lines - 1, from = #pref, to = -1, name = 'OutlineStatusProvider' })
     if p.get_status then
       table.insert(lines, 'Provider info:')
       table.insert(lines, '')
@@ -151,8 +151,8 @@ function M.show_status(ctx)
     else
       table.insert(lines, 'Code window is not active!')
       table.insert(lines, 'Try closing and reopening the outline.')
-      table.insert(hl, { line = #lines - 2, from = 0, to = -1, name = 'ErrorMsg' })
-      table.insert(hl, { line = #lines - 1, from = 0, to = -1, name = 'ErrorMsg' })
+      table.insert(hl, { line = #lines - 2, from = 0, to = -1, name = 'OutlineStatusError' })
+      table.insert(hl, { line = #lines - 1, from = 0, to = -1, name = 'OutlineStatusError' })
     end
   else
     table.insert(lines, 'No supported providers for current buffer.')
