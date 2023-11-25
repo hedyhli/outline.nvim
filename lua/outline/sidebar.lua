@@ -52,7 +52,6 @@ end
 function Sidebar:destroy()
   self:delete_autocmds()
   if self.view:is_open() then
-    vim.print('closing')
     self.view:close()
   end
   self.view = nil
