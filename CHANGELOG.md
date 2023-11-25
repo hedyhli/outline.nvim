@@ -54,9 +54,9 @@
 - Floating windows are now used for `show_help` keymap and `:OutlineStatus` command
 - `:OutlineStatus` command is now more informative (and prettier!)
 - New command `:OutlineRefresh` and corresponding lua API function
-  `refresh_outline()` triggers re-requesting of symbols from provider and
-  updating the outline
-- New lua API function `is_focus_in_outline()`
+  `refresh()` triggers re-requesting of symbols from provider and updating the
+  outline
+- New lua API function `has_focus()`
 - Auto-unfold root nodes when there is only N nodes. Where N defaults to 1
   (meaning when there is only 1 root node, keep it unfolded). The added config
   option is `symbol_folding.auto_unfold` with keys `hovered` and `only`.
@@ -77,6 +77,8 @@
   provided. This requires `norg` parser to be installed for treesitter
 - Outline.nvim now supports per-tabpage outlines
   ([#37](https://github.com/hedyhli/outline.nvim/issues/37))
+- Added `get_symbol` and `get_breadcrumb` functions (useful in
+  statusline/winbar) ([#24](https://github.com/hedyhli/outline.nvim/issues/24))
 
 ### Fixes
 

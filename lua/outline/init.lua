@@ -64,14 +64,14 @@ function M._sidebar_do(method, args)
   return sidebar[method](sidebar, unpack(args))
 end
 
----Close the current outline window
 function M.close_outline()
   return M._sidebar_do('close')
 end
 
+M.close = M.close_outline
+
 ---Toggle the outline window, and return whether the outline window is open
 -- after this operation.
----@see open_outline
 ---@param opts outline.OutlineOpts? Table of options
 ---@return boolean is_open Whether outline window is now open
 function M.toggle_outline(opts)
@@ -82,6 +82,8 @@ function M.toggle_outline(opts)
   end
   return sidebar:toggle(opts)
 end
+
+M.toggle = M.toggle_outline
 
 ---Set cursor to focus on the outline window, return whether the window is
 -- currently open.
@@ -115,6 +117,8 @@ function M.refresh_outline()
   return M._sidebar_do('__refresh')
 end
 
+M.refresh = M.refresh_outline
+
 ---Open the outline window.
 ---@param opts outline.OutlineOpts? Field focus_outline=false means don't focus on outline window after opening. If opts is not provided, focus will be on outline window after opening.
 function M.open_outline(opts)
@@ -130,6 +134,8 @@ function M.open_outline(opts)
 
   return sidebar:open(opts)
 end
+
+M.open = M.open_outline
 
 ---@return boolean? has_focus Nil when no outline opened yet, otherwise returns whether cursor is in outline window.
 function M.is_focus_in_outline()

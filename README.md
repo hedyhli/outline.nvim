@@ -729,19 +729,19 @@ require'outline'
 ```
 - setup(opts)
 
-- **toggle_outline(opts)**
+- **toggle(opts)**
 
   Toggle opening/closing of outline window.
 
   If `opts.focus_outline=false`, keep focus on previous window.
 
-- **open_outline(opts)**
+- **open(opts)**
 
   Open the outline window.
 
   If `opts.focus_outline=false`, keep focus on previous window.
 
-- **close_outline()**
+- **close()**
 
   Close the outline window.
 
@@ -767,7 +767,7 @@ require'outline'
 
 - **has_provider()**
 
-  Returns whether a provider is available for current window.
+  Returns whether a provider is available.
 
 - **follow_cursor(opts)**
 
@@ -779,11 +779,11 @@ require'outline'
   This is automatically called on events
   `outline_items.auto_update_events.follow` from config.
 
-- **is_focus_in_outline()**
+- **has_focus()**
 
   Return whether outline is open and current focus is in outline.
 
-- **refresh_outline()**
+- **refresh()**
 
   Re-request symbols from provider and update outline items.
 
