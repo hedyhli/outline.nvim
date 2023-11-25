@@ -120,12 +120,13 @@ end
 function M.open_outline(opts)
   local tab = vim.api.nvim_get_current_tabpage()
   local sidebar = M.sidebars[tab]
-  M.current = sidebar
 
   if not sidebar then
     sidebar = Sidebar:new()
     M.sidebars[tab] = sidebar
   end
+
+  M.current = sidebar
 
   return sidebar:open(opts)
 end
@@ -133,6 +134,85 @@ end
 ---@return boolean? has_focus Nil when no outline opened yet, otherwise returns whether cursor is in outline window.
 function M.is_focus_in_outline()
   return M._sidebar_do('has_focus')
+end
+
+M.has_focus = M.is_focus_in_outline
+
+---@return boolean
+function M.is_open()
+  local sidebar = M._get_sidebar()
+  if sidebar then
+    return sidebar.view:is_open()
+  end
+  return false
+end
+
+---@param sidebar outline.Sidebar
+---@param opts outline.BreadcrumbOpts
+---@return string
+local function _get_breadcrumb(sidebar, opts)
+  local list = sidebar.hovered
+  -- TODO: Use cursor column in writer.make_outline to prevent
+  -- siblings being included
+  local names = {}
+  for _, node in ipairs(list) do
+    if node.depth > opts.depth then
+      break
+    end
+    names[node.depth] = node.name
+  end
+
+  return table.concat(names, opts.sep)
+end
+
+---@param opts outline.BreadcrumbOpts?
+---@return string? breadcrumb nil if outline not open
+function M.get_breadcrumb(opts)
+  local sidebar = M._get_sidebar()
+
+  if not sidebar then
+    return
+  end
+
+  opts = opts or {}
+  opts.sep = opts.sep or ' > '
+  if not opts.depth or opts.depth < 1 then
+    opts.depth = math.huge
+  end
+
+  return _get_breadcrumb(sidebar, opts)
+end
+
+---@param opts outline.SymbolOpts
+---@return string?
+function M.get_symbol(opts)
+  local sidebar = M._get_sidebar()
+  if not sidebar then
+    return
+  end
+
+  opts = opts or {}
+  local depth = opts.depth
+  if not opts.depth or opts.depth < 1 then
+    depth = math.huge
+  end
+
+  if not utils.table_has_content(sidebar.hovered) then
+    return ""
+  end
+
+  local kind
+  if opts.kind then
+    kind = require('outline.symbols').str_to_kind[opts.kind]
+  end
+
+  for i = #sidebar.hovered, 1, -1 do
+    local node = sidebar.hovered[i]
+    if node.depth <= depth and (not kind or node.kind == kind) then
+      return node.name
+    end
+  end
+  return ""
 end
 
 ---Handle follow cursor command with bang

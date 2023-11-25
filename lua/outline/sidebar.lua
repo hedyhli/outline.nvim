@@ -17,6 +17,7 @@ local Sidebar = {}
 ---@field view outline.View
 ---@field items outline.SymbolNode[]
 ---@field flats outline.FlatSymbolNode[]
+---@field hovered outline.FlatSymbolNode[]
 ---@field original_cursor string
 ---@field code outline.SidebarCodeState
 ---@field autocmds { [integer]: integer } winnr to autocmd id
@@ -27,6 +28,7 @@ function Sidebar:new()
     code = { buf = 0, win = 0 },
     items = {},
     flats = {},
+    hovered = {},
     autocmds = {},
     original_cursor = vim.o.guicursor,
   }, { __index = Sidebar })
@@ -94,7 +96,7 @@ function Sidebar:initial_handler(response, opts)
   self.items = items
 
   local current
-  self.flats, current = writer.make_outline(self.view.bufnr, items, self.code.win)
+  self.flats, current, self.hovered = writer.make_outline(self.view.bufnr, items, self.code.win)
 
   self:update_cursor_pos(current)
 
@@ -261,7 +263,7 @@ end
 ---@param set_cursor_to_node outline.SymbolNode|outline.FlatSymbolNode?
 function Sidebar:_update_lines(update_cursor, set_cursor_to_node)
   local current
-  self.flats, current =
+  self.flats, current, self.hovered =
     writer.make_outline(self.view.bufnr, self.items, self.code.win, set_cursor_to_node)
   if update_cursor ~= false then
     self:update_cursor_pos(current)

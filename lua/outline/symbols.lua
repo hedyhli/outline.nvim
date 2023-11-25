@@ -39,6 +39,12 @@ M.kinds = {
   [255] = 'Macro',
 }
 
+-- inverse indexing of symbols.kind
+M.str_to_kind = {}
+for k, v in pairs(M.kinds) do
+  M.str_to_kind[v] = k
+end
+
 ---@param kind string|integer
 function M.icon_from_kind(kind)
   local kindstr = kind

@@ -68,16 +68,17 @@ end
 ---@param items outline.SymbolNode[] Tree of symbols after being parsed by parser.parse_result
 ---@param codewin integer code window
 ---@param find_node outline.FlatSymbolNode|outline.SymbolNode? Find a given node rather than node matching cursor position in codewin
----@return outline.FlatSymbolNode[],outline.FlatSymbolNode? flattened_items Empty table returned if bufnr is invalid
+---@return outline.FlatSymbolNode[],outline.FlatSymbolNode?,outline.FlatSymbolNode[]? flattened_items Empty table returned if bufnr is invalid
 function M.make_outline(bufnr, items, codewin, find_node)
   if not M.is_buffer_outline(bufnr) then
-    return {}, nil
+    return {}, nil, {}
   end
   local codebuf = vim.api.nvim_win_get_buf(codewin)
   -- 0-indexed
   local hovered_line = vim.api.nvim_win_get_cursor(codewin)[1] - 1
   -- Deepest matching node to put cursor on based on hovered line
   local put_cursor
+  local hover_list = {}
 
   clear_virt_text(bufnr)
 
@@ -144,6 +145,7 @@ function M.make_outline(bufnr, items, codewin, find_node)
       -- XXX: not setting for children, but it works because when unfold is called
       -- this function is called again anyway.
       node.hovered = true
+      table.insert(hover_list, node)
       if not find_node then
         put_cursor = node
       end
@@ -270,7 +272,7 @@ function M.make_outline(bufnr, items, codewin, find_node)
     end
   end
 
-  return flattened, put_cursor
+  return flattened, put_cursor, hover_list
 end
 -- XXX: Is the performance tradeoff of calling `nvim_buf_set_lines` on each
 -- iteration worth it in order to put setting of highlights, details, and

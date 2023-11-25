@@ -790,6 +790,25 @@ require'outline'
   This is automatically called on events
   `outline_items.auto_update_events.refresh` from config.
 
+- **get_breadcrumb(opts)**
+
+  Return a string concatenated from hovered symbols hierarchy representing code
+  location.
+
+  Optional opts table fields:
+  - depth (nil): Maximum depth of the last symbol included. First item has depth 1.
+    Set to 0 or nil to include all
+  - sep (` > `): String for separator
+
+- **get_symbol(opts)**
+
+  Return the symbol name of the deepest hovered symbol representing code
+  location.
+
+  Optional opts table fields:
+  - depth (nil): Maximum depth of the returned symbol
+  - kind (nil): Symbol kind to search for (string).
+
 
 ## Tips
 

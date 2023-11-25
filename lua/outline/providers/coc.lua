@@ -28,12 +28,7 @@ end
 ---@param result table
 local function convert_symbols(result)
   local s = {}
-  local kinds_index = {}
-  -- create a inverse indexing of symbols.kind
-  local symbols = require('outline.symbols')
-  for k, v in pairs(symbols.kinds) do
-    kinds_index[v] = k
-  end
+  local kinds_index = require('outline.symbol').str_to_kind
   -- rebuild coc.nvim symbol list hierarchy according to the 'level' key
   for _, value in pairs(result) do
     value.children = {}
