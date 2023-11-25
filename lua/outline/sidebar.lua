@@ -5,6 +5,10 @@ local parser = require('outline.parser')
 local providers = require('outline.providers.init')
 local utils = require('outline.utils.init')
 local writer = require('outline.writer')
+local symbols = require('outline.symbols')
+local t_utils = require('outline.utils.table')
+
+local strlen = vim.fn.strlen
 
 ---@class outline.Sidebar
 local Sidebar = {}
@@ -95,10 +99,7 @@ function Sidebar:initial_handler(response, opts)
   local items = parser.parse(response, self.code.buf)
   self.items = items
 
-  local current
-  self.flats, current, self.hovered = writer.make_outline(self.view.bufnr, items, self.code.win)
-
-  self:update_cursor_pos(current)
+  self:_update_lines(true)
 
   if not cfg.o.outline_window.focus_on_open or not opts.focus_outline then
     vim.fn.win_gotoid(self.code.win)
@@ -262,9 +263,7 @@ end
 ---@param update_cursor boolean?
 ---@param set_cursor_to_node outline.SymbolNode|outline.FlatSymbolNode?
 function Sidebar:_update_lines(update_cursor, set_cursor_to_node)
-  local current
-  self.flats, current, self.hovered =
-    writer.make_outline(self.view.bufnr, self.items, self.code.win, set_cursor_to_node)
+  local current = self:write_outline(set_cursor_to_node)
   if update_cursor ~= false then
     self:update_cursor_pos(current)
   end
@@ -599,6 +598,189 @@ function Sidebar:_highlight_current_item(winnr, update_cursor)
   end
 
   self:_update_lines(update_cursor)
+end
+
+---The quintessential function of this entire plugin. Clears virtual text,
+-- parses each node and replaces old lines with new lines to be written for the
+-- outline buffer.
+--
+-- Handles highlights, virtual text, and of course lines of outline to write.
+---@note Ensure new outlines are already set to `self.items` before calling this function. `self.flats` will be overwritten and current line is obtained from `win_get_cursor` using `self.code.win`.
+---@param find_node outline.FlatSymbolNode|outline.SymbolNode? Find a given node rather than node matching cursor position in codewin
+---@return outline.FlatSymbolNode? set_cursor_to_this_node
+function Sidebar:write_outline(find_node)
+  -- 0-indexed
+  local hovered_line = vim.api.nvim_win_get_cursor(self.code.win)[1] - 1
+  -- Deepest matching node to put cursor on based on hovered line
+  local put_cursor    ---@type outline.FlatSymbolNode
+
+  self.flats = {}
+  local line_count = 0
+
+  local lines = {}    ---@type string[]
+  local details = {}  ---@type string[]
+  local linenos = {}  ---@type string[]
+  local hl = {}
+
+  -- Find the prefix for each line needed for the lineno space
+  local lineno_offset = 0
+  local lineno_prefix = ''
+  local lineno_max_width = #tostring(vim.api.nvim_buf_line_count(self.code.buf) - 1)
+  if cfg.o.outline_items.show_symbol_lineno then
+    -- Use max width-1 plus 1 space padding.
+    -- -1 because if max_width is a power of ten, don't shift the entire lineno
+    -- column by the right just because the last line number requires an extra
+    -- digit. If max_width is 1000, the lineno column will take up 3 columns to
+    -- fill the digits, and 1 padding on the right. The 1000 can fit perfectly
+    -- there.
+    lineno_offset = math.max(2, lineno_max_width) + 1
+    lineno_prefix = string.rep(' ', lineno_offset)
+  end
+
+  -- Closures for convenience
+  local function add_guide_hl(from, to)
+    table.insert(hl, {
+      line_count,
+      from,
+      to,
+      'OutlineGuides',
+    })
+  end
+
+  local function add_fold_hl(from, to)
+    table.insert(hl, {
+      line_count,
+      from,
+      to,
+      'OutlineFoldMarker',
+    })
+  end
+
+  local guide_markers = cfg.o.guides.markers
+  local fold_markers = cfg.o.symbol_folding.markers
+
+  for node in parser.preorder_iter(self.items) do
+    line_count = line_count + 1
+    node.line_in_outline = line_count
+    table.insert(self.flats, node)
+
+    node.hovered = false
+    if
+      node.line == hovered_line
+      or (hovered_line >= node.range_start and hovered_line <= node.range_end)
+    then
+      -- XXX: not setting for children, but it works because when unfold is called
+      -- this function is called again anyway.
+      node.hovered = true
+      table.insert(self.hovered, node)
+      if not find_node then
+        put_cursor = node
+      end
+    end
+    if find_node and find_node == node then
+      ---@diagnostic disable-next-line: cast-local-type
+      put_cursor = find_node
+    end
+
+    table.insert(details, node.detail or '')
+    local lineno = tostring(node.range_start + 1)
+    local leftpad = string.rep(' ', lineno_max_width - #lineno)
+    table.insert(linenos, leftpad .. lineno)
+
+    -- Make the guides for the line prefix
+    local pref = t_utils.str_to_table(string.rep(' ', node.depth))
+    local fold_marker_width = 0
+
+    if folding.is_foldable(node) then
+      -- Add fold marker
+      local marker = fold_markers[2]
+      if folding.is_folded(node) then
+        marker = fold_markers[1]
+      end
+      pref[#pref] = marker
+      fold_marker_width = strlen(marker)
+    else
+      -- Rightmost guide for the direct parent, only added if fold marker is
+      -- not added
+      if node.depth > 1 then
+        local marker = guide_markers.middle
+        if node.isLast then
+          marker = guide_markers.bottom
+        end
+        pref[#pref] = marker
+      end
+    end
+
+    -- Add vertical guides to the left, for all parents that isn't the last
+    -- sibling. Iter from first grandparent until second last ancestor (last
+    -- ancestor is the entire outline itself, it should not have a vertical
+    -- guide).
+    local iternode = node
+    for i = node.depth - 1, 2, -1 do
+      iternode = iternode.parent_node
+      if not iternode.isLast then
+        pref[i] = guide_markers.vertical
+      end
+    end
+
+    -- Finished with guide prefix
+    -- Join all prefix chars by a space
+    local pref_str = table.concat(pref, ' ')
+    local total_pref_len = lineno_offset + #pref_str
+
+    -- Guide hl goes from start of prefix till before the fold marker, if any.
+    -- Fold hl goes from start of fold marker until before the icon.
+    add_guide_hl(lineno_offset, total_pref_len - fold_marker_width)
+    if fold_marker_width > 0 then
+      add_fold_hl(total_pref_len - fold_marker_width, total_pref_len + 1)
+    end
+
+    local line = lineno_prefix .. pref_str
+    local icon_pref = 0
+    if node.icon ~= '' then
+      line = line .. ' ' .. node.icon
+      icon_pref = 1
+    end
+    line = line .. ' ' .. node.name
+
+    -- Highlight for the icon ✨
+    -- Start from icon col
+    local hl_start = #pref_str + #lineno_prefix + icon_pref
+    local hl_end = hl_start + #node.icon -- until after icon
+    local hl_type = cfg.o.symbols.icons[symbols.kinds[node.kind]].hl
+    table.insert(hl, { line_count, hl_start, hl_end, hl_type })
+
+    -- Prefix length is from start until the beginning of the node.name, used
+    -- for hover highlights.
+    node.prefix_length = hl_end + 1
+
+    -- lines passed to nvim_buf_set_lines cannot contain newlines in each line
+    line = line:gsub('\n', ' ')
+    table.insert(lines, line)
+  end
+
+  -- Render
+
+  writer.clear_virt_text(self.view.bufnr)
+  writer.clear_icon_hl(self.view.bufnr)
+
+  vim.api.nvim_buf_set_option(self.view.bufnr, 'modifiable', true)
+  vim.api.nvim_buf_set_lines(self.view.bufnr, 0, -1, false, lines)
+  vim.api.nvim_buf_set_option(self.view.bufnr, 'modifiable', false)
+
+  -- Unfortunately highlights and extmarks cannot be added to lines that do not
+  -- yet exist. Hence these require another O(n) of iteration.
+  writer.add_highlights(self.view.bufnr, hl, self.flats)
+
+  if cfg.o.outline_items.show_symbol_details then
+    writer.add_details(self.view.bufnr, details)
+  end
+
+  if cfg.o.outline_items.show_symbol_lineno then
+    writer.add_linenos(self.view.bufnr, linenos)
+  end
+
+  return put_cursor
 end
 
 return Sidebar

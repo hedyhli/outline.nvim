@@ -284,6 +284,12 @@ function M.resolve_config()
       M.o.guides.enabled = false
     end
   end
+  if not M.o.guides.enabled then
+    M.o.guides = {
+      enabled = true,
+      markers = { middle = ' ', vertical = ' ', bottom = ' ' }
+    }
+  end
   ----- SPLIT COMMAND -----
   local sc = M.o.outline_window.split_command
   if sc then
