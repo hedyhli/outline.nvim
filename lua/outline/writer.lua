@@ -35,8 +35,8 @@ function M.add_highlights(bufnr, hl_info, nodes)
 end
 
 ---@param bufnr integer
-local function clear_virt_text(bufnr)
-  vim.api.nvim_buf_clear_namespace(bufnr, vtns, 0, -1)
+local function clear_all_ns(bufnr)
+  vim.api.nvim_buf_clear_namespace(bufnr, -1, 0, -1)
 end
 
 ---@param bufnr integer
@@ -79,7 +79,7 @@ function M.make_outline(bufnr, items, codewin, find_node)
   -- Deepest matching node to put cursor on based on hovered line
   local put_cursor
 
-  clear_virt_text(bufnr)
+  clear_all_ns(bufnr)
 
   ---@type string[]
   local lines = {}
