@@ -17,22 +17,6 @@ Table of Contents                                  *outline-table-of-contents*
   - Limitations                                          |outline-limitations|
   - Related plugins                                  |outline-related-plugins|
 ------------------------------------------------------------------------------
-**Features**
-
-- Auto-updates items and highlight for current symbol as the cursor moves
-- Supports **JSX** (treesitter), **Markdown**, **Norg** (treesitter), in
-    addition to LSP, with other treesitter support coming soon
-- Outline window opened for each tabpage
-- Symbol hierarchy UI with collapsible nodes and automatic collapsing based on
-    cursor movements
-- Custom symbol icon function, mapping, or use LspKind (see |outline-custom-function| and |outline-config|)
-- Dynamically set cursorline and cursor colors in outline (see
-    |outline-screenshot|)
-- Extra symbol details and line numbers of symbols (see
-    |outline-screenshot|)
-- Preview symbol location without visiting it
-- Neovim command modifiers on where to open outline (see |mods|)
-
 
 PREREQUISITES                                          *outline-prerequisites*
 
