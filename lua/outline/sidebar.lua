@@ -130,22 +130,15 @@ end
 
 function Sidebar:setup_keymaps()
   for name, meth in pairs({
+    show_help = { require('outline.help').show_keymap_help, {} },
+    close = { function() self:close() end, {} },
     goto_location = { '_goto_location', { true } },
     peek_location = { '_goto_location', { false } },
     restore_location = { '_map_follow_cursor', {} },
     goto_and_close = { '_goto_and_close', {} },
     down_and_jump = { '_move_and_jump', { 'down' } },
     up_and_jump = { '_move_and_jump', { 'up' } },
-    hover_symbol = { require('outline.hover').show_hover, {} },
     toggle_preview = { require('outline.preview').toggle, {} },
-    rename_symbol = {
-      providers.action, { self, 'rename_symbol', { self } }
-    },
-    code_actions = {
-      providers.action, { self, 'code_actions', { self } }
-    },
-    show_help = { require('outline.help').show_keymap_help, {} },
-    close = { function() self.view:close() end, {} },
     fold_toggle = { '_toggle_fold', {} },
     fold = { '_set_folded', { true } },
     unfold = { '_set_folded', { false } },
@@ -153,6 +146,13 @@ function Sidebar:setup_keymaps()
     fold_all = { '_set_all_folded', { true } },
     unfold_all = { '_set_all_folded', { false } },
     fold_reset = { '_set_all_folded', {} },
+    hover_symbol = { require('outline.hover').show_hover, {} },
+    rename_symbol = {
+      providers.action, { self, 'rename_symbol', { self } }
+    },
+    code_actions = {
+      providers.action, { self, 'code_actions', { self } }
+    },
   }) do
     ---@diagnostic disable-next-line param-type-mismatch
     self:nmap(name, meth[1], meth[2])
