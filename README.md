@@ -475,6 +475,10 @@ The current list of tested providers are:
 1. Markdown (no external requirements)
 1. Norg (requires `norg` parser for treesitter)
 
+External providers:
+- [Asciidoc](https://github.com/msr1k/outline-asciidoc-provider.nvim)
+
+
 ### External providers
 
 External providers can be appended to the `providers.priority` list. Each
