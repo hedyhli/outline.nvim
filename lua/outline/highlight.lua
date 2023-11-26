@@ -20,7 +20,7 @@ end
 
 ---Add single hover highlights
 ---@param bufnr integer
----@param nodes outline.FlatSymbolNode[]
+---@param nodes outline.FlatSymbol[]
 function M.hovers(bufnr, nodes)
   for line, node in ipairs(nodes) do
     if node.hovered then

@@ -15,7 +15,6 @@ local M = {
   name = 'markdown',
 }
 
-
 ---@return boolean ft_is_markdown
 function M.supports_buffer(bufnr)
   return vim.api.nvim_buf_get_option(bufnr, 'ft') == 'markdown'
@@ -32,7 +31,7 @@ end
 
 -- Parses markdown files and returns a table of SymbolInformation[] which is
 -- used by the plugin to show the outline.
----@return table
+---@return outline.ProviderSymbol[]
 function M.handle_markdown()
   local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
   local level_symbols = { { children = {} } }
@@ -119,7 +118,7 @@ function M.handle_markdown()
   return level_symbols[1].children
 end
 
----@param on_symbols function
+---@param on_symbols fun(symbols?:outline.ProviderSymbol[], opts?:table)
 ---@param opts table
 function M.request_symbols(on_symbols, opts)
   on_symbols(M.handle_markdown(), opts)

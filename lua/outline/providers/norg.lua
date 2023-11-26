@@ -53,6 +53,8 @@ if not _G._outline_nvim_has[8] then
   end
 end
 
+---@param node outline.ProviderSymbol
+---@param field string
 local function rec_remove_field(node, field)
   node[field] = nil
   if node.children then
@@ -62,6 +64,8 @@ local function rec_remove_field(node, field)
   end
 end
 
+---@param callback fun(symbols?:outline.ProviderSymbol[], opts?:table)
+---@param opts table
 function M.request_symbols(callback, opts)
   if not M.parser then
     local status, parser = pcall(vim.treesitter.get_parser, 0, 'norg')

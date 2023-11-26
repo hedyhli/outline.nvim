@@ -9,12 +9,12 @@ local M = {}
 ---Parses result from LSP into a reorganized tree of symbols (not flattened,
 -- simply reoganized by merging each property table from the arguments into a
 -- table for each symbol)
----@param result table The result from a language server.
+---@param result outline.ProviderSymbol The result from a language server.
 ---@param depth number? The current depth of the symbol in the hierarchy.
 ---@param hierarchy table? A table of booleans which tells if a symbols parent was the last in its group.
 ---@param parent table? A reference to the current symbol's parent in the function's recursion
 ---@param bufnr integer The buffer number which the result was from
----@return outline.SymbolNode[]
+---@return outline.Symbol[]
 local function parse_result(result, depth, hierarchy, parent, bufnr)
   local ret = {}
 
@@ -48,7 +48,7 @@ local function parse_result(result, depth, hierarchy, parent, bufnr)
         isLast = isLast,
         hierarchy = hir,
         parent = parent,
-        traversal_child = 1,
+        _i = 1,
       }
 
       table.insert(ret, node)
@@ -74,7 +74,7 @@ end
 ---Used when refreshing and setting up new symbols
 ---@param response table The result from buf_request_all
 ---@param bufnr integer
----@return outline.SymbolNode[]
+---@return outline.Symbol[]
 function M.parse(response, bufnr)
   local sorted = lsp_utils.sort_symbols(response)
 
@@ -83,11 +83,11 @@ end
 
 ---Iterator that traverses the tree parent first before children, returning each node.
 -- Essentailly 'flatten' items, but returns an iterator.
----@param items outline.SymbolNode[] Tree of symbols parsed by parse_result
+---@param items outline.Symbol[] Tree of symbols parsed by parse_result
 ---@param children_check function? Takes a node and return whether the children should be explored.
 ---Note that the root node (param items) is always explored regardless of children_check.
 function M.preorder_iter(items, children_check)
-  local node = { children = items, traversal_child = 1, depth = 1, is_root = true }
+  local node = { children = items, _i = 1, depth = 1, is_root = true }
   local prev
   local visited = {}
 
@@ -104,19 +104,15 @@ function M.preorder_iter(items, children_check)
         return node
       end
 
-      if
-        node.children
-        and node.traversal_child <= #node.children
-        and (node.is_root or children_check(node))
-      then
+      if node.children and node._i <= #node.children and (node.is_root or children_check(node)) then
         prev = node
-        if node.children[node.traversal_child] then
-          node.children[node.traversal_child].parent_node = node
-          node = node.children[node.traversal_child]
+        if node.children[node._i] then
+          node.children[node._i].parent_node = node
+          node = node.children[node._i]
         end
-        prev.traversal_child = prev.traversal_child + 1
+        prev._i = prev._i + 1
       else
-        node.traversal_child = 1
+        node._i = 1
         node = node.parent_node
       end
     end

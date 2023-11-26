@@ -17,9 +17,9 @@ local Sidebar = {}
 
 ---@class outline.Sidebar
 ---@field view outline.View
----@field items outline.SymbolNode[]
----@field flats outline.FlatSymbolNode[]
----@field hovered outline.FlatSymbolNode[]
+---@field items outline.Symbol[]
+---@field flats outline.FlatSymbol[]
+---@field hovered outline.FlatSymbol[]
 ---@field original_cursor string
 ---@field code outline.SidebarCodeState
 ---@field autocmds { [integer]: integer } winnr to autocmd id
@@ -68,7 +68,7 @@ function Sidebar:destroy()
 end
 
 ---Handler for provider request_symbols when outline is opened for the first time.
----@param response table?
+---@param response outline.ProviderSymbol[]?
 ---@param opts outline.OutlineOpts?
 function Sidebar:initial_handler(response, opts)
   if response == nil or type(response) ~= 'table' or self.view:is_open() then
@@ -110,7 +110,7 @@ end
 ---Convenience function for setup_keymaps
 ---@param cfg_name string Field in cfg.o.keymaps
 ---@param method string|function If string, field in Sidebar
----@param args table Passed to method
+---@param args any[] Passed to method
 function Sidebar:nmap(cfg_name, method, args)
   local keys = cfg.o.keymaps[cfg_name]
   local fn
@@ -255,7 +255,7 @@ function Sidebar:reset_cursor_style()
 end
 
 ---Set the cursor to current.line_in_outline and column to a convenient place
----@param current outline.FlatSymbolNode?
+---@param current outline.FlatSymbol?
 function Sidebar:update_cursor_pos(current)
   local col = 0
   local buf = vim.api.nvim_win_get_buf(self.code.win)
@@ -271,7 +271,7 @@ end
 ---Calls build_outline and then calls update_cursor_pos if update_cursor is
 ---not false
 ---@param update_cursor boolean?
----@param set_cursor_to_node outline.SymbolNode|outline.FlatSymbolNode?
+---@param set_cursor_to_node outline.Symbol|outline.FlatSymbol?
 function Sidebar:_update_lines(update_cursor, set_cursor_to_node)
   local current = self:build_outline(set_cursor_to_node)
   if update_cursor ~= false then
@@ -280,6 +280,7 @@ function Sidebar:_update_lines(update_cursor, set_cursor_to_node)
 end
 
 ---Handler for provider request_symbols for refreshing outline
+---@param response outline.ProviderSymbol[]
 function Sidebar:refresh_handler(response)
   if response == nil or type(response) ~= 'table' then
     return
@@ -308,7 +309,7 @@ function Sidebar:refresh_handler(response)
   self:_update_lines(update_cursor)
 end
 
----@param items outline.SymbolNode[]
+---@param items outline.Symbol[]
 function Sidebar:_merge_items(items)
   parser.merge_items_rec({ children = items }, { children = self.items })
 end
@@ -335,7 +336,7 @@ end
 -- stylua: ignore end
 
 ---Currently hovered node in outline
----@return outline.FlatSymbolNode
+---@return outline.FlatSymbol
 function Sidebar:_current_node()
   local current_line = vim.api.nvim_win_get_cursor(self.view.win)[1]
   return self.flats[current_line]
@@ -432,7 +433,7 @@ function Sidebar:_set_folded(folded, move_cursor, node_index)
   end
 end
 
----@param nodes outline.SymbolNode[]
+---@param nodes outline.Symbol[]
 function Sidebar:_toggle_all_fold(nodes)
   nodes = nodes or self.items
   local folded = true
@@ -448,7 +449,7 @@ function Sidebar:_toggle_all_fold(nodes)
 end
 
 ---@param folded boolean?
----@param nodes? outline.SymbolNode[]
+---@param nodes? outline.Symbol[]
 function Sidebar:_set_all_folded(folded, nodes)
   local stack = { nodes or self.items }
   local current = self:_current_node()
@@ -639,12 +640,12 @@ end
 ---@note Ensure new outlines are already set to `self.items` before calling
 ---this function. `self.flats` will be overwritten and current line is obtained
 ---from `win_get_cursor` using `self.code.win`.
----@param find_node outline.FlatSymbolNode|outline.SymbolNode? Find a given node rather than node matching cursor position in codewin
----@return outline.FlatSymbolNode? set_cursor_to_this_node
+---@param find_node outline.FlatSymbol|outline.Symbol? Find a given node rather than node matching cursor position in codewin
+---@return outline.FlatSymbol? set_cursor_to_this_node
 function Sidebar:build_outline(find_node)
   ---@type integer 0-indexed
   local hovered_line = vim.api.nvim_win_get_cursor(self.code.win)[1] - 1
-  ---@type outline.FlatSymbolNode Deepest visible matching node to set cursor
+  ---@type outline.FlatSymbol Deepest visible matching node to set cursor
   local put_cursor
   self.flats = {}
   local line_count = 0

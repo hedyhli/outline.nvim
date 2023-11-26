@@ -15,10 +15,6 @@ function M.get_status()
   return { 'client: ' .. M.client.name }
 end
 
-local function get_params()
-  return { textDocument = vim.lsp.util.make_text_document_params() }
-end
-
 function M.hover_info(bufnr, params, on_info)
   local clients = vim.lsp.get_active_clients({ bufnr = bufnr })
   local use_client
@@ -49,6 +45,7 @@ function M.hover_info(bufnr, params, on_info)
   use_client.request('textDocument/hover', params, on_info, bufnr)
 end
 
+---@return boolean
 function M.supports_buffer(bufnr)
   local clients = vim.lsp.get_active_clients({ bufnr = bufnr })
   local ret = false
@@ -69,6 +66,8 @@ function M.supports_buffer(bufnr)
   return ret
 end
 
+---@param response outline.ProviderSymbol[]
+---@return outline.ProviderSymbol[]
 local function postprocess_symbols(response)
   local symbols = lsp_utils.flatten_response(response)
 
@@ -81,9 +80,13 @@ local function postprocess_symbols(response)
   end
 end
 
----@param on_symbols function
+---@param on_symbols fun(symbols?:outline.ProviderSymbol[], opts?:table)
+---@param opts table
 function M.request_symbols(on_symbols, opts)
-  vim.lsp.buf_request_all(0, 'textDocument/documentSymbol', get_params(), function(response)
+  local params = {
+    textDocument = vim.lsp.util.make_text_document_params(),
+  }
+  vim.lsp.buf_request_all(0, 'textDocument/documentSymbol', params, function(response)
     response = postprocess_symbols(response)
     on_symbols(response, opts)
   end)

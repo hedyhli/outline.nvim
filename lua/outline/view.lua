@@ -98,7 +98,7 @@ end
 
 ---Ensure all existing highlights are already cleared before calling!
 ---@param hl outline.HL[]
----@param nodes outline.FlatSymbolNode[]
+---@param nodes outline.FlatSymbol[]
 ---@param details string[]
 ---@param linenos string[]
 function View:add_hl_and_ns(hl, nodes, details, linenos)

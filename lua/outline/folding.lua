@@ -1,7 +1,7 @@
 local M = {}
 local cfg = require('outline.config')
 
----@param node outline.SymbolNode|outline.FlatSymbolNode
+---@param node outline.Symbol|outline.FlatSymbol
 function M.is_foldable(node)
   return node.children and #node.children > 0
 end
@@ -16,7 +16,7 @@ local function get_default_folded(depth)
   end
 end
 
----@param node outline.SymbolNode|outline.FlatSymbolNode
+---@param node outline.Symbol|outline.FlatSymbol
 function M.is_folded(node)
   local hover = cfg.o.symbol_folding.auto_unfold_hover
   local only = cfg.o.symbol_folding.auto_unfold.only
