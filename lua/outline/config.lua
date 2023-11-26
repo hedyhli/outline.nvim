@@ -287,7 +287,7 @@ function M.resolve_config()
   if not M.o.guides.enabled then
     M.o.guides = {
       enabled = true,
-      markers = { middle = ' ', vertical = ' ', bottom = ' ' }
+      markers = { middle = ' ', vertical = ' ', bottom = ' ' },
     }
   end
   ----- SPLIT COMMAND -----

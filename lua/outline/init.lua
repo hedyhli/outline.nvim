@@ -204,7 +204,7 @@ function M.get_symbol(opts)
   end
 
   if not utils.table_has_content(sidebar.hovered) then
-    return ""
+    return ''
   end
 
   local kind
@@ -218,7 +218,7 @@ function M.get_symbol(opts)
       return node.name
     end
   end
-  return ""
+  return ''
 end
 
 ---Handle follow cursor command with bang

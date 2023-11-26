@@ -3,8 +3,8 @@ local cfg = require('outline.config')
 local folding = require('outline.folding')
 local parser = require('outline.parser')
 local providers = require('outline.providers.init')
-local utils = require('outline.utils.init')
 local symbols = require('outline.symbols')
+local utils = require('outline.utils.init')
 
 local strlen = vim.fn.strlen
 
@@ -621,10 +621,10 @@ function Sidebar:build_outline(find_node)
   local put_cursor
   self.flats = {}
   local line_count = 0
-  local lines = {}    ---@type string[]
-  local details = {}  ---@type string[]
-  local linenos = {}  ---@type string[]
-  local hl = {}       ---@type outline.HL[]
+  local lines = {} ---@type string[]
+  local details = {} ---@type string[]
+  local linenos = {} ---@type string[]
+  local hl = {} ---@type outline.HL[]
 
   -- Find the prefix for each line needed for the lineno space.
   -- Use [max width of [max_line-1]] + 1 space padding.
