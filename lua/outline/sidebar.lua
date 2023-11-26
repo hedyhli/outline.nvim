@@ -530,7 +530,9 @@ end
 
 ---@see outline.close_outline
 function Sidebar:close()
+  local code_win = self.code.win
   self.view:close()
+  vim.fn.win_gotoid(code_win)
 end
 
 ---@see outline.focus_outline
