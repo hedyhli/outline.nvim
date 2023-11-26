@@ -27,9 +27,13 @@ end
 ---@param args any[]
 function M.action(sidebar, method, args)
   if not sidebar.provider or not sidebar.provider[method] then
+    require('outline.utils').echo('No supported providers to perform this action.')
     return
   end
-  return sidebar.provider[method](unpack(args))
+  local ok = sidebar.provider[method](unpack(args))
+  if not ok then
+    require('outline.utils').echo('The provider could not perform this action successfully.')
+  end
 end
 
 return M
