@@ -1,4 +1,5 @@
 local cfg = require('outline.config')
+local highlight = require('outline.highlight')
 
 ---@class outline.View
 local View = {}
@@ -66,6 +67,7 @@ function View:setup_view(split_command)
   end
 end
 
+---Close view window and remove winnr/bufnr fields
 function View:close()
   if self.winnr then
     vim.api.nvim_win_close(self.winnr, true)
@@ -74,11 +76,53 @@ function View:close()
   end
 end
 
+---Return whether view has valid buf and win numbers
 function View:is_open()
   return self.winnr
     and self.bufnr
     and vim.api.nvim_buf_is_valid(self.bufnr)
     and vim.api.nvim_win_is_valid(self.winnr)
+end
+
+---Replace all lines in buffer with given new `lines`
+---@param lines string[]
+function View:rewrite_lines(lines)
+  vim.api.nvim_buf_set_option(self.bufnr, 'modifiable', true)
+  vim.api.nvim_buf_set_lines(self.bufnr, 0, -1, false, lines)
+  vim.api.nvim_buf_set_option(self.bufnr, 'modifiable', false)
+end
+
+function View:clear_all_ns()
+  highlight.clear_all_ns(self.bufnr)
+end
+
+---Ensure all existing highlights are already cleared before calling!
+---@param hl outline.HL[]
+---@param nodes outline.FlatSymbolNode[]
+---@param details string[]
+---@param linenos string[]
+function View:add_hl_and_ns(hl, nodes, details, linenos)
+  highlight.items(self.bufnr, hl)
+  if cfg.o.outline_items.highlight_hovered_item then
+    highlight.hovers(self.bufnr, nodes)
+  end
+  if cfg.o.outline_items.show_symbol_details then
+    highlight.details(self.bufnr, details)
+  end
+
+  -- Note on hl_mode:
+  -- When hide_cursor + cursorline enabled, we want the lineno to also take on
+  -- the cursorline background so wherever the cursor is, it appears blended.
+  -- We want 'replace' even for `hide_cursor=false cursorline=true` because
+  -- vim's native line numbers do not get highlighted by cursorline.
+  if cfg.o.outline_items.show_symbol_lineno then
+    -- stylua: ignore start
+    highlight.linenos(
+      self.bufnr, linenos,
+      (cfg.o.outline_window.hide_cursor and 'combine') or 'replace'
+    )
+    -- stylua: ignore end
+  end
 end
 
 return View

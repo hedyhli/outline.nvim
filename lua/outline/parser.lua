@@ -1,8 +1,8 @@
 local cfg = require('outline.config')
 local folding = require('outline.folding')
-local lsp_utils = require('outline.utils.lsp_utils')
+local lsp_utils = require('outline.utils.lsp')
 local symbols = require('outline.symbols')
-local t_utils = require('outline.utils.table')
+local utils = require('outline.utils.init')
 
 local M = {}
 
@@ -56,7 +56,7 @@ local function parse_result(result, depth, hierarchy, parent, bufnr)
       local children = nil
       if value.children ~= nil then
         -- copy by value because we dont want it messing with the hir table
-        local child_hir = t_utils.array_copy(hir)
+        local child_hir = utils.array_copy(hir)
         table.insert(child_hir, isLast)
         children = parse_result(value.children, level + 1, child_hir, node, bufnr)
       else
@@ -119,6 +119,68 @@ function M.preorder_iter(items, children_check)
         node.traversal_child = 1
         node = node.parent_node
       end
+    end
+  end
+end
+
+---Merges a symbol tree recursively, only replacing nodes
+---which have changed. This will maintain the folding
+---status of any unchanged nodes.
+---@param new_node table New node
+---@param old_node table Old node
+---@param index? number Index of old_item in parent
+---@param parent? table Parent of old_item
+function M.merge_items_rec(new_node, old_node, index, parent)
+  local failed = false
+
+  if not new_node or not old_node then
+    failed = true
+  else
+    for key, _ in pairs(new_node) do
+      if
+        vim.tbl_contains({
+          'parent',
+          'children',
+          'folded',
+          'hovered',
+          'line_in_outline',
+          'hierarchy',
+        }, key)
+      then
+        goto continue
+      end
+
+      if key == 'name' then
+        -- in the case of a rename, just rename the existing node
+        old_node['name'] = new_node['name']
+      else
+        if not vim.deep_equal(new_node[key], old_node[key]) then
+          failed = true
+          break
+        end
+      end
+
+      ::continue::
+    end
+  end
+
+  if failed then
+    if parent and index then
+      parent[index] = new_node
+    end
+  else
+    local next_new_item = new_node.children or {}
+
+    -- in case new children are created on a node which
+    -- previously had no children
+    if #next_new_item > 0 and not old_node.children then
+      old_node.children = {}
+    end
+
+    local next_old_item = old_node.children or {}
+
+    for i = 1, math.max(#next_new_item, #next_old_item) do
+      M.merge_items_rec(next_new_item[i], next_old_item[i], i, next_old_item)
     end
   end
 end

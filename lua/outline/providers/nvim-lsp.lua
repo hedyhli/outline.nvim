@@ -1,6 +1,6 @@
 local config = require('outline.config')
 local jsx = require('outline.providers.jsx')
-local lsp_utils = require('outline.utils.lsp_utils')
+local lsp_utils = require('outline.utils.lsp')
 
 local M = {
   name = 'lsp',

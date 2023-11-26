@@ -337,7 +337,7 @@ function M.setup(opts)
   }
 
   cfg.setup(opts)
-  highlight.setup_highlights()
+  highlight.setup()
 
   setup_global_autocmd()
   setup_commands()

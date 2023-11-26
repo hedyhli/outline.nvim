@@ -74,7 +74,7 @@
 -- HELP
 
 ---@class outline.HL
----@field line integer
+---@field line integer Line number 1-indexed
 ---@field from integer
 ---@field to integer
 ---@field name string

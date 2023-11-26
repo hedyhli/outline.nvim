@@ -4,9 +4,7 @@ local folding = require('outline.folding')
 local parser = require('outline.parser')
 local providers = require('outline.providers.init')
 local utils = require('outline.utils.init')
-local writer = require('outline.writer')
 local symbols = require('outline.symbols')
-local t_utils = require('outline.utils.table')
 
 local strlen = vim.fn.strlen
 
@@ -105,25 +103,30 @@ function Sidebar:initial_handler(response, opts)
   end
 end
 
+-- stylua: ignore start
 ---Convenience function for setup_keymaps
 ---@param cfg_name string Field in cfg.o.keymaps
 ---@param method string|function If string, field in Sidebar
 ---@param args table Passed to method
 function Sidebar:nmap(cfg_name, method, args)
+  local keys = cfg.o.keymaps[cfg_name]
+  local fn
+
   if type(method) == 'string' then
-    utils.nmap(self.view.bufnr, cfg.o.keymaps[cfg_name], function()
-      Sidebar[method](self, unpack(args))
-    end)
+    fn = function() Sidebar[method](self, unpack(args)) end
   else
-    utils.nmap(self.view.bufnr, cfg.o.keymaps[cfg_name], function()
-      method(unpack(args))
-    end)
+    fn = function() method(unpack(args)) end
+  end
+
+  for _, key in ipairs(keys) do
+    vim.keymap.set( 'n', key, fn,
+      { silent = true, noremap = true, buffer = self.view.bufnr }
+    )
   end
 end
 
 function Sidebar:setup_keymaps()
   for name, meth in pairs({
-    -- stylua: ignore start
     goto_location = { '_goto_location', { true } },
     peek_location = { '_goto_location', { false } },
     restore_location = { '_map_follow_cursor', {} },
@@ -143,12 +146,12 @@ function Sidebar:setup_keymaps()
     fold_all = { '_set_all_folded', { true } },
     unfold_all = { '_set_all_folded', { false } },
     fold_reset = { '_set_all_folded', {} },
-    -- stylua: ignore end
   }) do
     ---@diagnostic disable-next-line param-type-mismatch
     self:nmap(name, meth[1], meth[2])
   end
 end
+-- stylua: ignore end
 
 ---Autocmds for the (current) outline buffer
 function Sidebar:setup_buffer_autocmd()
@@ -257,12 +260,12 @@ function Sidebar:update_cursor_pos(current)
   end
 end
 
----Calls writer.make_outline and then calls M.update_cursor_pos if
--- update_cursor is not false
+---Calls build_outline and then calls update_cursor_pos if update_cursor is
+--not false
 ---@param update_cursor boolean?
 ---@param set_cursor_to_node outline.SymbolNode|outline.FlatSymbolNode?
 function Sidebar:_update_lines(update_cursor, set_cursor_to_node)
-  local current = self:write_outline(set_cursor_to_node)
+  local current = self:build_outline(set_cursor_to_node)
   if update_cursor ~= false then
     self:update_cursor_pos(current)
   end
@@ -299,7 +302,7 @@ end
 
 ---@param items outline.SymbolNode[]
 function Sidebar:_merge_items(items)
-  utils.merge_items_rec({ children = items }, { children = self.items })
+  parser.merge_items_rec({ children = items }, { children = self.items })
 end
 
 ---Re-request symbols from provider
@@ -600,60 +603,57 @@ function Sidebar:_highlight_current_item(winnr, update_cursor)
 end
 
 ---The quintessential function of this entire plugin. Clears virtual text,
--- parses each node and replaces old lines with new lines to be written for the
--- outline buffer.
---
--- Handles highlights, virtual text, and of course lines of outline to write.
----@note Ensure new outlines are already set to `self.items` before calling this function. `self.flats` will be overwritten and current line is obtained from `win_get_cursor` using `self.code.win`.
+---parses each node and replaces old lines with new lines to be written for the
+---outline buffer.
+---
+---Handles highlights, virtual text, and of course lines of outline to write.
+---@note Ensure new outlines are already set to `self.items` before calling
+---this function. `self.flats` will be overwritten and current line is obtained
+---from `win_get_cursor` using `self.code.win`.
 ---@param find_node outline.FlatSymbolNode|outline.SymbolNode? Find a given node rather than node matching cursor position in codewin
 ---@return outline.FlatSymbolNode? set_cursor_to_this_node
-function Sidebar:write_outline(find_node)
-  -- 0-indexed
+function Sidebar:build_outline(find_node)
+  ---@type integer 0-indexed
   local hovered_line = vim.api.nvim_win_get_cursor(self.code.win)[1] - 1
-  -- Deepest matching node to put cursor on based on hovered line
-  local put_cursor    ---@type outline.FlatSymbolNode
-
+  ---@type outline.FlatSymbolNode Deepest visible matching node to set cursor
+  local put_cursor
   self.flats = {}
   local line_count = 0
-
   local lines = {}    ---@type string[]
   local details = {}  ---@type string[]
   local linenos = {}  ---@type string[]
-  local hl = {}
+  local hl = {}       ---@type outline.HL[]
 
-  -- Find the prefix for each line needed for the lineno space
+  -- Find the prefix for each line needed for the lineno space.
+  -- Use [max width of [max_line-1]] + 1 space padding.
+  -- -1 because if max_width is a power of ten, don't shift the entire lineno
+  -- column by the right just because the last line number requires an extra
+  -- digit. i.e.: If max_width is 1000, the lineno column will take up 3
+  -- columns to fill the digits, and 1 padding on the right. The 1000 can fit
+  -- perfectly there.
   local lineno_offset = 0
   local lineno_prefix = ''
   local lineno_max_width = #tostring(vim.api.nvim_buf_line_count(self.code.buf) - 1)
   if cfg.o.outline_items.show_symbol_lineno then
-    -- Use max width-1 plus 1 space padding.
-    -- -1 because if max_width is a power of ten, don't shift the entire lineno
-    -- column by the right just because the last line number requires an extra
-    -- digit. If max_width is 1000, the lineno column will take up 3 columns to
-    -- fill the digits, and 1 padding on the right. The 1000 can fit perfectly
-    -- there.
     lineno_offset = math.max(2, lineno_max_width) + 1
     lineno_prefix = string.rep(' ', lineno_offset)
   end
 
   -- Closures for convenience
-  local function add_guide_hl(from, to)
+  -- stylua: ignore start
+  local function save_guide_hl(from, to)
     table.insert(hl, {
-      line_count,
-      from,
-      to,
-      'OutlineGuides',
+      line = line_count, name = 'OutlineGuides',
+      from = from, to = to,
     })
   end
-
-  local function add_fold_hl(from, to)
+  local function save_fold_hl(from, to)
     table.insert(hl, {
-      line_count,
-      from,
-      to,
-      'OutlineFoldMarker',
+      line = line_count, name = 'OutlineFoldMarker',
+      from = from, to = to,
     })
   end
+  -- stylua: ignore end
 
   local guide_markers = cfg.o.guides.markers
   local fold_markers = cfg.o.symbol_folding.markers
@@ -687,7 +687,7 @@ function Sidebar:write_outline(find_node)
     table.insert(linenos, leftpad .. lineno)
 
     -- Make the guides for the line prefix
-    local pref = t_utils.str_to_table(string.rep(' ', node.depth))
+    local pref = utils.str_to_table(string.rep(' ', node.depth))
     local fold_marker_width = 0
 
     if folding.is_foldable(node) then
@@ -722,16 +722,15 @@ function Sidebar:write_outline(find_node)
       end
     end
 
-    -- Finished with guide prefix
-    -- Join all prefix chars by a space
+    -- Finished with guide prefix. Now join all prefix chars by a space
     local pref_str = table.concat(pref, ' ')
     local total_pref_len = lineno_offset + #pref_str
 
     -- Guide hl goes from start of prefix till before the fold marker, if any.
     -- Fold hl goes from start of fold marker until before the icon.
-    add_guide_hl(lineno_offset, total_pref_len - fold_marker_width)
+    save_guide_hl(lineno_offset, total_pref_len - fold_marker_width)
     if fold_marker_width > 0 then
-      add_fold_hl(total_pref_len - fold_marker_width, total_pref_len + 1)
+      save_fold_hl(total_pref_len - fold_marker_width, total_pref_len + 1)
     end
 
     local line = lineno_prefix .. pref_str
@@ -742,42 +741,35 @@ function Sidebar:write_outline(find_node)
     end
     line = line .. ' ' .. node.name
 
-    -- Highlight for the icon ✨
-    -- Start from icon col
+    -- Start from left of icon col
     local hl_start = #pref_str + #lineno_prefix + icon_pref
     local hl_end = hl_start + #node.icon -- until after icon
     local hl_type = cfg.o.symbols.icons[symbols.kinds[node.kind]].hl
-    table.insert(hl, { line_count, hl_start, hl_end, hl_type })
-
+    -- stylua: ignore start
+    table.insert(hl, {
+      line = line_count, name = hl_type,
+      from = hl_start, to = hl_end,
+    })
+    -- stylua: ignore end
     -- Prefix length is from start until the beginning of the node.name, used
     -- for hover highlights.
     node.prefix_length = hl_end + 1
 
-    -- lines passed to nvim_buf_set_lines cannot contain newlines in each line
+    -- Each line passed to nvim_buf_set_lines cannot contain newlines
     line = line:gsub('\n', ' ')
     table.insert(lines, line)
   end
 
-  -- Render
-
-  writer.clear_virt_text(self.view.bufnr)
-  writer.clear_icon_hl(self.view.bufnr)
-
-  vim.api.nvim_buf_set_option(self.view.bufnr, 'modifiable', true)
-  vim.api.nvim_buf_set_lines(self.view.bufnr, 0, -1, false, lines)
-  vim.api.nvim_buf_set_option(self.view.bufnr, 'modifiable', false)
-
-  -- Unfortunately highlights and extmarks cannot be added to lines that do not
-  -- yet exist. Hence these require another O(n) of iteration.
-  writer.add_highlights(self.view.bufnr, hl, self.flats)
-
-  if cfg.o.outline_items.show_symbol_details then
-    writer.add_details(self.view.bufnr, details)
-  end
-
-  if cfg.o.outline_items.show_symbol_lineno then
-    writer.add_linenos(self.view.bufnr, linenos)
-  end
+  -- PERF:
+  -- * Is setting individual lines is not as good as rewriting entire buffer?
+  --   That way we can set all highlights and virtual text together without
+  --   requiring extra O(n) iterations.
+  -- * Is there a significant difference if new lines are set first, on top
+  --   of old highlights, before resetting the highlights? (Rather than doing
+  --   like below)
+  self.view:clear_all_ns()
+  self.view:rewrite_lines(lines)
+  self.view:add_hl_and_ns(hl, self.flats, details, linenos)
 
   return put_cursor
 end

@@ -326,6 +326,12 @@ function M.resolve_config()
   if type(au.only) ~= 'number' then
     au.only = (au.only and 1) or 0
   end
+  ----- KEYMAPS -----
+  for action, keys in pairs(M.o.keymaps) do
+    if type(keys) == 'string' then
+      M.o.keymaps[action] = { keys }
+    end
+  end
 end
 
 ---Ensure l is either table, false, or nil. If not, print warning using given

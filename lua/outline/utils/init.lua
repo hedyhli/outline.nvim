@@ -1,13 +1,9 @@
 local M = {}
 
 ---maps the table|string of keys to the action
----@param keys table|string
+---@param keys table
 ---@param action function|string
 function M.nmap(bufnr, keys, action)
-  if type(keys) == 'string' then
-    keys = { keys }
-  end
-
   for _, lhs in ipairs(keys) do
     vim.keymap.set('n', lhs, action, { silent = true, noremap = true, buffer = bufnr })
   end
@@ -30,78 +26,6 @@ function M.debounce(f, delay)
         f(unpack(args))
       end)
     )
-  end
-end
-
-function M.items_dfs(callback, children)
-  for _, val in ipairs(children) do
-    callback(val)
-
-    if val.children then
-      M.items_dfs(callback, val.children)
-    end
-  end
-end
-
----Merges a symbol tree recursively, only replacing nodes
----which have changed. This will maintain the folding
----status of any unchanged nodes.
----@param new_node table New node
----@param old_node table Old node
----@param index? number Index of old_item in parent
----@param parent? table Parent of old_item
-function M.merge_items_rec(new_node, old_node, index, parent)
-  local failed = false
-
-  if not new_node or not old_node then
-    failed = true
-  else
-    for key, _ in pairs(new_node) do
-      if
-        vim.tbl_contains({
-          'parent',
-          'children',
-          'folded',
-          'hovered',
-          'line_in_outline',
-          'hierarchy',
-        }, key)
-      then
-        goto continue
-      end
-
-      if key == 'name' then
-        -- in the case of a rename, just rename the existing node
-        old_node['name'] = new_node['name']
-      else
-        if not vim.deep_equal(new_node[key], old_node[key]) then
-          failed = true
-          break
-        end
-      end
-
-      ::continue::
-    end
-  end
-
-  if failed then
-    if parent and index then
-      parent[index] = new_node
-    end
-  else
-    local next_new_item = new_node.children or {}
-
-    -- in case new children are created on a node which
-    -- previously had no children
-    if #next_new_item > 0 and not old_node.children then
-      old_node.children = {}
-    end
-
-    local next_old_item = old_node.children or {}
-
-    for i = 1, math.max(#next_new_item, #next_old_item) do
-      M.merge_items_rec(next_new_item[i], next_old_item[i], i, next_old_item)
-    end
   end
 end
 
@@ -145,6 +69,51 @@ end
 ---@param t table|string?
 function M.str_or_nonempty_table(t)
   return type(t) == 'string' or M.table_has_content(t)
+end
+
+function M.table_to_str(t)
+  local ret = ''
+  for _, value in ipairs(t) do
+    ret = ret .. tostring(value)
+  end
+  return ret
+end
+
+function M.str_to_table(str)
+  local t = {}
+  for i = 1, #str do
+    t[i] = str:sub(i, i)
+  end
+  return t
+end
+
+--- Copies an array and returns it because lua usually does references
+---@generic T
+---@param t T[]
+---@return T[]
+function M.array_copy(t)
+  local ret = {}
+  for _, value in ipairs(t) do
+    table.insert(ret, value)
+  end
+  return ret
+end
+
+--- Deep copy a table, deeply excluding certain keys
+function M.deepcopy_excluding(t, keys)
+  local res = {}
+
+  for key, value in pairs(t) do
+    if not vim.tbl_contains(keys, key) then
+      if type(value) == 'table' then
+        res[key] = M.deepcopy_excluding(value, keys)
+      else
+        res[key] = value
+      end
+    end
+  end
+
+  return res
 end
 
 return M
