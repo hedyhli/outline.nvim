@@ -245,18 +245,24 @@ end
 function M.show_status()
   local sidebar = M._get_sidebar(false)
   local buf, win = 0, 0
-  local is_open
+  local is_open, provider
 
   if sidebar then
     buf = sidebar.code.buf
     win = sidebar.code.win
     is_open = sidebar.view:is_open()
+    provider = sidebar.provider
+  end
+
+  if not is_open then
+    provider = providers.find_provider()
   end
 
   ---@type outline.StatusContext
   local ctx = {
     priority = cfg.o.providers.priority,
     outline_open = is_open,
+    provider = provider,
   }
 
   if vim.api.nvim_buf_is_valid(buf) then
@@ -267,13 +273,7 @@ function M.show_status()
 
   ctx.default_filter = cfg.o.symbols.user_config_filter.default
 
-  local p = _G._outline_current_provider
-  if not is_open then
-    p = providers.find_provider()
-  end
-
-  if p ~= nil then
-    ctx.provider = p
+  if provider ~= nil then
     -- Just show code window is active when the first outline in this tabpage
     -- has not yet been opened.
     if not sidebar then

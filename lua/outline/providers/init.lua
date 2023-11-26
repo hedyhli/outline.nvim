@@ -3,19 +3,19 @@ local cfg = require('outline.config')
 local M = {}
 local import_prefix = 'outline/providers/'
 
+---@return outline.Provider?
 function M.find_provider()
   if not M.providers then
     M.providers = vim.tbl_map(function(p)
       return import_prefix .. p
     end, cfg.get_providers())
   end
-  for _, name in ipairs(M.providers) do
-    local provider = require(name)
+  for _, path in ipairs(M.providers) do
+    local provider = require(path)
     if provider.supports_buffer(0) then
-      return provider, name
+      return provider
     end
   end
-  return nil, nil
 end
 
 ---@return boolean found_provider
@@ -23,20 +23,15 @@ function M.has_provider()
   return M.find_provider() ~= nil
 end
 
----@param on_symbols function
----@param opts outline.OutlineOpts?
----@return boolean found_provider
-function M.request_symbols(on_symbols, opts)
-  local provider, name = M.find_provider()
-  if not provider then
-    return false
+---Call `sidebar.provider[method]` with args. NOP if no provider or no defined `method`
+---@param sidebar outline.Sidebar
+---@param method string
+---@param args any[]
+function M.action(sidebar, method, args)
+  if not sidebar.provider or not sidebar.provider[method] then
+    return
   end
-  _G._outline_current_provider = provider
-  if not provider.name then
-    _G._outline_current_provider.name = name
-  end
-  provider.request_symbols(on_symbols, opts)
-  return true
+  return sidebar.provider[method](unpack(args))
 end
 
 return M

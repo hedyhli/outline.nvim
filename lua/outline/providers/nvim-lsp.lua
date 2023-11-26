@@ -89,4 +89,20 @@ function M.request_symbols(on_symbols, opts)
   end)
 end
 
+-- No good way to update outline when LSP action complete for now
+
+---@param sidebar outline.Sidebar
+function M.code_actions(sidebar)
+  sidebar:wrap_goto_location(function()
+    vim.lsp.buf.code_action()
+  end)
+end
+
+---@param sidebar outline.Sidebar
+function M.rename_symbol(sidebar)
+  sidebar:wrap_goto_location(function()
+    vim.lsp.buf.rename()
+  end)
+end
+
 return M

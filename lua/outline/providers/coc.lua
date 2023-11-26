@@ -28,7 +28,7 @@ end
 ---@param result table
 local function convert_symbols(result)
   local s = {}
-  local kinds_index = require('outline.symbol').str_to_kind
+  local kinds_index = require('outline.symbols').str_to_kind
   -- rebuild coc.nvim symbol list hierarchy according to the 'level' key
   for _, value in pairs(result) do
     value.children = {}

@@ -23,6 +23,7 @@ local Sidebar = {}
 ---@field original_cursor string
 ---@field code outline.SidebarCodeState
 ---@field autocmds { [integer]: integer } winnr to autocmd id
+---@field provider outline.Provider?
 
 function Sidebar:new()
   return setmetatable({
@@ -50,6 +51,7 @@ function Sidebar:reset_state()
   self.items = {}
   self.flats = {}
   self.original_cursor = vim.o.guicursor
+  self.provider = nil
   self:delete_autocmds()
 end
 
@@ -62,6 +64,7 @@ function Sidebar:destroy()
   self.items = nil
   self.flats = nil
   self.code = nil
+  self.provider = nil
 end
 
 ---Handler for provider request_symbols when outline is opened for the first time.
@@ -135,8 +138,12 @@ function Sidebar:setup_keymaps()
     up_and_jump = { '_move_and_jump', { 'up' } },
     hover_symbol = { require('outline.hover').show_hover, {} },
     toggle_preview = { require('outline.preview').toggle, {} },
-    rename_symbol = { require('outline.rename').rename, {} },
-    code_actions = { require('outline.code_action').show_code_actions, {} },
+    rename_symbol = {
+      providers.action, { self, 'rename_symbol', { self } }
+    },
+    code_actions = {
+      providers.action, { self, 'code_actions', { self } }
+    },
     show_help = { require('outline.help').show_keymap_help, {} },
     close = { function() self.view:close() end, {} },
     fold_toggle = { '_toggle_fold', {} },
@@ -309,11 +316,16 @@ end
 ---Re-request symbols from provider
 function Sidebar:__refresh()
   local focused_outline = self.view.bufnr == vim.api.nvim_get_current_buf()
-  if self.view:is_open() and not focused_outline then
-    providers.request_symbols(function(res)
-      self:refresh_handler(res)
-    end)
+  if focused_outline or not self.view:is_open() then
+    return
   end
+  self.provider = providers.find_provider()
+  if not self.provider then
+    return
+  end
+  self.provider.request_symbols(function(res)
+    self:refresh_handler(res)
+  end)
 end
 
 -- stylua: ignore start
@@ -363,6 +375,17 @@ end
 function Sidebar:_goto_and_close()
   self:__goto_location(true)
   self:close()
+end
+
+---Goto location in code, run fn() then go back to outline.
+---Like emacs save-excursion but here it's explicitly goto_location.
+---@param fn function
+function Sidebar:wrap_goto_location(fn)
+  local pos = vim.api.nvim_win_get_cursor(0)
+  self:__goto_location(true)
+  fn()
+  vim.fn.win_gotoid(self.view.winnr)
+  vim.api.nvim_win_set_cursor(self.view.winnr, pos)
 end
 
 ---@param direction "up"|"down"
@@ -494,12 +517,14 @@ function Sidebar:open(opts)
   end
 
   if not self.view:is_open() then
-    local found = providers.request_symbols(function(...)
+    self.provider = providers.find_provider()
+    if not self.provider then
+      utils.echo('No providers found for current buffer')
+      return
+    end
+    self.provider.request_symbols(function(...)
       self:initial_handler(...)
     end, opts)
-    if not found then
-      utils.echo('No providers found for current buffer')
-    end
   end
 end
 
@@ -558,7 +583,7 @@ end
 ---@return boolean has_provider
 function Sidebar:has_provider()
   if self:has_focus() then
-    return _G._outline_current_provider ~= nil
+    return self.provider ~= nil
   end
   return providers.has_provider()
 end
