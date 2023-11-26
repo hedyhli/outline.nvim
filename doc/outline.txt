@@ -1,4 +1,4 @@
-*outline.txt*           For NVIM v0.7.0          Last change: 2023 November 25
+*outline.txt*           For NVIM v0.7.0          Last change: 2023 November 26
 
 ==============================================================================
 Table of Contents                                  *outline-table-of-contents*
@@ -667,13 +667,13 @@ Outline.nvim provides the following public API for use in lua.
 <
 
 - setup(opts)
-- **toggle_outline(opts)**
+- **toggle(opts)**
     Toggle opening/closing of outline window.
     If `opts.focus_outline=false`, keep focus on previous window.
-- **open_outline(opts)**
+- **open(opts)**
     Open the outline window.
     If `opts.focus_outline=false`, keep focus on previous window.
-- **close_outline()**
+- **close()**
     Close the outline window.
 - **focus_toggle()**
     Toggle cursor focus between code and outline window.
@@ -686,19 +686,32 @@ Outline.nvim provides the following public API for use in lua.
 - **show_status()**
     Display provider and outline window status in a floating window.
 - **has_provider()**
-    Returns whether a provider is available for current window.
+    Returns whether a provider is available.
 - **follow_cursor(opts)**
     Go to corresponding node in outline based on cursor position in code, and focus
     on the outline window.
     With `opts.focus_outline=false`, cursor focus will remain on code window.
     This is automatically called on events
     `outline_items.auto_update_events.follow` from config.
-- **is_focus_in_outline()**
+- **has_focus()**
     Return whether outline is open and current focus is in outline.
-- **refresh_outline()**
+- **refresh()**
     Re-request symbols from provider and update outline items.
     This is automatically called on events
     `outline_items.auto_update_events.refresh` from config.
+- **get_breadcrumb(opts)**
+    Return a string concatenated from hovered symbols hierarchy representing code
+    location.
+    Optional opts table fields:
+    - depth (nil): Maximum depth of the last symbol included. First item has depth 1.
+        Set to 0 or nil to include all
+    - sep (`>`): String for separator
+- **get_symbol(opts)**
+    Return the symbol name of the deepest hovered symbol representing code
+    location.
+    Optional opts table fields:
+    - depth (nil): Maximum depth of the returned symbol
+    - kind (nil): Symbol kind to search for (string).
 
 
 TIPS                                                            *outline-tips*
