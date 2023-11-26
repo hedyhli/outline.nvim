@@ -57,10 +57,8 @@ end
 
 function Sidebar:destroy()
   self:delete_autocmds()
-  if self.view:is_open() then
-    self.view:close()
-  end
   self.view = nil
+  self.preview = nil
   self.items = nil
   self.flats = nil
   self.code = nil
