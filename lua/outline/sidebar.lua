@@ -247,6 +247,7 @@ function Sidebar:reset_cursor_style()
   vim.o.guicursor = self.original_cursor
 end
 
+---Set the cursor to current.line_in_outline and column to a convenient place
 ---@param current outline.FlatSymbolNode?
 function Sidebar:update_cursor_pos(current)
   local col = 0
@@ -261,7 +262,7 @@ function Sidebar:update_cursor_pos(current)
 end
 
 ---Calls build_outline and then calls update_cursor_pos if update_cursor is
---not false
+---not false
 ---@param update_cursor boolean?
 ---@param set_cursor_to_node outline.SymbolNode|outline.FlatSymbolNode?
 function Sidebar:_update_lines(update_cursor, set_cursor_to_node)
@@ -315,12 +316,13 @@ function Sidebar:__refresh()
   end
 end
 
+-- stylua: ignore start
 function Sidebar:_refresh()
-  (utils.debounce(function()
-    self:__refresh()
-  end, 100))()
+  (utils.debounce(function() self:__refresh() end, 100))()
 end
+-- stylua: ignore end
 
+---Currently hovered node in outline
 ---@return outline.FlatSymbolNode
 function Sidebar:_current_node()
   local current_line = vim.api.nvim_win_get_cursor(self.view.winnr)[1]

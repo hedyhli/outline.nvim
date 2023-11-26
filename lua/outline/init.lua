@@ -49,8 +49,8 @@ function M._get_sidebar(set_current)
   return sidebar
 end
 
----Run a Sidebar method by getting the sidebar of current tabpage, with args
--- NOP if sidebar not found for this tabpage.
+---Run a Sidebar method by getting the sidebar of current tabpage, with args.
+---NOP if sidebar not found for this tabpage.
 ---@param method string Must be valid
 ---@param args table?
 ---@return any return_of_method Depends on sidebar `method`
@@ -71,7 +71,7 @@ end
 M.close = M.close_outline
 
 ---Toggle the outline window, and return whether the outline window is open
--- after this operation.
+---after this operation.
 ---@param opts outline.OutlineOpts? Table of options
 ---@return boolean is_open Whether outline window is now open
 function M.toggle_outline(opts)
@@ -86,7 +86,7 @@ end
 M.toggle = M.toggle_outline
 
 ---Set cursor to focus on the outline window, return whether the window is
--- currently open.
+---currently open.
 ---@return boolean is_open Whether the window is open
 function M.focus_outline()
   return M._sidebar_do('focus')
