@@ -86,7 +86,7 @@ function Sidebar:initial_handler(response, opts)
   self.view:setup_view(sc)
 
   -- clear state when buffer is closed
-  vim.api.nvim_buf_attach(self.view.bufnr, false, {
+  vim.api.nvim_buf_attach(self.view.buf, false, {
     on_detach = function(_, _)
       self:reset_state()
     end,
@@ -123,7 +123,7 @@ function Sidebar:nmap(cfg_name, method, args)
 
   for _, key in ipairs(keys) do
     vim.keymap.set( 'n', key, fn,
-      { silent = true, noremap = true, buffer = self.view.bufnr }
+      { silent = true, noremap = true, buffer = self.view.buf }
     )
   end
 end
@@ -264,7 +264,7 @@ function Sidebar:update_cursor_pos(current)
     col = #tostring(vim.api.nvim_buf_line_count(buf) - 1)
   end
   if current then -- Don't attempt to set cursor if the matching node is not found
-    vim.api.nvim_win_set_cursor(self.view.winnr, { current.line_in_outline, col })
+    vim.api.nvim_win_set_cursor(self.view.win, { current.line_in_outline, col })
   end
 end
 
@@ -315,7 +315,7 @@ end
 
 ---Re-request symbols from provider
 function Sidebar:__refresh()
-  local focused_outline = self.view.bufnr == vim.api.nvim_get_current_buf()
+  local focused_outline = self.view.buf == vim.api.nvim_get_current_buf()
   if focused_outline or not self.view:is_open() then
     return
   end
@@ -337,7 +337,7 @@ end
 ---Currently hovered node in outline
 ---@return outline.FlatSymbolNode
 function Sidebar:_current_node()
-  local current_line = vim.api.nvim_win_get_cursor(self.view.winnr)[1]
+  local current_line = vim.api.nvim_win_get_cursor(self.view.win)[1]
   return self.flats[current_line]
 end
 
@@ -384,8 +384,8 @@ function Sidebar:wrap_goto_location(fn)
   local pos = vim.api.nvim_win_get_cursor(0)
   self:__goto_location(true)
   fn()
-  vim.fn.win_gotoid(self.view.winnr)
-  vim.api.nvim_win_set_cursor(self.view.winnr, pos)
+  vim.fn.win_gotoid(self.view.win)
+  vim.api.nvim_win_set_cursor(self.view.win, pos)
 end
 
 ---@param direction "up"|"down"
@@ -419,7 +419,7 @@ function Sidebar:_set_folded(folded, move_cursor, node_index)
     node.folded = folded
 
     if move_cursor then
-      vim.api.nvim_win_set_cursor(self.view.winnr, { node_index, 0 })
+      vim.api.nvim_win_set_cursor(self.view.win, { node_index, 0 })
     end
 
     self:_update_lines(false)
@@ -539,7 +539,7 @@ end
 ---@return boolean is_open
 function Sidebar:focus()
   if self.view:is_open() then
-    vim.fn.win_gotoid(self.view.winnr)
+    vim.fn.win_gotoid(self.view.win)
     return true
   end
   return false
@@ -561,7 +561,7 @@ function Sidebar:focus_toggle()
   if self.view:is_open() and require('outline.preview').has_code_win(self.code.win) then
     local winid = vim.fn.win_getid()
     if winid == self.code.win then
-      vim.fn.win_gotoid(self.view.winnr)
+      vim.fn.win_gotoid(self.view.win)
     else
       vim.fn.win_gotoid(self.code.win)
     end
@@ -578,7 +578,7 @@ end
 
 function Sidebar:has_focus()
   local winid = vim.fn.win_getid()
-  return self.view:is_open() and winid == self.view.winnr
+  return self.view:is_open() and winid == self.view.win
 end
 
 ---Whether there is currently an available provider.
@@ -593,7 +593,7 @@ end
 function Sidebar:_highlight_current_item(winnr, update_cursor)
   local has_provider = self:has_provider()
   local has_outline_open = self.view:is_open()
-  local current_buffer_is_outline = self.view.bufnr == vim.api.nvim_get_current_buf()
+  local current_buffer_is_outline = self.view.buf == vim.api.nvim_get_current_buf()
 
   if not has_provider then
     return

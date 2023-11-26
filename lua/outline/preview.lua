@@ -11,7 +11,7 @@ local state = {
 
 local function is_current_win_outline()
   local curwin = vim.api.nvim_get_current_win()
-  return curwin == outline.current.view.winnr
+  return curwin == outline.current.view.win
 end
 
 local function has_code_win(winnr)
@@ -29,7 +29,7 @@ M.has_code_win = has_code_win
 ---@param preview_width integer
 local function get_col(preview_width)
   ---@type integer
-  local outline_winnr = outline.current.view.winnr
+  local outline_winnr = outline.current.view.win
   local outline_col = vim.api.nvim_win_get_position(outline_winnr)[2]
   local outline_width = vim.api.nvim_win_get_width(outline_winnr)
   local code_col = vim.api.nvim_win_get_position(outline.current.code.win)[2]
@@ -50,15 +50,15 @@ end
 ---@param outline_height integer
 local function get_row(preview_height, outline_height)
   local offset = math.floor((outline_height - preview_height) / 2) - 1
-  return vim.api.nvim_win_get_position(outline.current.view.winnr)[1] + offset
+  return vim.api.nvim_win_get_position(outline.current.view.win)[1] + offset
 end
 
 local function get_height()
-  return vim.api.nvim_win_get_height(outline.current.view.winnr)
+  return vim.api.nvim_win_get_height(outline.current.view.win)
 end
 
 local function get_hovered_node()
-  local hovered_line = vim.api.nvim_win_get_cursor(outline.current.view.winnr)[1]
+  local hovered_line = vim.api.nvim_win_get_cursor(outline.current.view.win)[1]
   local node = outline.current.flats[hovered_line]
   return node
 end

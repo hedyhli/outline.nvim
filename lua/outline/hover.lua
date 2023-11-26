@@ -17,7 +17,7 @@ end
 
 -- handler yoinked from the default implementation
 function M.show_hover()
-  local current_line = vim.api.nvim_win_get_cursor(outline.current.view.winnr)[1]
+  local current_line = vim.api.nvim_win_get_cursor(outline.current.view.win)[1]
   local node = outline.current.flats[current_line]
 
   local hover_params = get_hover_params(node, outline.current.code.win)

@@ -5,21 +5,21 @@ local highlight = require('outline.highlight')
 local View = {}
 
 ---@class outline.View
----@field bufnr integer
----@field winnr integer
+---@field buf integer
+---@field win integer
 
 function View:new()
-  return setmetatable({ bufnr = nil, winnr = nil }, { __index = View })
+  return setmetatable({ buf = nil, win = nil }, { __index = View })
 end
 
 ---Creates the outline window and sets it up
 ---@param split_command string A valid split command that is to be executed in order to create the view.
 function View:setup_view(split_command)
   -- create a scratch unlisted buffer
-  self.bufnr = vim.api.nvim_create_buf(false, true)
+  self.buf = vim.api.nvim_create_buf(false, true)
 
   -- delete buffer when window is closed / buffer is hidden
-  vim.api.nvim_buf_set_option(self.bufnr, 'bufhidden', 'delete')
+  vim.api.nvim_buf_set_option(self.buf, 'bufhidden', 'delete')
   -- create a split
   vim.cmd(split_command)
 
@@ -27,73 +27,73 @@ function View:setup_view(split_command)
   vim.cmd('vertical resize ' .. cfg.get_window_width())
 
   -- get current (outline) window and attach our buffer to it
-  self.winnr = vim.api.nvim_get_current_win()
-  vim.api.nvim_win_set_buf(self.winnr, self.bufnr)
+  self.win = vim.api.nvim_get_current_win()
+  vim.api.nvim_win_set_buf(self.win, self.buf)
 
   -- window stuff
-  vim.api.nvim_win_set_option(self.winnr, 'spell', false)
-  vim.api.nvim_win_set_option(self.winnr, 'signcolumn', 'no')
-  vim.api.nvim_win_set_option(self.winnr, 'foldcolumn', '0')
-  vim.api.nvim_win_set_option(self.winnr, 'number', false)
-  vim.api.nvim_win_set_option(self.winnr, 'relativenumber', false)
-  vim.api.nvim_win_set_option(self.winnr, 'winfixwidth', true)
-  vim.api.nvim_win_set_option(self.winnr, 'list', false)
-  vim.api.nvim_win_set_option(self.winnr, 'wrap', cfg.o.outline_window.wrap)
-  vim.api.nvim_win_set_option(self.winnr, 'winhl', cfg.o.outline_window.winhl)
-  vim.api.nvim_win_set_option(self.winnr, 'linebreak', true) -- only has effect when wrap=true
-  vim.api.nvim_win_set_option(self.winnr, 'breakindent', true) -- only has effect when wrap=true
+  vim.api.nvim_win_set_option(self.win, 'spell', false)
+  vim.api.nvim_win_set_option(self.win, 'signcolumn', 'no')
+  vim.api.nvim_win_set_option(self.win, 'foldcolumn', '0')
+  vim.api.nvim_win_set_option(self.win, 'number', false)
+  vim.api.nvim_win_set_option(self.win, 'relativenumber', false)
+  vim.api.nvim_win_set_option(self.win, 'winfixwidth', true)
+  vim.api.nvim_win_set_option(self.win, 'list', false)
+  vim.api.nvim_win_set_option(self.win, 'wrap', cfg.o.outline_window.wrap)
+  vim.api.nvim_win_set_option(self.win, 'winhl', cfg.o.outline_window.winhl)
+  vim.api.nvim_win_set_option(self.win, 'linebreak', true) -- only has effect when wrap=true
+  vim.api.nvim_win_set_option(self.win, 'breakindent', true) -- only has effect when wrap=true
   --  Would be nice to use guides.markers.vertical as part of showbreak to keep
   --  continuity of the tree UI, but there's currently no way to style the
   --  color, apart from globally overriding hl-NonText, which will potentially
   --  mess with other theme/user settings. So just use empty spaces for now.
-  vim.api.nvim_win_set_option(self.winnr, 'showbreak', '      ') -- only has effect when wrap=true.
+  vim.api.nvim_win_set_option(self.win, 'showbreak', '      ') -- only has effect when wrap=true.
   -- buffer stuff
   local tab = vim.api.nvim_get_current_tabpage()
-  vim.api.nvim_buf_set_name(self.bufnr, 'OUTLINE_' .. tostring(tab))
-  vim.api.nvim_buf_set_option(self.bufnr, 'filetype', 'Outline')
-  vim.api.nvim_buf_set_option(self.bufnr, 'modifiable', false)
+  vim.api.nvim_buf_set_name(self.buf, 'OUTLINE_' .. tostring(tab))
+  vim.api.nvim_buf_set_option(self.buf, 'filetype', 'Outline')
+  vim.api.nvim_buf_set_option(self.buf, 'modifiable', false)
 
   if cfg.o.outline_window.show_numbers or cfg.o.outline_window.show_relative_numbers then
-    vim.api.nvim_win_set_option(self.winnr, 'nu', true)
+    vim.api.nvim_win_set_option(self.win, 'nu', true)
   end
 
   if cfg.o.outline_window.show_relative_numbers then
-    vim.api.nvim_win_set_option(self.winnr, 'rnu', true)
+    vim.api.nvim_win_set_option(self.win, 'rnu', true)
   end
 
   local cl = cfg.o.outline_window.show_cursorline
   if cl == true or cl == 'focus_in_outline' then
-    vim.api.nvim_win_set_option(self.winnr, 'cursorline', true)
+    vim.api.nvim_win_set_option(self.win, 'cursorline', true)
   end
 end
 
 ---Close view window and remove winnr/bufnr fields
 function View:close()
-  if self.winnr then
-    vim.api.nvim_win_close(self.winnr, true)
-    self.winnr = nil
-    self.bufnr = nil
+  if self.win then
+    vim.api.nvim_win_close(self.win, true)
+    self.win = nil
+    self.buf = nil
   end
 end
 
 ---Return whether view has valid buf and win numbers
 function View:is_open()
-  return self.winnr
-    and self.bufnr
-    and vim.api.nvim_buf_is_valid(self.bufnr)
-    and vim.api.nvim_win_is_valid(self.winnr)
+  return self.win
+    and self.buf
+    and vim.api.nvim_buf_is_valid(self.buf)
+    and vim.api.nvim_win_is_valid(self.win)
 end
 
 ---Replace all lines in buffer with given new `lines`
 ---@param lines string[]
 function View:rewrite_lines(lines)
-  vim.api.nvim_buf_set_option(self.bufnr, 'modifiable', true)
-  vim.api.nvim_buf_set_lines(self.bufnr, 0, -1, false, lines)
-  vim.api.nvim_buf_set_option(self.bufnr, 'modifiable', false)
+  vim.api.nvim_buf_set_option(self.buf, 'modifiable', true)
+  vim.api.nvim_buf_set_lines(self.buf, 0, -1, false, lines)
+  vim.api.nvim_buf_set_option(self.buf, 'modifiable', false)
 end
 
 function View:clear_all_ns()
-  highlight.clear_all_ns(self.bufnr)
+  highlight.clear_all_ns(self.buf)
 end
 
 ---Ensure all existing highlights are already cleared before calling!
@@ -102,12 +102,12 @@ end
 ---@param details string[]
 ---@param linenos string[]
 function View:add_hl_and_ns(hl, nodes, details, linenos)
-  highlight.items(self.bufnr, hl)
+  highlight.items(self.buf, hl)
   if cfg.o.outline_items.highlight_hovered_item then
-    highlight.hovers(self.bufnr, nodes)
+    highlight.hovers(self.buf, nodes)
   end
   if cfg.o.outline_items.show_symbol_details then
-    highlight.details(self.bufnr, details)
+    highlight.details(self.buf, details)
   end
 
   -- Note on hl_mode:
@@ -118,7 +118,7 @@ function View:add_hl_and_ns(hl, nodes, details, linenos)
   if cfg.o.outline_items.show_symbol_lineno then
     -- stylua: ignore start
     highlight.linenos(
-      self.bufnr, linenos,
+      self.buf, linenos,
       (cfg.o.outline_window.hide_cursor and 'combine') or 'replace'
     )
     -- stylua: ignore end
