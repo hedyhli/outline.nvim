@@ -1,4 +1,5 @@
 local View = require('outline.view')
+local Preview = require('outline.preview')
 local cfg = require('outline.config')
 local folding = require('outline.folding')
 local parser = require('outline.parser')
@@ -24,10 +25,12 @@ local Sidebar = {}
 ---@field code outline.SidebarCodeState
 ---@field autocmds { [integer]: integer } winnr to autocmd id
 ---@field provider outline.Provider?
+---@field preview outline.Preview
 
 function Sidebar:new()
   return setmetatable({
     view = View:new(),
+    preview = Preview:new(),
     code = { buf = 0, win = 0 },
     items = {},
     flats = {},
@@ -136,7 +139,7 @@ function Sidebar:setup_keymaps()
     goto_and_close = { '_goto_and_close', {} },
     down_and_jump = { '_move_and_jump', { 'down' } },
     up_and_jump = { '_move_and_jump', { 'up' } },
-    toggle_preview = { require('outline.preview').toggle, {} },
+    toggle_preview = { function() self.preview:toggle() end, {} },
     fold_toggle = { '_toggle_fold', {} },
     fold = { '_set_folded', { true } },
     unfold = { '_set_folded', { false } },
@@ -163,12 +166,12 @@ function Sidebar:setup_buffer_autocmd()
   if cfg.o.preview_window.auto_preview then
     vim.api.nvim_create_autocmd('CursorMoved', {
       buffer = 0,
-      callback = require('outline.preview').show,
+      callback = function() self.preview:show() end,
     })
   else
     vim.api.nvim_create_autocmd('CursorMoved', {
       buffer = 0,
-      callback = require('outline.preview').close,
+      callback = function() self.preview:close() end,
     })
   end
   if cfg.o.outline_window.auto_jump then
@@ -465,6 +468,10 @@ function Sidebar:_set_all_folded(folded, nodes)
   self:_update_lines(true, current)
 end
 
+function Sidebar:has_code_win()
+  return self.code.win and self.code.buf and self.code.win ~= 0 and self.code.buf ~= 0 and vim.api.nvim_win_is_valid(self.code.win) and vim.api.nvim_buf_is_valid(self.code.buf)
+end
+
 ---@see outline.follow_cursor
 ---@param opts outline.OutlineOpts?
 ---@return boolean ok
@@ -473,7 +480,7 @@ function Sidebar:follow_cursor(opts)
     return false
   end
 
-  if require('outline.preview').has_code_win(self.code.win) then
+  if self:has_code_win() then
     self:_highlight_current_item(self.code.win, true)
   else
     return false
@@ -516,6 +523,7 @@ function Sidebar:open(opts)
   end
 
   if not self.view:is_open() then
+    self.preview.s = self
     self.provider = providers.find_provider()
     if not self.provider then
       utils.echo('No providers found for current buffer')
@@ -531,6 +539,7 @@ end
 function Sidebar:close()
   local code_win = self.code.win
   self.view:close()
+  self.preview:close()
   vim.fn.win_gotoid(code_win)
 end
 
@@ -547,7 +556,7 @@ end
 ---@see outline.focus_code
 ---@return boolean ok
 function Sidebar:focus_code()
-  if require('outline.preview').has_code_win(self.code.win) then
+  if self:has_code_win() then
     vim.fn.win_gotoid(self.code.win)
     return true
   end
@@ -557,7 +566,7 @@ end
 ---@see outline.focus_toggle
 ---@return boolean ok
 function Sidebar:focus_toggle()
-  if self.view:is_open() and require('outline.preview').has_code_win(self.code.win) then
+  if self.view:is_open() and self:has_code_win() then
     local winid = vim.fn.win_getid()
     if winid == self.code.win then
       vim.fn.win_gotoid(self.view.win)

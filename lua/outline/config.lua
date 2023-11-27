@@ -154,20 +154,18 @@ end
 function M.get_window_width()
   if M.o.outline_window.relative_width then
     return math.ceil(vim.o.columns * (M.o.outline_window.width / 100))
-  else
-    return M.o.outline_window.width
   end
+  return M.o.outline_window.width
 end
 
 function M.get_preview_width()
   if M.o.preview_window.relative_width then
-    local relative_width = math.ceil(vim.o.columns * (M.o.preview_window.width / 100))
+    local relative_width = math.max(
+      math.ceil(vim.o.columns * (M.o.preview_window.width / 100)),
+      M.o.preview_window.min_width
+    )
 
-    if relative_width < M.o.preview_window.min_width then
-      return M.o.preview_window.min_width
-    else
-      return relative_width
-    end
+    return relative_width
   else
     return M.o.preview_window.width
   end
@@ -332,6 +330,10 @@ function M.resolve_config()
       M.o.keymaps[action] = { keys }
     end
   end
+  ----- PREVIEW -----
+  M.o.preview_window.width = M.get_preview_width()
+  ----- WINDOW -----
+  M.o.outline_window.width = M.get_window_width()
 end
 
 ---Ensure l is either table, false, or nil. If not, print warning using given

@@ -24,7 +24,7 @@ function View:setup_view(split_command)
   vim.cmd(split_command)
 
   -- resize to a % of the current window size
-  vim.cmd('vertical resize ' .. cfg.get_window_width())
+  vim.cmd('vertical resize ' .. cfg.o.outline_window.width)
 
   -- get current (outline) window and attach our buffer to it
   self.win = vim.api.nvim_get_current_win()

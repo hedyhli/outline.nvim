@@ -279,7 +279,7 @@ function M.show_status()
     if not sidebar then
       ctx.code_win_active = true
     else
-      ctx.code_win_active = require('outline.preview').has_code_win(win)
+      ctx.code_win_active = sidebar:has_code_win()
     end
   end
 

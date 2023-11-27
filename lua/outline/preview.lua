@@ -1,88 +1,67 @@
 local cfg = require('outline.config')
-local hover = require('outline.hover')
-local outline = require('outline')
+local providers = require('outline.providers')
 
-local M = {}
+local conf
 
-local state = {
-  preview_buf = nil,
-  preview_win = nil,
-}
+---@class outline.Preview
+local Preview = {}
 
-local function is_current_win_outline()
-  local curwin = vim.api.nvim_get_current_win()
-  return curwin == outline.current.view.win
+---@class outline.Preview
+---@field buf integer
+---@field win integer
+---@field width integer
+---@field height integer
+---@field outline_height integer
+---@field s outline.Sidebar
+
+---@param s outline.Sidebar
+function Preview:new(s)
+  -- Config must have been setup when calling Preview:new
+  conf = cfg.o.preview_window
+  return setmetatable({
+    buf = nil,
+    win = nil,
+    s = s,
+    width = nil,
+    height = nil,
+  }, { __index = Preview })
 end
 
-local function has_code_win(winnr)
-  if not outline.current then
-    return false
-  end
-  winnr = winnr or outline.current.code.win
-  return vim.api.nvim_win_is_valid(winnr) and vim.api.nvim_buf_is_valid(outline.current.code.buf)
+---Creates new preview window and sets the content. Calls setup and set_lines.
+function Preview:create()
+  self.buf = vim.api.nvim_create_buf(false, true)
+  vim.api.nvim_buf_attach(self.buf, false, {
+    on_detach = function()
+      self.buf = nil
+      self.win = nil
+    end,
+  })
+  -- FIXME: Re-calculate dimensions on update-preview, in case outline window
+  -- was resized between last preview and next preview?
+  self.outline_height = vim.api.nvim_win_get_height(self.s.view.win)
+  self.width = conf.width
+  self.height = math.max(math.ceil(self.outline_height / 2), conf.min_height)
+  self.win = vim.api.nvim_open_win(self.buf, false, {
+    relative = 'editor',
+    height = self.height,
+    width = self.width,
+    bufpos = { 0, 0 },
+    col = self:calc_col(),
+    row = self:calc_row(),
+    border = conf.border,
+  })
+  self:setup()
+  self:set_lines()
 end
 
-M.has_code_win = has_code_win
+---Set up highlights, window, and buffer options
+function Preview:setup()
+  vim.api.nvim_win_set_option(self.win, 'winhl', conf.winhl)
+  vim.api.nvim_win_set_option(self.win, 'winblend', conf.winblend)
 
----Get the correct column to place the floating window based on
--- Relative positions of the outline and the code window.
----@param preview_width integer
-local function get_col(preview_width)
-  ---@type integer
-  local outline_winnr = outline.current.view.win
-  local outline_col = vim.api.nvim_win_get_position(outline_winnr)[2]
-  local outline_width = vim.api.nvim_win_get_width(outline_winnr)
-  local code_col = vim.api.nvim_win_get_position(outline.current.code.win)[2]
-
-  -- TODO: What if code win is below/above outline instead?
-
-  local col = outline_col
-  if outline_col > code_col then
-    col = col - preview_width - 3
-  else
-    col = col + outline_width + 1
-  end
-
-  return col
-end
-
----@param preview_height integer
----@param outline_height integer
-local function get_row(preview_height, outline_height)
-  local offset = math.floor((outline_height - preview_height) / 2) - 1
-  return vim.api.nvim_win_get_position(outline.current.view.win)[1] + offset
-end
-
-local function get_height()
-  return vim.api.nvim_win_get_height(outline.current.view.win)
-end
-
-local function get_hovered_node()
-  local hovered_line = vim.api.nvim_win_get_cursor(outline.current.view.win)[1]
-  local node = outline.current.flats[hovered_line]
-  return node
-end
-
-local function update_preview(code_buf)
-  code_buf = code_buf or outline.current.code.buf
-
-  local node = get_hovered_node()
-  if not node then
-    return
-  end
-  local lines = vim.api.nvim_buf_get_lines(code_buf, 0, -1, false)
-
-  if state.preview_buf ~= nil then
-    vim.api.nvim_buf_set_lines(state.preview_buf, 0, -1, false, lines)
-    vim.api.nvim_win_set_cursor(state.preview_win, { node.line + 1, node.character })
-  end
-end
-
-local function setup_preview_buf()
-  local code_buf = outline.current.code.buf
+  local code_buf = self.s.code.buf
   local ft = vim.api.nvim_buf_get_option(code_buf, 'filetype')
-
-  vim.api.nvim_buf_set_option(state.preview_buf, 'syntax', ft)
+  vim.api.nvim_buf_set_option(self.buf, 'syntax', ft)
 
   local ts_highlight_fn = vim.treesitter.start
   if not _G._outline_nvim_has[8] then
@@ -91,75 +70,95 @@ local function setup_preview_buf()
       ts_highlight_fn = ts_highlight.attach
     end
   end
-  pcall(ts_highlight_fn, state.preview_buf, ft)
+  pcall(ts_highlight_fn, self.buf, ft)
 
-  vim.api.nvim_buf_set_option(state.preview_buf, 'bufhidden', 'delete')
-  vim.api.nvim_win_set_option(state.preview_win, 'cursorline', true)
-  update_preview(code_buf)
+  vim.api.nvim_buf_set_option(self.buf, 'bufhidden', 'delete')
+  vim.api.nvim_win_set_option(self.win, 'cursorline', true)
+  vim.api.nvim_buf_set_option(self.buf, 'modifiable', false)
 end
 
-local function set_bg_hl()
-  vim.api.nvim_win_set_option(state.preview_win, 'winhl', cfg.o.preview_window.winhl)
-  vim.api.nvim_win_set_option(state.preview_win, 'winblend', cfg.o.preview_window.winblend)
-end
+---Get the correct column to place the floating window based on relative
+---positions of the outline and the code window.
+function Preview:calc_col()
+  ---@type integer
+  local outline_winnr = self.s.view.win
+  local outline_col = vim.api.nvim_win_get_position(outline_winnr)[2]
+  local outline_width = vim.api.nvim_win_get_width(outline_winnr)
+  local code_col = vim.api.nvim_win_get_position(self.s.code.win)[2]
 
-local function show_preview()
-  if state.preview_win == nil and state.preview_buf == nil then
-    state.preview_buf = vim.api.nvim_create_buf(false, true)
-    vim.api.nvim_buf_attach(state.preview_buf, false, {
-      on_detach = function()
-        state.preview_buf = nil
-        state.preview_win = nil
-      end,
-    })
-    local height = get_height()
-    local width = cfg.get_preview_width()
-    local winheight = math.max(math.ceil(height / 2), cfg.o.preview_window.min_height)
-    state.preview_win = vim.api.nvim_open_win(state.preview_buf, false, {
-      relative = 'editor',
-      height = winheight,
-      width = width,
-      bufpos = { 0, 0 },
-      col = get_col(width),
-      -- Position preview window middle-aligned vertically
-      row = get_row(winheight, height),
-      border = cfg.o.preview_window.border,
-    })
-    setup_preview_buf()
+  -- TODO: What if code win is below/above outline instead?
+
+  local col = outline_col
+  if outline_col > code_col then
+    col = col - self.width - 3
   else
-    update_preview()
+    col = col + outline_width + 1
+  end
+
+  return col
+end
+
+---Get the vertically center-aligned row for preview window
+function Preview:calc_row()
+  local offset = math.floor((self.outline_height - self.height) / 2) - 1
+  return vim.api.nvim_win_get_position(self.s.view.win)[1] + offset
+end
+
+---Set and update preview buffer content
+function Preview:set_lines()
+  -- TODO: Editable, savable buffer in the preview like VS Code for quick
+  -- edits? It can be like LSP. Trigger preview to open, trigger again to focus
+  -- (so buffer can be edited).
+  -- This can be achieved by simply opening the buffer from inside the preview
+  -- window.
+  -- This also removes the need of manually setting highlights, treesitter etc.
+  -- The preview window will look exactly the same as in the code window.
+  local node = self.s:_current_node()
+  if not node then
+    return
+  end
+  local lines = vim.api.nvim_buf_get_lines(self.s.code.buf, 0, -1, false)
+
+  if self.buf ~= nil then
+    vim.api.nvim_buf_set_option(self.buf, 'modifiable', true)
+    vim.api.nvim_buf_set_lines(self.buf, 0, -1, false, lines)
+    vim.api.nvim_buf_set_option(self.buf, 'modifiable', false)
+    vim.api.nvim_win_set_cursor(self.win, { node.line + 1, node.character })
   end
 end
 
-function M.show()
-  if not is_current_win_outline() or #vim.api.nvim_list_wins() < 2 then
+---Create or update preview
+function Preview:show()
+  if not self.s:has_focus() or #vim.api.nvim_list_wins() < 2 then
     return
   end
 
-  show_preview()
-  set_bg_hl()
-  if cfg.o.preview_window.open_hover_on_preview then
-    hover.show_hover()
-  end
-end
-
-function M.close()
-  if has_code_win() then
-    if state.preview_win ~= nil and vim.api.nvim_win_is_valid(state.preview_win) then
-      vim.api.nvim_win_close(state.preview_win, true)
-    end
-    if state.hover_win ~= nil and vim.api.nvim_win_is_valid(state.hover_win) then
-      vim.api.nvim_win_close(state.hover_win, true)
-    end
-  end
-end
-
-function M.toggle()
-  if state.preview_win ~= nil then
-    M.close()
+  if self.buf and self.win then
+    self:set_lines()
   else
-    M.show()
+    self:create()
+  end
+
+  if conf.open_hover_on_preview then
+    providers.action(self.s, 'show_hover', { self.s })
   end
 end
 
-return M
+function Preview:close()
+  -- TODO: Why was this in symbols-outline.nvim?
+  -- if self.s:has_code_win() then
+    if self.win ~= nil and vim.api.nvim_win_is_valid(self.win) then
+      vim.api.nvim_win_close(self.win, true)
+    end
+  -- end
+end
+
+function Preview:toggle()
+  if self.win ~= nil then
+    self:close()
+  else
+    self:show()
+  end
+end
+
+return Preview
