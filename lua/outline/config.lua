@@ -232,7 +232,7 @@ function M.should_include_symbol(kind, bufnr)
   return filter_table[kind] ~= false
 end
 
----@param client vim.lsp.client|number
+---@param client lsp.client|number
 function M.is_client_blacklisted(client)
   if not client then
     return false
@@ -243,7 +243,7 @@ function M.is_client_blacklisted(client)
       return false
     end
   end
-  return has_value(M.o.providers.lsp.blacklist_clients, client.name)
+  return M.o.providers.lsp.blacklist_clients[client.name] == true
 end
 
 ---Retrieve and cache import paths of all providers in order of given priority
@@ -334,6 +334,12 @@ function M.resolve_config()
   M.o.preview_window.width = M.get_preview_width()
   ----- WINDOW -----
   M.o.outline_window.width = M.get_window_width()
+  ----- LSP BLACKLIST -----
+  local map = {}
+  for _, client in ipairs(M.o.providers.lsp.blacklist_clients) do
+    map[client] = true
+  end
+  M.o.providers.lsp.blacklist_clients = map
 end
 
 ---Ensure l is either table, false, or nil. If not, print warning using given
