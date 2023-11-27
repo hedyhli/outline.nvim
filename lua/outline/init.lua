@@ -22,7 +22,12 @@ local function setup_global_autocmd()
   end
   vim.api.nvim_create_autocmd('WinEnter', {
     pattern = '*',
-    callback = require('outline.preview').close,
+    callback = function()
+      local s = M._get_sidebar()
+      if s and s.preview then
+        s.preview:close()
+      end
+    end,
   })
   vim.api.nvim_create_autocmd('TabClosed', {
     pattern = '*',
