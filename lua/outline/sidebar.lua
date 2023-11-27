@@ -1,5 +1,5 @@
-local View = require('outline.view')
 local Preview = require('outline.preview')
+local View = require('outline.view')
 local cfg = require('outline.config')
 local folding = require('outline.folding')
 local parser = require('outline.parser')
@@ -168,12 +168,16 @@ function Sidebar:setup_buffer_autocmd()
   if cfg.o.preview_window.auto_preview then
     vim.api.nvim_create_autocmd('CursorMoved', {
       buffer = 0,
-      callback = function() self.preview:show() end,
+      callback = function()
+        self.preview:show()
+      end,
     })
   else
     vim.api.nvim_create_autocmd('CursorMoved', {
       buffer = 0,
-      callback = function() self.preview:close() end,
+      callback = function()
+        self.preview:close()
+      end,
     })
   end
   if cfg.o.outline_window.auto_jump then
@@ -471,7 +475,12 @@ function Sidebar:_set_all_folded(folded, nodes)
 end
 
 function Sidebar:has_code_win()
-  return self.code.win and self.code.buf and self.code.win ~= 0 and self.code.buf ~= 0 and vim.api.nvim_win_is_valid(self.code.win) and vim.api.nvim_buf_is_valid(self.code.buf)
+  return self.code.win
+    and self.code.buf
+    and self.code.win ~= 0
+    and self.code.buf ~= 0
+    and vim.api.nvim_win_is_valid(self.code.win)
+    and vim.api.nvim_buf_is_valid(self.code.buf)
 end
 
 ---@see outline.follow_cursor

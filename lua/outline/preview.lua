@@ -147,9 +147,9 @@ end
 function Preview:close()
   -- TODO: Why was this in symbols-outline.nvim?
   -- if self.s:has_code_win() then
-    if self.win ~= nil and vim.api.nvim_win_is_valid(self.win) then
-      vim.api.nvim_win_close(self.win, true)
-    end
+  if self.win ~= nil and vim.api.nvim_win_is_valid(self.win) then
+    vim.api.nvim_win_close(self.win, true)
+  end
   -- end
 end
 

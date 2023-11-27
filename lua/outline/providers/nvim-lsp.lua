@@ -118,7 +118,8 @@ function M.rename_symbol(sidebar)
     bufnr = sidebar.code.buf,
     newName = new_name,
   }
-  local status, err = client.request_sync('textDocument/rename', params, request_timeout, sidebar.code.buf)
+  local status, err =
+    client.request_sync('textDocument/rename', params, request_timeout, sidebar.code.buf)
   if status == nil or status.err or err or status.result == nil then
     return false
   end
