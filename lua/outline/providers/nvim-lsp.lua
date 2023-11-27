@@ -1,12 +1,16 @@
-local config = require('outline.config')
+local cfg = require('outline.config')
 local jsx = require('outline.providers.jsx')
 local lsp_utils = require('outline.utils.lsp')
 
+local l = vim.lsp
+
 local M = {
   name = 'lsp',
-  ---@type vim.lsp.client
+  ---@type lsp.client
   client = nil,
 }
+
+local request_timeout = 2000
 
 function M.get_status()
   if not M.client then
@@ -16,11 +20,11 @@ function M.get_status()
 end
 
 local function get_appropriate_client(bufnr, capability)
-  local clients = vim.lsp.get_active_clients({ bufnr = bufnr })
+  local clients = l.get_active_clients({ bufnr = bufnr })
   local use_client
 
   for _, client in ipairs(clients) do
-    if config.is_client_blacklisted(client) then
+    if cfg.is_client_blacklisted(client) then
       goto continue
     else
       if client.server_capabilities[capability] then
@@ -61,9 +65,9 @@ end
 ---@param opts table
 function M.request_symbols(on_symbols, opts)
   local params = {
-    textDocument = vim.lsp.util.make_text_document_params(),
+    textDocument = l.util.make_text_document_params(),
   }
-  vim.lsp.buf_request_all(0, 'textDocument/documentSymbol', params, function(response)
+  l.buf_request_all(0, 'textDocument/documentSymbol', params, function(response)
     response = postprocess_symbols(response)
     on_symbols(response, opts)
   end)
@@ -86,7 +90,7 @@ function M.code_actions(sidebar)
   -- we still keep it because many people are moving here from
   -- symbols-outline.nvim, which happened to implement this feature.
   sidebar:wrap_goto_location(function()
-    vim.lsp.buf.code_action()
+    l.buf.code_action()
   end)
   return true
 end
@@ -114,32 +118,51 @@ function M.rename_symbol(sidebar)
     bufnr = sidebar.code.buf,
     newName = new_name,
   }
-  local timeout = 2000
-  local status, err = client.request_sync('textDocument/rename', params, timeout, sidebar.code.buf)
+  local status, err = client.request_sync('textDocument/rename', params, request_timeout, sidebar.code.buf)
   if status == nil or status.err or err or status.result == nil then
     return false
   end
 
-  vim.lsp.util.apply_workspace_edit(status.result, client.offset_encoding)
+  l.util.apply_workspace_edit(status.result, client.offset_encoding)
   node.name = new_name
   sidebar:_update_lines(false)
   return true
 end
 
-function M.hover_info(bufnr, params, on_info)
-  local use_client = get_appropriate_client(bufnr, 'hoverProvider')
-
-  if not use_client then
-    on_info(nil, {
-      contents = {
-        kind = 'markdown',
-        content = { 'No extra information availaible' },
-      },
-    })
-    return
+---Synchronously request and show hover info from LSP
+---@param sidebar outline.Sidebar
+---@return boolean success
+function M.show_hover(sidebar)
+  local client = get_appropriate_client(sidebar.code.buf, 'hoverProvider')
+  if not client then
+    return false
   end
 
-  use_client.request('textDocument/hover', params, on_info, bufnr)
+  local node = sidebar:_current_node()
+  local params = {
+    textDocument = { uri = vim.uri_from_bufnr(sidebar.code.buf) },
+    position = { line = node.line, character = node.character },
+    bufnr = sidebar.code.buf,
+  }
+
+  local status, err = client.request_sync('textDocument/hover', params, request_timeout)
+  if status == nil or status.err or err or not status.result or not status.result.contents then
+    return false
+  end
+
+  local md_lines = l.util.convert_input_to_markdown_lines(status.result.contents)
+  md_lines = l.util.trim_empty_lines(md_lines)
+  if vim.tbl_isempty(md_lines) then
+    -- Request was successful, but there is no hover content
+    return true
+  end
+  local code_width = vim.api.nvim_win_get_width(sidebar.code.win)
+  local bufnr, winnr = l.util.open_floating_preview(md_lines, 'markdown', {
+    border = cfg.o.preview_window.border,
+    width = code_width,
+  })
+  vim.api.nvim_win_set_option(winnr, 'winhighlight', cfg.o.preview_window.winhl)
+  return true
 end
 
 return M

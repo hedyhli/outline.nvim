@@ -147,12 +147,14 @@ function Sidebar:setup_keymaps()
     fold_all = { '_set_all_folded', { true } },
     unfold_all = { '_set_all_folded', { false } },
     fold_reset = { '_set_all_folded', {} },
-    hover_symbol = { require('outline.hover').show_hover, {} },
     rename_symbol = {
       providers.action, { self, 'rename_symbol', { self } }
     },
     code_actions = {
       providers.action, { self, 'code_actions', { self } }
+    },
+    hover_symbol = {
+      providers.action, { self, 'show_hover', { self } }
     },
   }) do
     ---@diagnostic disable-next-line param-type-mismatch

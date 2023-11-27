@@ -66,7 +66,7 @@
 ---@field get_status? fun():string[]
 ---@field supports_buffer fun(bufnr:integer):boolean
 ---@field request_symbols fun(on_symbols:fun(symbols?:outline.ProviderSymbol[], opts:table?), opts:table?)
----@field hover_info? fun(bufnr:integer, params:table, on_info:function)
+---@field show_hover? fun(sidebar:outline.Sidebar):boolean
 ---@field rename_symbol? fun(sidebar:outline.Sidebar):boolean
 ---@field code_actions? fun(sidebar:outline.Sidebar):boolean
 

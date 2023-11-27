@@ -20,15 +20,6 @@ function M.supports_buffer(bufnr)
   return vim.api.nvim_buf_get_option(bufnr, 'ft') == 'markdown'
 end
 
-function M.hover_info(_, _, on_info)
-  on_info(nil, {
-    contents = {
-      kind = 'markdown',
-      contents = { 'No extra information availaible!' },
-    },
-  })
-end
-
 -- Parses markdown files and returns a table of SymbolInformation[] which is
 -- used by the plugin to show the outline.
 ---@return outline.ProviderSymbol[]

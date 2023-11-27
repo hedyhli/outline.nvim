@@ -16,15 +16,6 @@ function M.supports_buffer(_)
   return coc_attached and has_symbols
 end
 
-function M.hover_info(_, _, on_info)
-  on_info(nil, {
-    contents = {
-      kind = 'markdown',
-      contents = { 'No extra information availaible!' },
-    },
-  })
-end
-
 ---@param result table
 local function convert_symbols(result)
   local s = {}
