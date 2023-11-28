@@ -1,7 +1,8 @@
-local cfg = require('outline.config')
-local providers = require('outline.providers')
-
-local conf
+-- A floating window to preview the location of a symbol from the outline.
+-- Classical preview reads entire lines into a new buffer for preview. Live
+-- preview sets the buffer of floating window to the code buffer, which allows
+-- focusing by pressing the preview keymap again, to edit the buffer at that
+-- position.
 
 ---@class outline.Preview
 local Preview = {}
@@ -9,77 +10,53 @@ local Preview = {}
 ---@class outline.Preview
 ---@field buf integer
 ---@field win integer
----@field width integer
 ---@field height integer
+---@field width integer
 ---@field outline_height integer
 ---@field s outline.Sidebar
+---@field conf table
 
----@param s outline.Sidebar
-function Preview:new(s)
-  -- Config must have been setup when calling Preview:new
-  conf = cfg.o.preview_window
-  return setmetatable({
-    buf = nil,
-    win = nil,
-    s = s,
-    width = nil,
-    height = nil,
-  }, { __index = Preview })
-end
+---@class outline.LivePreview
+local LivePreview = {}
 
----Creates new preview window and sets the content. Calls setup and set_lines.
-function Preview:create()
-  self.buf = vim.api.nvim_create_buf(false, true)
-  vim.api.nvim_buf_attach(self.buf, false, {
-    on_detach = function()
-      self.buf = nil
-      self.win = nil
-    end,
-  })
-  -- FIXME: Re-calculate dimensions on update-preview, in case outline window
-  -- was resized between last preview and next preview?
-  self.outline_height = vim.api.nvim_win_get_height(self.s.view.win)
-  self.width = conf.width
-  self.height = math.max(math.ceil(self.outline_height / 2), conf.min_height)
-  self.win = vim.api.nvim_open_win(self.buf, false, {
-    relative = 'editor',
-    height = self.height,
-    width = self.width,
-    bufpos = { 0, 0 },
-    col = self:calc_col(),
-    row = self:calc_row(),
-    border = conf.border,
-  })
-  self:setup()
-  self:set_lines()
-end
+---@class outline.LivePreview
+---@field win integer
+---@field codewin integer
+---@field codebuf integer
+---@field height integer
+---@field width integer
+---@field outline_height integer
+---@field s outline.Sidebar
+---@field last_node outline.FlatSymbol
+---@field initial_cursorline boolean
+---@field conf table
 
----Set up highlights, window, and buffer options
-function Preview:setup()
-  vim.api.nvim_win_set_option(self.win, 'winhl', conf.winhl)
-  vim.api.nvim_win_set_option(self.win, 'winblend', conf.winblend)
-
-  local code_buf = self.s.code.buf
-  local ft = vim.api.nvim_buf_get_option(code_buf, 'filetype')
-  vim.api.nvim_buf_set_option(self.buf, 'syntax', ft)
-
-  local ts_highlight_fn = vim.treesitter.start
-  if not _G._outline_nvim_has[8] then
-    local ok, ts_highlight = pcall(require, 'nvim-treesitter.highlight')
-    if ok then
-      ts_highlight_fn = ts_highlight.attach
-    end
+---@param conf table
+function Preview:new(conf)
+  if conf.live == true then
+    return setmetatable({
+      conf = conf,
+      win = nil,
+      width = nil,
+      height = nil,
+    }, { __index = LivePreview })
+  else
+    return setmetatable({
+      conf = conf,
+      buf = nil,
+      win = nil,
+      width = nil,
+      height = nil,
+    }, { __index = Preview })
   end
-  pcall(ts_highlight_fn, self.buf, ft)
-
-  vim.api.nvim_buf_set_option(self.buf, 'bufhidden', 'delete')
-  vim.api.nvim_win_set_option(self.win, 'cursorline', true)
-  vim.api.nvim_buf_set_option(self.buf, 'modifiable', false)
 end
 
 ---Get the correct column to place the floating window based on relative
 ---positions of the outline and the code window.
-function Preview:calc_col()
+---@param self outline.Preview|outline.LivePreview
+local function calc_col(self)
+  -- TODO: Re-calculate dimensions on update-preview, in case outline window
+  -- was resized between last preview and next preview?
   ---@type integer
   local outline_winnr = self.s.view.win
   local outline_col = vim.api.nvim_win_get_position(outline_winnr)[2]
@@ -99,20 +76,63 @@ function Preview:calc_col()
 end
 
 ---Get the vertically center-aligned row for preview window
-function Preview:calc_row()
+---@param self outline.Preview|outline.LivePreview
+local function calc_row(self)
   local offset = math.floor((self.outline_height - self.height) / 2) - 1
   return vim.api.nvim_win_get_position(self.s.view.win)[1] + offset
 end
 
----Set and update preview buffer content
-function Preview:set_lines()
-  -- TODO: Editable, savable buffer in the preview like VS Code for quick
-  -- edits? It can be like LSP. Trigger preview to open, trigger again to focus
-  -- (so buffer can be edited).
-  -- This can be achieved by simply opening the buffer from inside the preview
-  -- window.
-  -- This also removes the need of manually setting highlights, treesitter etc.
-  -- The preview window will look exactly the same as in the code window.
+function Preview:create()
+  self.buf = vim.api.nvim_create_buf(false, true)
+  vim.api.nvim_buf_attach(self.buf, false, {
+    on_detach = function()
+      self.buf = nil
+      self.win = nil
+    end,
+  })
+  self.outline_height = vim.api.nvim_win_get_height(self.s.view.win)
+  self.width = self.conf.width
+  self.height = math.max(math.ceil(self.outline_height / 2), self.conf.min_height)
+  self.win = vim.api.nvim_open_win(self.buf, false, {
+    relative = 'editor',
+    height = self.height,
+    width = self.width,
+    bufpos = { 0, 0 },
+    col = calc_col(self),
+    row = calc_row(self),
+    border = self.conf.border,
+    focusable = false,
+  })
+  self:setup()
+  self:update()
+end
+
+
+---Set buf & win options, and setup highlight
+function Preview:setup()
+  vim.api.nvim_win_set_option(self.win, 'winhl', self.conf.winhl)
+  vim.api.nvim_win_set_option(self.win, 'winblend', self.conf.winblend)
+
+  local code_buf = self.s.code.buf
+  local ft = vim.api.nvim_buf_get_option(code_buf, 'filetype')
+  vim.api.nvim_buf_set_option(self.buf, 'syntax', ft)
+
+  local ts_highlight_fn = vim.treesitter.start
+  if not _G._outline_nvim_has[8] then
+    local ok, ts_highlight = pcall(require, 'nvim-treesitter.highlight')
+    if ok then
+      ts_highlight_fn = ts_highlight.attach
+    end
+  end
+  pcall(ts_highlight_fn, self.buf, ft)
+
+  vim.api.nvim_buf_set_option(self.buf, 'bufhidden', 'delete')
+  vim.api.nvim_buf_set_option(self.buf, 'modifiable', false)
+  vim.api.nvim_win_set_option(self.win, 'cursorline', true)
+end
+
+
+function Preview:update()
   local node = self.s:_current_node()
   if not node then
     return
@@ -133,24 +153,17 @@ function Preview:show()
     return
   end
 
-  if self.buf and self.win then
-    self:set_lines()
-  else
+  if not self.buf or not self.win then
     self:create()
-  end
-
-  if conf.open_hover_on_preview then
-    providers.action(self.s, 'show_hover', { self.s })
+  else
+    self:update()
   end
 end
 
 function Preview:close()
-  -- TODO: Why was this in symbols-outline.nvim?
-  -- if self.s:has_code_win() then
   if self.win ~= nil and vim.api.nvim_win_is_valid(self.win) then
     vim.api.nvim_win_close(self.win, true)
   end
-  -- end
 end
 
 function Preview:toggle()
@@ -159,6 +172,104 @@ function Preview:toggle()
   else
     self:show()
   end
+end
+
+---Creates new preview window and sets the content. Calls setup and set_lines.
+function LivePreview:create()
+  self.codewin = self.s.code.win
+  self.initial_cursorline = vim.api.nvim_win_get_option(self.s.code.win, 'cursorline')
+  self.outline_height = vim.api.nvim_win_get_height(self.s.view.win)
+  self.width = self.conf.width
+  self.height = math.max(math.ceil(self.outline_height / 2), self.conf.min_height)
+  self.win = vim.api.nvim_open_win(self.s.code.buf, false, {
+    relative = 'editor',
+    height = self.height,
+    width = self.width,
+    bufpos = { 0, 0 },
+    col = calc_col(self),
+    row = calc_row(self),
+    border = self.conf.border,
+    -- Setting this to disallow using other methods to focus on this window,
+    -- because currently the autocmds from setup() isn't triggering if user did
+    -- not use close() and focus().
+    focusable = false,
+  })
+  self:setup()
+end
+
+---Set buf & win options, and autocmds
+function LivePreview:setup()
+  vim.api.nvim_win_set_option(self.win, 'winhl', self.conf.winhl)
+  vim.api.nvim_win_set_option(self.win, 'winblend', self.conf.winblend)
+  vim.api.nvim_win_set_option(self.win, 'cursorline', true)
+
+  vim.api.nvim_create_autocmd('WinClosed', {
+    pattern = tostring(self.win),
+    once = true,
+    callback = function()
+      self.s.code.win = self.codewin
+      self.win = nil
+    end
+  })
+  vim.api.nvim_create_autocmd('WinEnter', {
+    pattern = tostring(self.win),
+    once = true,
+    callback = function()
+      -- This doesn't work at all?
+      vim.api.nvim_win_set_option(self.win, 'cursorline', self.initial_cursorline)
+    end
+  })
+end
+
+function LivePreview:update(node)
+  vim.api.nvim_win_set_buf(self.win, self.s.code.buf)
+  vim.api.nvim_win_set_cursor(self.win, { node.line + 1, node.character })
+end
+
+function LivePreview:focus()
+  vim.api.nvim_set_current_win(self.win)
+  -- Remove this when the autocmd for WinEnter works above
+  vim.api.nvim_win_set_option(self.win, 'cursorline', self.initial_cursorline)
+end
+
+---Create, focus, or update preview
+function LivePreview:show()
+  if not self.s:has_focus() or #vim.api.nvim_list_wins() < 2 then
+    return
+  end
+
+  local node = self.s:_current_node()
+  if not node then
+    return
+  end
+
+  if not self.win then
+    self:create()
+    vim.api.nvim_win_set_cursor(self.win, { node.line + 1, node.character })
+    self.last_node = node
+    return
+  end
+
+  if node == self.last_node then
+    self:focus()
+  else
+    self:update(node)
+  end
+
+  self.last_node = node
+end
+
+function LivePreview:close()
+  if self.win ~= nil then
+    vim.api.nvim_win_close(self.win, true)
+    -- autocmd from setup is not triggered here?
+    self.win = nil
+    self.s.code.win = self.codewin
+  end
+end
+
+function LivePreview:toggle()
+  self:show()
 end
 
 return Preview

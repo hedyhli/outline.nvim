@@ -309,6 +309,9 @@ Pass a table to the setup call with your configuration options.
     winhl = 'NormalFloat:',
     -- Pseudo-transparency of the preview window, see ':h winblend'
     winblend = 0
+    -- Experimental feature that let's you edit the source content live
+    -- in the preview window. Like VS Code's "peek editor".
+    live = false
   },
 
   -- These keymaps can be a string or a table for multiple keys.
@@ -1035,6 +1038,27 @@ symbols = {
 ```
 
 <div align=center><img width="500" alt="outline with disabled icon for String" src="https://github.com/hedyhli/outline.nvim/assets/50042066/26d258c6-9530-43d4-b88b-963304e3bf2d"></div>
+
+### Live, editable previews
+
+Press `K` to open the preview, press `K` again to focus on the preview window
+to make any quick edits, similar to VS Code's reference window "peek editor".
+
+Then use `:q` to close the window, and continue browsing the outline.
+
+```lua
+preview_window = {
+  live = true,
+}
+```
+
+Note that this feature is experimental and may be unstable.
+
+https://github.com/hedyhli/outline.nvim/assets/50042066/183fc5f9-b369-41e2-a831-a4185704d76d
+
+Auto-preview with the feature is also supported, set `auto_preview = true` and
+press `K` to focus on the auto-opened preview window. `:q` to quit the window.
+
 
 <!-- panvimdoc-ignore-start -->
 

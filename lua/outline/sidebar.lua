@@ -26,13 +26,13 @@ local Sidebar = {}
 ---@field code outline.SidebarCodeState
 ---@field augroup integer
 ---@field provider outline.Provider?
----@field preview outline.Preview
+---@field preview outline.Preview|outline.LivePreview
 
 function Sidebar:new(id)
   return setmetatable({
     id = id,
     view = View:new(),
-    preview = Preview:new(),
+    preview = Preview:new(cfg.o.preview_window),
     code = { buf = 0, win = 0 },
     items = {},
     flats = {},
@@ -138,7 +138,6 @@ function Sidebar:setup_keymaps()
     goto_and_close = { '_goto_and_close', {} },
     down_and_jump = { '_move_and_jump', { 'down' } },
     up_and_jump = { '_move_and_jump', { 'up' } },
-    toggle_preview = { function() self.preview:toggle() end, {} },
     fold_toggle = { '_toggle_fold', {} },
     fold = { '_set_folded', { true } },
     unfold = { '_set_folded', { false } },
@@ -159,6 +158,14 @@ function Sidebar:setup_keymaps()
     ---@diagnostic disable-next-line param-type-mismatch
     self:nmap(name, meth[1], meth[2])
   end
+
+  local toggle_preview
+  if cfg.o.preview_window.auto_preview and cfg.o.preview_window.live then
+    toggle_preview = { function() self.preview:focus() end, {} }
+  else
+    toggle_preview = { function() self.preview:toggle() end, {} }
+  end
+  self:nmap('toggle_preview', toggle_preview[1], toggle_preview[2])
 end
 -- stylua: ignore end
 
@@ -240,7 +247,6 @@ function Sidebar:update_cursor_style()
 
   -- Set cursor color to CursorLine in normal mode
   if hide_cursor then
-    self.original_cursor = vim.o.guicursor
     local cur = vim.o.guicursor:match('n.-:(.-)[-,]')
     vim.opt.guicursor:append('n:' .. cur .. '-Cursorline')
   end

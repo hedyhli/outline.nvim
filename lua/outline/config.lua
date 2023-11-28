@@ -48,6 +48,7 @@ M.defaults = {
     center_on_jump = true,
   },
   preview_window = {
+    live = false,
     auto_preview = false,
     width = 50,
     min_width = 50,

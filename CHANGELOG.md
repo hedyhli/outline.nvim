@@ -79,6 +79,10 @@
   ([#37](https://github.com/hedyhli/outline.nvim/issues/37))
 - Added `get_symbol` and `get_breadcrumb` functions (useful in
   statusline/winbar) ([#24](https://github.com/hedyhli/outline.nvim/issues/24))
+- New "Live Preview" feature which allows editing in the preview buffer. This
+  allows navigating some symbol away from cursor location and make quick edits in
+  the other position using the preview window. This feature is currently
+  experimental and opt-in. Enable with `preview_window.live = true`
 
 ### Fixes
 
@@ -116,6 +120,9 @@
 - Follow cursor algorithm significantly improved
 - Highlight hovered item and initial opening of outline has been rewritten and
   performance improved
+- Revamped various provider-related modules such as rename/code-actions/hover
+  to delegate the task to specific providers
+- Revamped the preview module for better per-tab outline support and more features
 
 ### Others
 

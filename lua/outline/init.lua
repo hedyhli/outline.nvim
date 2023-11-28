@@ -24,8 +24,12 @@ local function setup_global_autocmd()
     pattern = '*',
     callback = function()
       local s = M._get_sidebar()
+      local w = vim.api.nvim_get_current_win()
       if s and s.preview then
-        s.preview:close()
+        -- Don't close preview when entering preview!
+        if not s.preview.win or s.preview.win ~= w then
+          s.preview:close()
+        end
       end
     end,
   })
