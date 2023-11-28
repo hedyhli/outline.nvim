@@ -17,36 +17,35 @@ local Sidebar = {}
 ---@field buf integer
 
 ---@class outline.Sidebar
+---@field id integer
 ---@field view outline.View
 ---@field items outline.Symbol[]
 ---@field flats outline.FlatSymbol[]
 ---@field hovered outline.FlatSymbol[]
 ---@field original_cursor string
 ---@field code outline.SidebarCodeState
----@field autocmds { [integer]: integer } winnr to autocmd id
+---@field augroup integer
 ---@field provider outline.Provider?
 ---@field preview outline.Preview
 
-function Sidebar:new()
+function Sidebar:new(id)
   return setmetatable({
+    id = id,
     view = View:new(),
     preview = Preview:new(),
     code = { buf = 0, win = 0 },
     items = {},
     flats = {},
     hovered = {},
-    autocmds = {},
     original_cursor = vim.o.guicursor,
   }, { __index = Sidebar })
 end
 
 function Sidebar:delete_autocmds()
-  for codewin, au in pairs(self.autocmds) do
-    if vim.api.nvim_win_is_valid(codewin) then
-      vim.api.nvim_del_autocmd(au)
-    end
+  if self.augroup then
+    vim.api.nvim_del_augroup_by_id(self.augroup)
   end
-  self.autocmds = {}
+  self.augroup = nil
 end
 
 function Sidebar:reset_state()
@@ -214,13 +213,10 @@ function Sidebar:setup_attached_buffer_autocmd()
   local events = cfg.o.outline_items.auto_update_events
 
   if cfg.o.outline_items.highlight_hovered_item or cfg.o.symbol_folding.auto_unfold_hover then
-    if self.autocmds[code_win] then
-      vim.api.nvim_del_autocmd(self.autocmds[code_win])
-      self.autocmds[code_win] = nil
-    end
-
     if utils.str_or_nonempty_table(events.follow) then
-      self.autocmds[code_win] = vim.api.nvim_create_autocmd(events.follow, {
+      self.augroup = vim.api.nvim_create_augroup("outline_"..self.id, { clear = true })
+      vim.api.nvim_create_autocmd(events.follow, {
+        group = self.augroup,
         buffer = code_buf,
         callback = function()
           self:_highlight_current_item(code_win, cfg.o.outline_items.auto_set_cursor)
@@ -296,13 +292,6 @@ function Sidebar:refresh_handler(response)
   local curwin = vim.api.nvim_get_current_win()
   local curbuf = vim.api.nvim_get_current_buf()
   local newbuf = curbuf ~= self.code.buf
-
-  if self.code.win ~= curwin then
-    if self.autocmds[self.code.win] then
-      vim.api.nvim_del_autocmd(self.autocmds[self.code.win])
-      self.autocmds[self.code.win] = nil
-    end
-  end
 
   self.code.win = curwin
   self.code.buf = curbuf

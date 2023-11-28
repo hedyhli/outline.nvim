@@ -131,7 +131,7 @@ function M.open_outline(opts)
   local sidebar = M.sidebars[tab]
 
   if not sidebar then
-    sidebar = Sidebar:new()
+    sidebar = Sidebar:new(tab)
     M.sidebars[tab] = sidebar
   end
 
