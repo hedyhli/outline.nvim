@@ -45,6 +45,8 @@ https://github.com/hedyhli/outline.nvim/assets/50042066/88fbb3cf-27c1-4115-8a08-
 - Preview symbol location without visiting it
 - Neovim command modifiers on where to open outline (see `:h mods`)
 
+> **Still not sure whether to use this?** Read about [related
+plugins](#related-plugins).
 
 <!-- panvimdoc-ignore-end -->
 
@@ -1109,20 +1111,96 @@ instead, there would be highlighting issues (say the calculated starting line
 was within a markdown code block, so what was previously not supposed to be
 code is now highlighted as code).
 
+If this poses a problem for you, you should try out the
+[live-preview](#live-editable-previews) feature, uses the code buffer directly
+for displaying the preview.
+
 ### Many outlines
 
 Outline.nvim does not support multiple outline windows in the same tabpage as
 of now However, this feature is
 [planned](https://github.com/hedyhli/outline.nvim/issues/26), and you can use a
-single outline that auto-updates on buffer switches. Per-tabpage outline is
-supported.
+single outline that auto-updates on buffer switches.
+
+That said, per-tabpage outline is supported.
 
 ## Related plugins
 
-- Aerial.nvim
-- nvim-navic
-- nvim-navbuddy
-- dropdown.nvim
-- treesitter (inspect/edit)
-- lspsaga
-- navigator.lua
+- [**Aerial.nvim**](https://github.com/stevearc/aerial.nvim)
+
+  The most obvious plugin alternative to Outline.nvim would be Aerial. It
+  provides an outline window with a lot of features that outline.nvim does not
+  have (but might add in the future). That said, outline.nvim also has features
+  that Aerial does not support. I do not find it productive to be listing out
+  the exact details of which, as a table here, since both plugins are in active
+  development and the table would get out of date quickly; Instead, I have
+  listed a few example use-cases where you may want to use Aerial, and others
+  Outline.nvim.
+
+  Aerial does a great job at supercharging vim's built-in outline (`gO`). It
+  supports treesitter and vimdoc which Outline.nvim does not provide by default.
+  (Note that Aerial also supports Norg through treesitter like Outline.nvim, but
+  as of writing it does not support JSX like Outline.nvim does.)
+
+  - If you wish to prioritize treesitter as the provider ("backend" in Aerial's
+    terms) for your symbols, you should use Aerial. This lets your have symbols
+    for languages that you might not want to set up an LSP for, which is quite
+    useful. Treesitter support is a planned feature in Outline.nvim but might
+    not arrive very soon.
+  - Aerial.nvim supports only Neovim 0.8 and above for the bleeding-edge
+    features, as far as I know. You should use Outline.nvim (or the
+    alternatives below) if you use Neovim 0.7 and wish to have equal support.
+  - At the moment, integrations such as Telescope and statuslines in Outline.nvim
+    has not been very well implemented yet, though they are planned features. If you
+    wish to use this, you should use Aerial.
+  - Outline.nvim supports both inclusive and exclusive symbol filtering.
+
+  In addition to these, Aerial also supports a `AerialNav` window which gives
+  you a miller column view of symbol hierarchy similar to
+  [nvim-navbuddy](https://github.com/SmiteshP/nvim-navbuddy). This feature
+  might never be supported in Outline.nvim because I personally feel that it is
+  out of scope of a "outline window" plugin, and to keep the codebase simple.
+  If you don't want to install a second plugin for this feature, you should use
+  Aerial.
+
+- [**nvim-navic**](https://github.com/SmiteshP/nvim-navic)
+
+  nvim-navic gives you fully customizable breadcrumb section for you
+  winbar/statusline. However, as far as I am aware it only supports LSP. To
+  have other providers built-in you can try Aerial, or
+  [dropbar.nvim](https://github.com/Bekaboo/dropbar.nvim).
+
+- [**nvim-navbuddy**](https://github.com/SmiteshP/nvim-navbuddy)
+
+  Miller columns popup for LSP navigation. Again as far as I know only LSP is
+  supported.
+
+- [**dropbar.nvim**](https://github.com/Bekaboo/dropbar.nvim)
+
+  Clickable breadcrumbs section with support for many sources in addition to
+  LSP. However, it requires Neovim nightly as of writing.
+
+- [**lspsaga**](https://github.com/nvimdev/lspsaga.nvim)
+
+  I've heard that this plugin gives you many features previously described all
+  in one plugin. However I have not used this myself so I cannot comment on it
+  more, other than it might only support LSP.
+
+- [**glance.nvim**](https://github.com/DNLHC/glance.nvim)
+
+  Extremely interesting plugin that gives you a floating window for navigation
+  and quick-edits of locations provided by LSP. However it solves a different
+  problem to Outline.nvim: navigating references and definitions.
+
+- [**navigator.lua**](https://github.com/ray-x/navigator.lua)
+
+  Unfortunately I have not used this myself, but it looks pretty good. It might
+  only support LSP.
+
+- **Treesitter (inspect/edit)**
+
+  The built-in treesitter module has a `:InspectTree` feature that can follow
+  your cursor around and let you jump to locations by navigating the tree.
+  Compared to Outline.nvim it may not be as customizable, but it uses
+  treesitter and can highlight entire ranges of symbols.
+
