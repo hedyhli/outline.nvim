@@ -349,6 +349,7 @@ end
 
 function Sidebar:no_providers_ui()
   self.view:rewrite_lines({ 'No supported provider...' })
+  vim.api.nvim_win_set_cursor(self.view.win, { 1, 0 })
 end
 
 ---Currently hovered node in outline
