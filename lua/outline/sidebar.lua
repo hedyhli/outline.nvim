@@ -67,18 +67,8 @@ function Sidebar:destroy()
   self.provider = nil
 end
 
----Handler for provider request_symbols when outline is opened for the first time.
----@param response outline.ProviderSymbol[]?
----@param opts outline.OutlineOpts?
-function Sidebar:initial_handler(response, opts)
-  if response == nil or type(response) ~= 'table' or self.view:is_open() then
-    return
-  end
-
-  if not opts then
-    opts = {}
-  end
-
+---@param opts table
+function Sidebar:initial_setup(opts)
   self.code.win = vim.api.nvim_get_current_win()
   self.code.buf = vim.api.nvim_get_current_buf()
 
@@ -95,15 +85,26 @@ function Sidebar:initial_handler(response, opts)
   self:setup_keymaps()
   self:setup_buffer_autocmd()
   self:setup_attached_buffer_autocmd()
+end
+
+---Handler for provider request_symbols when outline is opened for the first time.
+---@param response outline.ProviderSymbol[]?
+---@param opts outline.OutlineOpts?
+function Sidebar:initial_handler(response, opts)
+  if response == nil or type(response) ~= 'table' or self.view:is_open() then
+    return
+  end
+
+  if not opts then
+    opts = {}
+  end
+
+  self:initial_setup(opts)
 
   local items = parser.parse(response, self.code.buf)
   self.items = items
 
   self:_update_lines(true)
-
-  if not cfg.o.outline_window.focus_on_open or not opts.focus_outline then
-    vim.fn.win_gotoid(self.code.win)
-  end
 end
 
 -- stylua: ignore start
@@ -288,13 +289,8 @@ function Sidebar:_update_lines(update_cursor, set_cursor_to_node)
   end
 end
 
----Handler for provider request_symbols for refreshing outline
----@param response outline.ProviderSymbol[]
-function Sidebar:refresh_handler(response)
-  if response == nil or type(response) ~= 'table' then
-    return
-  end
-
+---@return boolean new_buf
+function Sidebar:refresh_setup()
   local curwin = vim.api.nvim_get_current_win()
   local curbuf = vim.api.nvim_get_current_buf()
   local newbuf = curbuf ~= self.code.buf
@@ -303,6 +299,17 @@ function Sidebar:refresh_handler(response)
   self.code.buf = curbuf
 
   self:setup_attached_buffer_autocmd()
+  return newbuf
+end
+
+---Handler for provider request_symbols for refreshing outline
+---@param response outline.ProviderSymbol[]
+function Sidebar:refresh_handler(response)
+  if response == nil or type(response) ~= 'table' then
+    return
+  end
+
+  local newbuf = self:refresh_setup()
 
   local items = parser.parse(response, vim.api.nvim_get_current_buf())
   self:_merge_items(items)
@@ -323,12 +330,15 @@ function Sidebar:__refresh()
     return
   end
   self.provider = providers.find_provider()
-  if not self.provider then
+  if self.provider then
+    self.provider.request_symbols(function(res)
+      self:refresh_handler(res)
+    end)
     return
   end
-  self.provider.request_symbols(function(res)
-    self:refresh_handler(res)
-  end)
+  -- No provider
+  self:refresh_setup()
+  self:no_providers_ui()
 end
 
 -- stylua: ignore start
@@ -336,6 +346,10 @@ function Sidebar:_refresh()
   (utils.debounce(function() self:__refresh() end, 100))()
 end
 -- stylua: ignore end
+
+function Sidebar:no_providers_ui()
+  self.view:rewrite_lines({ 'No supported provider...' })
+end
 
 ---Currently hovered node in outline
 ---@return outline.FlatSymbol
@@ -531,13 +545,18 @@ function Sidebar:open(opts)
   if not self.view:is_open() then
     self.preview.s = self
     self.provider = providers.find_provider()
-    if not self.provider then
-      utils.echo('No providers found for current buffer')
-      return
+    if self.provider then
+      self.provider.request_symbols(function(...)
+        self:initial_handler(...)
+      end, opts)
+    else
+      -- No provider
+      self:initial_setup(opts)
+      self:no_providers_ui()
     end
-    self.provider.request_symbols(function(...)
-      self:initial_handler(...)
-    end, opts)
+    if not cfg.o.outline_window.focus_on_open or not opts.focus_outline then
+      vim.fn.win_gotoid(self.code.win)
+    end
   end
 end
 
