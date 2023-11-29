@@ -60,7 +60,7 @@ M.defaults = {
     winblend = 0,
   },
   symbol_folding = {
-    autofold_depth = nil,
+    autofold_depth = 1,
     auto_unfold = {
       hovered = true,
       ---@type boolean|integer

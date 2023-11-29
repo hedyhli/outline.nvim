@@ -274,8 +274,8 @@ Pass a table to the setup call with your configuration options.
   },
 
   symbol_folding = {
-    -- Depth past which nodes will be folded by default
-    autofold_depth = nil,
+    -- Depth past which nodes will be folded by default. Set to false to unfold all on open.
+    autofold_depth = 1,
     -- When to auto unfold nodes
     auto_unfold = {
       -- Auto unfold currently hovered symbol
@@ -884,6 +884,8 @@ unless specified otherwise.
 
 ### Unfold others
 
+(Now a default behaviour, different to symbols-outline.nvim.)
+
 Unfold all others except currently hovered item.
 
 ```lua
@@ -895,6 +897,14 @@ symbol_folding = {
 },
 ```
 <div align=center><img width="900" alt="outline window showing auto fold depth" src="https://github.com/hedyhli/outline.nvim/assets/50042066/2e0c5f91-a979-4e64-a100-256ad062dce3"></div>
+
+### Unfold entire symbol tree by default
+
+```lua
+symbol_folding = {
+  autofold_depth = false,
+},
+```
 
 ### Auto-unfold when there's only two (or any number of) root nodes
 

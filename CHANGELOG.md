@@ -86,6 +86,11 @@
 - New outline window can be opened when no providers are found. A message is
   displayed in the outline buffer. Same goes for refreshing outline during buffer
   switches.
+- Config option `autofold_depth = 1` is now the default. To restore previous
+  behaviour set it to `false` (`nil` will NOT work). Reason being that it is
+  rarely beneficial to show neighboring symbol locations (sometimes even same
+  line!) when opening outline with the intention of getting an overall view of
+  the file and jumping elsewhere.
 
 ### Fixes
 
