@@ -83,6 +83,9 @@
   allows navigating some symbol away from cursor location and make quick edits in
   the other position using the preview window. This feature is currently
   experimental and opt-in. Enable with `preview_window.live = true`
+- New outline window can be opened when no providers are found. A message is
+  displayed in the outline buffer. Same goes for refreshing outline during buffer
+  switches.
 
 ### Fixes
 
