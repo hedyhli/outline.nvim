@@ -1204,7 +1204,7 @@ That said, per-tabpage outline is supported.
   Compared to Outline.nvim it may not be as customizable, but it uses
   treesitter and can highlight entire ranges of symbols.
 
----
+<hr>
 
 If you've read this much, maybe you should subscribe to the [breaking changes
 announcements](https://github.com/hedyhli/outline.nvim/issues/10) to get
