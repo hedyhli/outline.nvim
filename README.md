@@ -481,7 +481,7 @@ The current list of tested providers are:
 1. Norg (requires `norg` parser for treesitter)
 
 External providers:
-- [Asciidoc](https://github.com/msr1k/outline-asciidoc-provider.nvim)
+- [Asciidoc](https://github.com/msr1k/outline-asciidoc-provider.nvim) (no external requirements)
 
 
 ### External providers
@@ -511,7 +511,7 @@ External providers from plugins should define the provider module at
   `opts` table.
   - param `opts` can be passed to `callback` without processing
 
-  Each symbol table in the list of symbols should these fields:
+  Each symbol table in the list of symbols should have these fields:
   - name: string
   - kind: integer
   - selectionRange: table with fields `start` and `end`, each have fields
@@ -519,7 +519,7 @@ External providers from plugins should define the provider module at
   - range: table with fields `start` and `end`, each have fields `line` and
   `character`, each integers
   - children: list of table of symbols
-  - detail: (optional) string, shown as `outline_items.show_symbol_details`
+  - detail: (optional) string, shown for `outline_items.show_symbol_details`
 
 The built-in [markdown](./lua/outline/providers/markdown.lua) provider is a
 good example of a very simple outline-provider module which parses raw buffer
@@ -532,6 +532,14 @@ All providers should support at least nvim 0.7. You can make use of
 
 If a higher nvim version is required, it is recommended to check for this
 requirement in the `supports_buffer` function.
+
+Hover symbol, code action and rename functions are defined from providers. You
+can customize what these functions do if these functions are triggered when
+your provider is active. See the built-in
+[LSP](./lua/outline/providers/nvim-lsp.lua) provider for an example.
+
+Other functions such as goto-location may also be delegated to providers in the
+future.
 
 
 ## Commands
@@ -1148,12 +1156,13 @@ That said, per-tabpage outline is supported.
   Outline.nvim.
 
   Aerial does a great job at supercharging vim's built-in outline (`gO`). It
-  supports treesitter and vimdoc which Outline.nvim does not provide by default.
-  (Note that Aerial also supports Norg through treesitter like Outline.nvim, but
-  as of writing it does not support JSX like Outline.nvim does.)
+  supports treesitter and manpages which Outline.nvim does not provide [by
+  default](#external-providers). (Note that Aerial also supports Norg through
+  treesitter like Outline.nvim, but as of writing it does not support JSX like
+  Outline.nvim does.)
 
   - If you wish to prioritize treesitter as the provider ("backend" in Aerial's
-    terms) for your symbols, you should use Aerial. This lets your have symbols
+    terms) for your symbols, you should use Aerial. This lets you have symbols
     for languages that you might not want to set up an LSP for, which is quite
     useful. Treesitter support is a planned feature in Outline.nvim but might
     not arrive very soon.
