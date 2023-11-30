@@ -15,6 +15,7 @@ local Preview = {}
 ---@field outline_height integer
 ---@field s outline.Sidebar
 ---@field conf table
+---@field size_augroup integer
 
 ---@class outline.LivePreview
 local LivePreview = {}
@@ -30,6 +31,7 @@ local LivePreview = {}
 ---@field last_node outline.FlatSymbol
 ---@field initial_cursorline boolean
 ---@field conf table
+---@field size_augroup integer
 
 ---@param conf table
 function Preview:new(conf)
@@ -82,6 +84,30 @@ local function calc_row(self)
   return vim.api.nvim_win_get_position(self.s.view.win)[1] + offset
 end
 
+---@param self outline.Preview|outline.LivePreview
+local function update_size(self)
+  if self.size_augroup and (not self.win or not vim.api.nvim_win_is_valid(self.win)) then
+    vim.api.nvim_del_augroup_by_id(self.size_augroup)
+    self.win = nil
+    self.buf = nil
+    self.size_augroup = nil
+    return
+  end
+
+  self.outline_height = vim.api.nvim_win_get_height(self.s.view.win)
+  self.width = self.conf.width
+  self.height = math.max(math.ceil(self.outline_height / 2), self.conf.min_height)
+  local row = calc_row(self)
+  local col = calc_col(self)
+  vim.api.nvim_win_set_config(self.win, {
+    height = self.height,
+    width = self.width,
+    row = row,
+    col = col,
+    relative = 'editor',
+  })
+end
+
 function Preview:create()
   self.buf = vim.api.nvim_create_buf(false, true)
   vim.api.nvim_buf_attach(self.buf, false, {
@@ -105,8 +131,21 @@ function Preview:create()
   })
   self:setup()
   self:update()
-end
 
+  if self.conf.auto_preview then
+    self.size_augroup = vim.api.nvim_create_augroup('outline_' .. self.s.id .. '_preview_size', {
+      clear = true,
+    })
+    vim.api.nvim_create_autocmd('WinResized', {
+      -- XXX: Using view.win doesn't work here?
+      pattern = tostring(self.s.code.win),
+      group = self.size_augroup,
+      callback = function()
+        update_size(self)
+      end,
+    })
+  end
+end
 
 ---Set buf & win options, and setup highlight
 function Preview:setup()
@@ -130,7 +169,6 @@ function Preview:setup()
   vim.api.nvim_buf_set_option(self.buf, 'modifiable', false)
   vim.api.nvim_win_set_option(self.win, 'cursorline', true)
 end
-
 
 function Preview:update()
   local node = self.s:_current_node()
@@ -195,6 +233,19 @@ function LivePreview:create()
     focusable = false,
   })
   self:setup()
+  if self.conf.auto_preview then
+    self.size_augroup = vim.api.nvim_create_augroup('outline_' .. self.s.id .. '_preview_size', {
+      clear = true,
+    })
+    vim.api.nvim_create_autocmd('WinResized', {
+      -- XXX: Using view.win doesn't work here?
+      pattern = tostring(self.s.code.win),
+      group = self.size_augroup,
+      callback = function()
+        update_size(self)
+      end,
+    })
+  end
 end
 
 ---Set buf & win options, and autocmds
@@ -209,7 +260,7 @@ function LivePreview:setup()
     callback = function()
       self.s.code.win = self.codewin
       self.win = nil
-    end
+    end,
   })
   vim.api.nvim_create_autocmd('WinEnter', {
     pattern = tostring(self.win),
@@ -217,7 +268,7 @@ function LivePreview:setup()
     callback = function()
       -- This doesn't work at all?
       vim.api.nvim_win_set_option(self.win, 'cursorline', self.initial_cursorline)
-    end
+    end,
   })
 end
 

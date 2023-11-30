@@ -237,8 +237,8 @@ end
 ---Set hide_cursor depending on whether cursorline is 'focus_in_outline'
 function Sidebar:update_cursor_style()
   local cl = cfg.o.outline_window.show_cursorline
-  -- XXX: Still 'hide' cursor if show_cursorline set to false, because we've
-  -- already warned the user during setup.
+  -- Still 'hide' cursor if show_cursorline set to false, because we've already
+  -- warned the user during setup.
   local hide_cursor = type(cl) ~= 'string'
 
   if cl == 'focus_in_outline' or cl == 'focus_in_code' then
@@ -342,6 +342,7 @@ function Sidebar:__refresh()
 end
 
 -- stylua: ignore start
+-- TODO: Is this still needed?
 function Sidebar:_refresh()
   (utils.debounce(function() self:__refresh() end, 100))()
 end
@@ -731,7 +732,7 @@ function Sidebar:build_outline(find_node)
       node.line == hovered_line
       or (hovered_line >= node.range_start and hovered_line <= node.range_end)
     then
-      -- XXX: not setting for children, but it works because when unfold is called
+      -- Not setting for children, but it works because when unfold is called
       -- this function is called again anyway.
       node.hovered = true
       table.insert(self.hovered, node)

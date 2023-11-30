@@ -949,6 +949,12 @@ preview_window = {
 
 https://github.com/hedyhli/outline.nvim/assets/50042066/a473d791-d1b9-48e9-917f-b816b564a645
 
+Note that auto-resizing of the preview window is only enabled for auto-preview.
+Otherwise, close and reopen the preview after resizing the code window.
+
+https://github.com/hedyhli/outline.nvim/assets/50042066/b7f6d2b6-98b3-4557-8143-e49583e99d3b
+
+
 Alternatively, if you want to automatically navigate to the corresponding code
 location directly and not use the preview window:
 

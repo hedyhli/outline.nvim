@@ -227,9 +227,9 @@ function M.should_include_symbol(kind, bufnr)
     end
   end
 
-  -- XXX: If the given kind is not known by outline.nvim (ie: not in
-  -- all_kinds), still return true. Only exclude those symbols that were
-  -- explicitly filtered out.
+  -- If the given kind is not known by outline.nvim (ie: not in all_kinds),
+  -- still return true. Only exclude those symbols that were explicitly
+  -- filtered out.
   return filter_table[kind] ~= false
 end
 

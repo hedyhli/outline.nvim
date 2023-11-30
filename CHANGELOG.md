@@ -91,6 +91,8 @@
   rarely beneficial to show neighboring symbol locations (sometimes even same
   line!) when opening outline with the intention of getting an overall view of
   the file and jumping elsewhere.
+- If auto-preview is enabled the preview window will automatically resize and
+  reposition
 
 ### Fixes
 
