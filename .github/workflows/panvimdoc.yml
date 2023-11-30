@@ -1,6 +1,9 @@
 name: panvimdoc
 
-on: [push]
+on:
+  push:
+    paths:
+      - '**.md'
 
 jobs:
   docs:
@@ -15,7 +18,7 @@ jobs:
           version: "NVIM v0.7.0"
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: "Auto generate vim docs"
+          commit_message: "chore(vimdoc): Auto update"
           branch: ${{ github.head_ref }}
           # Don't commit if no changes are needed
           skip_dirty_check: false
