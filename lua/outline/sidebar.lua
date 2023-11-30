@@ -225,7 +225,7 @@ function Sidebar:setup_attached_buffer_autocmd()
 
   if cfg.o.outline_items.highlight_hovered_item or cfg.o.symbol_folding.auto_unfold_hover then
     if utils.str_or_nonempty_table(events.follow) then
-      self.augroup = vim.api.nvim_create_augroup("outline_"..self.id, { clear = true })
+      self.augroup = vim.api.nvim_create_augroup('outline_' .. self.id, { clear = true })
       vim.api.nvim_create_autocmd(events.follow, {
         group = self.augroup,
         buffer = code_buf,

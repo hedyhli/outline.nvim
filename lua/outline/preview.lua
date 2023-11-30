@@ -293,8 +293,10 @@ function LivePreview:show()
     return
   end
 
-  if not vim.api.nvim_win_is_valid(self.s.code.win)
-      or (self.codewin and not vim.api.nvim_win_is_valid(self.codewin)) then
+  if
+    not vim.api.nvim_win_is_valid(self.s.code.win)
+    or (self.codewin and not vim.api.nvim_win_is_valid(self.codewin))
+  then
     return
   end
 
