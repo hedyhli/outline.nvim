@@ -310,7 +310,10 @@ function LivePreview:show()
     return
   end
 
-  if node == self.last_node then
+  if node == self.last_node and not self.conf.auto_preview then
+    -- Focus is called manually through keybinding from sidebar.lua. This
+    -- should only be used on second toggle_preview call in the case of no
+    -- auto-preview.
     self:focus()
   else
     self:update(node)
