@@ -105,6 +105,9 @@ function Sidebar:initial_handler(response, opts)
   self.items = items
 
   self:_update_lines(true)
+  if not cfg.o.outline_window.focus_on_open or not opts.focus_outline then
+    vim.fn.win_gotoid(self.code.win)
+  end
 end
 
 -- stylua: ignore start
@@ -325,8 +328,15 @@ end
 
 ---Re-request symbols from provider
 function Sidebar:__refresh()
-  local focused_outline = self.view.buf == vim.api.nvim_get_current_buf()
+  local buf = vim.api.nvim_get_current_buf()
+  local focused_outline = self.view.buf == buf
   if focused_outline or not self.view:is_open() then
+    return
+  end
+  local ft = vim.api.nvim_buf_get_option(buf, 'ft')
+  local nolisted = vim.api.nvim_buf_get_option(buf, 'buflisted')
+  local hidden = vim.api.nvim_buf_get_option(buf, 'bufhidden')
+  if ft == 'OutlineHelp' or nolisted or hidden then
     return
   end
   self.provider = providers.find_provider()
@@ -551,6 +561,7 @@ function Sidebar:open(opts)
       self.provider.request_symbols(function(...)
         self:initial_handler(...)
       end, opts)
+      return
     else
       -- No provider
       self:initial_setup(opts)

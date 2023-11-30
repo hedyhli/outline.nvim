@@ -184,24 +184,8 @@ function M.get_split_command()
   end
 end
 
----Whether table == {}
----@param t table
-local function is_empty_table(t)
-  return t and next(t) == nil
-end
-
 local function table_has_content(t)
   return t and next(t) ~= nil
-end
-
-local function has_value(tab, val)
-  for _, value in ipairs(tab) do
-    if value == val then
-      return true
-    end
-  end
-
-  return false
 end
 
 ---Determine whether to include symbol in outline based on bufnr and its kind

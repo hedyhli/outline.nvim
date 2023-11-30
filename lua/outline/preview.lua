@@ -191,6 +191,10 @@ function Preview:show()
     return
   end
 
+  if not vim.api.nvim_win_is_valid(self.s.code.win) then
+    return
+  end
+
   if not self.buf or not self.win then
     self:create()
   else
@@ -286,6 +290,11 @@ end
 ---Create, focus, or update preview
 function LivePreview:show()
   if not self.s:has_focus() or #vim.api.nvim_list_wins() < 2 then
+    return
+  end
+
+  if not vim.api.nvim_win_is_valid(self.s.code.win)
+      or (self.codewin and not vim.api.nvim_win_is_valid(self.codewin)) then
     return
   end
 
