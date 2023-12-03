@@ -5,7 +5,7 @@
 This is a fork of the original **symbols-outline.nvim** which fixed a lot of
 bugs from the original repo, and also added many more features.
 
-You can see all the changes from the original plugin before v1.0.0 in [#12
+You can see all the changes from the original plugin before fork detach in [#12
 on github](https://github.com/hedyhli/outline.nvim/issues/12) and afterwards in
 the [changelog](./CHANGELOG.md).
 
