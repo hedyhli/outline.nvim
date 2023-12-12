@@ -334,9 +334,8 @@ function Sidebar:__refresh()
     return
   end
   local ft = vim.api.nvim_buf_get_option(buf, 'ft')
-  local nolisted = vim.api.nvim_buf_get_option(buf, 'buflisted')
-  local hidden = vim.api.nvim_buf_get_option(buf, 'bufhidden')
-  if ft == 'OutlineHelp' or nolisted or hidden then
+  local listed = vim.api.nvim_buf_get_option(buf, 'buflisted')
+  if ft == 'OutlineHelp' or not listed then
     return
   end
   self.provider = providers.find_provider()
