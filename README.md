@@ -5,7 +5,7 @@
 This is a fork of the original **symbols-outline.nvim** which fixed a lot of
 bugs from the original repo, and also added many more features.
 
-You can see all the changes from the original plugin before v1.0.0 in [#12
+You can see all the changes from the original plugin before fork detach in [#12
 on github](https://github.com/hedyhli/outline.nvim/issues/12) and afterwards in
 the [changelog](./CHANGELOG.md).
 
@@ -126,7 +126,7 @@ This allows Lazy.nvim to lazy-load the plugin on commands `Outline`,
 Call the setup function with your configuration options.
 
 Note that a call to `.setup()` is **required** for this plugin to work
-(otherwise you might see this error: simrat39/symbols-outline.nvim#213).
+(otherwise you might see this error: [simrat39/symbols-outline.nvim#213](simrat39/symbols-outline.nvim#213)).
 
 ```lua
 require("outline").setup({})
@@ -528,7 +528,7 @@ provider is an example which uses treesitter.
 
 All providers should support at least nvim 0.7. You can make use of
 `_G._outline_nvim_has` with fields `[8]` and `[9]` equivalent to
-`vim.fn.has('nvim-0.8) == 1` and  `vim.fn.has('nvim-0.9) == 1` respectively.
+`vim.fn.has('nvim-0.8') == 1` and  `vim.fn.has('nvim-0.9') == 1` respectively.
 
 If a higher nvim version is required, it is recommended to check for this
 requirement in the `supports_buffer` function.
