@@ -191,7 +191,7 @@ function Preview:show()
     return
   end
 
-  if not vim.api.nvim_win_is_valid(self.s.code.win) then
+  if not vim.api.nvim_win_is_valid(self.s.code.win) or not self.s.provider then
     return
   end
 
@@ -296,6 +296,7 @@ function LivePreview:show()
   if
     not vim.api.nvim_win_is_valid(self.s.code.win)
     or (self.codewin and not vim.api.nvim_win_is_valid(self.codewin))
+    or not self.s.provider
   then
     return
   end

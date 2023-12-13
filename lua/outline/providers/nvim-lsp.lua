@@ -105,6 +105,9 @@ function M.rename_symbol(sidebar)
   end
 
   local node = sidebar:_current_node()
+  if not node then
+    return false
+  end
 
   -- Using fn.input so it's synchronous
   local new_name = vim.fn.input({ prompt = 'New Name: ', default = node.name })
@@ -140,6 +143,9 @@ function M.show_hover(sidebar)
   end
 
   local node = sidebar:_current_node()
+  if not node then
+    return false
+  end
   local params = {
     textDocument = { uri = vim.uri_from_bufnr(sidebar.code.buf) },
     position = { line = node.line, character = node.character },

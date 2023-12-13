@@ -194,8 +194,10 @@ function Sidebar:setup_buffer_autocmd()
     vim.api.nvim_create_autocmd('CursorMoved', {
       buffer = 0,
       callback = function()
-        -- Don't use _goto_location because we don't want to auto-close
-        self:__goto_location(false)
+        if self.provider then
+          -- Don't use _goto_location because we don't want to auto-close
+          self:__goto_location(false)
+        end
       end,
     })
   end
@@ -363,15 +365,24 @@ function Sidebar:no_providers_ui()
 end
 
 ---Currently hovered node in outline
----@return outline.FlatSymbol
+---@return outline.FlatSymbol?
 function Sidebar:_current_node()
   local current_line = vim.api.nvim_win_get_cursor(self.view.win)[1]
-  return self.flats[current_line]
+  if self.flats then
+    return self.flats[current_line]
+  end
 end
 
 ---@param change_focus boolean Whether to switch to code window after setting cursor
 function Sidebar:__goto_location(change_focus)
+  if not self.provider then
+    return
+  end
   local node = self:_current_node()
+  if not node then
+    return
+  end
+
   vim.api.nvim_win_set_cursor(self.code.win, { node.line + 1, node.character })
 
   if cfg.o.outline_window.center_on_jump then
@@ -426,13 +437,18 @@ function Sidebar:_move_and_jump(direction)
 end
 
 ---@param move_cursor boolean
----@param node_index integer Index for self.flats
-function Sidebar:_toggle_fold(move_cursor, node_index)
-  local node = self.flats[node_index] or self:_current_node()
+function Sidebar:_toggle_fold(move_cursor)
+  if not self.provider then
+    return
+  end
+  local node = self:_current_node()
+  if not node then
+    return
+  end
   local is_folded = folding.is_folded(node)
 
   if folding.is_foldable(node) then
-    self:_set_folded(not is_folded, move_cursor, node_index)
+    self:_set_folded(not is_folded, move_cursor)
   end
 end
 
@@ -440,6 +456,9 @@ end
 ---@param move_cursor? boolean
 ---@param node_index? integer
 function Sidebar:_set_folded(folded, move_cursor, node_index)
+  if not self.provider then
+    return
+  end
   local node = self.flats[node_index] or self:_current_node()
   local changed = (folded ~= folding.is_folded(node))
 
@@ -462,6 +481,9 @@ end
 
 ---@param nodes outline.Symbol[]
 function Sidebar:_toggle_all_fold(nodes)
+  if not self.provider then
+    return
+  end
   nodes = nodes or self.items
   local folded = true
 
@@ -478,8 +500,14 @@ end
 ---@param folded boolean?
 ---@param nodes? outline.Symbol[]
 function Sidebar:_set_all_folded(folded, nodes)
+  if not self.provider then
+    return
+  end
   local stack = { nodes or self.items }
   local current = self:_current_node()
+  if not current then
+    return
+  end
 
   while #stack > 0 do
     local current_nodes = table.remove(stack, #stack)
