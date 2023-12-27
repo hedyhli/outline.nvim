@@ -1,4 +1,4 @@
-*outline.txt*           For NVIM v0.7.0          Last change: 2023 December 03
+*outline.txt*           For NVIM v0.7.0          Last change: 2023 December 27
 
 ==============================================================================
 Table of Contents                                  *outline-table-of-contents*
@@ -14,6 +14,7 @@ Table of Contents                                  *outline-table-of-contents*
   - Lua API                                                  |outline-lua-api|
   - Tips                                                        |outline-tips|
   - Recipes                                                  |outline-recipes|
+  - Neovim 0.7                                            |outline-neovim-0.7|
   - Limitations                                          |outline-limitations|
   - Related plugins                                  |outline-related-plugins|
 ------------------------------------------------------------------------------
@@ -21,8 +22,8 @@ Table of Contents                                  *outline-table-of-contents*
 PREREQUISITES                                          *outline-prerequisites*
 
 - Neovim 0.7+
-    - To use modifiers on |outline-commands|, Neovim 0.8 is required.
-        Everything else works with Neovim 0.7.
+    - Note that it is recommended to use Neovim 0.8+ for all the features and fixes.
+        See details |outline-here|. Everything else works as normal in Neovim 0.7.
 - To use outline.nvim with LSP, a properly configured LSP client is required.
 
 
@@ -986,6 +987,15 @@ https://github.com/hedyhli/outline.nvim/assets/50042066/183fc5f9-b369-41e2-a831-
 
 Auto-preview with the feature is also supported, set `auto_preview = true` and
 press `K` to focus on the auto-opened preview window. `:q` to quit the window.
+
+
+NEOVIM 0.7                                                *outline-neovim-0.7*
+
+The following features and fixes are not included in Neovim 0.7.
+
+- |outline-command| modifiers (`:rightbel Outline`).
+- Rename methods in golang from outline window
+    (#42 <https://github.com/hedyhli/outline.nvim/issues/42>)
 
 
 LIMITATIONS                                              *outline-limitations*
