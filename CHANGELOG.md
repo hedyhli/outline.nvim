@@ -120,6 +120,9 @@
   previous heading. So when cursor was on the next heading, the previous heading
   would also be highlighted in the outline. This is now fixed, but marksman LSP
   would still do this. A "fix" is to add marksman into lsp client blacklist.
+- Fix rename symbol (LSP) in golang methods. We now use `vim.lsp.buf.rename` to
+  handle all the edge cases instead, for nvim-0.8 and above.
+  ([#42](https://github.com/hedyhli/outline.nvim/issues/42))
 
 ### Performance
 

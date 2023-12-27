@@ -53,8 +53,8 @@ plugins](#related-plugins).
 ## Prerequisites
 
 - Neovim 0.7+
-  - To use modifiers on [commands](#commands), Neovim 0.8 is required.
-    Everything else works with Neovim 0.7.
+  - Note that it is recommended to use Neovim 0.8+ for all the features and fixes.
+    See details [here](#neovim-07). Everything else works as normal in Neovim 0.7.
 - To use outline.nvim with LSP, a properly configured LSP client is required.
 
 <!-- panvimdoc-ignore-start -->
@@ -74,6 +74,7 @@ plugins](#related-plugins).
 * [Tips](#tips)
 * [Recipes](#recipes)
 * [TODO](#todo)
+* [Neovim 0.7](#neovim-07)
 * [Limitations](#limitations)
 * [Related plugins](#related-plugins)
 
@@ -1122,6 +1123,14 @@ Key:
   close the buffer.
 
 <!-- panvimdoc-ignore-end -->
+
+## Neovim 0.7
+
+The following features and fixes are not included in Neovim 0.7.
+
+- [Command](#commands) modifiers (`:rightbel Outline`).
+- Rename methods in golang from outline window
+  ([#42](https://github.com/hedyhli/outline.nvim/issues/42))
 
 ## Limitations
 
