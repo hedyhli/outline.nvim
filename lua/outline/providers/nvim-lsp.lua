@@ -95,20 +95,11 @@ function M.code_actions(sidebar)
   return true
 end
 
----Synchronously request rename from LSP
+---@see rename_symbol
 ---@param sidebar outline.Sidebar
+---@param node outline.FlatSymbol
 ---@return boolean success
-function M.rename_symbol(sidebar)
-  local client = get_appropriate_client(sidebar.code.buf, 'renameProvider')
-  if not client then
-    return false
-  end
-
-  local node = sidebar:_current_node()
-  if not node then
-    return false
-  end
-
+local function legacy_rename(sidebar, client, node)
   -- Using fn.input so it's synchronous
   local new_name = vim.fn.input({ prompt = 'New Name: ', default = node.name })
   if not new_name or new_name == '' or new_name == node.name then
@@ -131,6 +122,33 @@ function M.rename_symbol(sidebar)
   node.name = new_name
   sidebar:_update_lines(false)
   return true
+end
+
+---Synchronously request rename from LSP
+---@param sidebar outline.Sidebar
+---@return boolean success
+function M.rename_symbol(sidebar)
+  local client = get_appropriate_client(sidebar.code.buf, 'renameProvider')
+  if not client then
+    return false
+  end
+  local node = sidebar:_current_node()
+  if not node then
+    return false
+  end
+
+  if _G._outline_nvim_has[8] then
+    sidebar:wrap_goto_location(function()
+      -- Options table with filter key only added in nvim-0.8
+      -- Use vim.lsp's function because it has better support.
+      l.buf.rename(nil, { filter = function (client)
+        return not cfg.is_client_blacklisted(client)
+      end })
+    end)
+    return true
+  else
+    return legacy_rename(sidebar, client, node)
+  end
 end
 
 ---Synchronously request and show hover info from LSP
