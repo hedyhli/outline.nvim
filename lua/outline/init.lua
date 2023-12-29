@@ -167,7 +167,7 @@ end
 ---@return string
 local function _get_breadcrumb(sidebar, opts)
   local list = sidebar.hovered
-  -- TODO: Use cursor column in writer.make_outline to prevent
+  -- TODO: Use cursor column in sidebar:build_outline to prevent
   -- siblings being included
   local names = {}
   for _, node in ipairs(list) do
