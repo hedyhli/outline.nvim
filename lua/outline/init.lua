@@ -252,19 +252,20 @@ end
 
 ---Open a floating window displaying debug information about outline
 function M.show_status()
-  local sidebar = M._get_sidebar(false)
+  local sidebar = M._get_sidebar()
   local buf, win = 0, 0
-  local is_open, provider
+  local is_open, provider, provider_info
 
   if sidebar then
     buf = sidebar.code.buf
     win = sidebar.code.win
     is_open = sidebar.view:is_open()
     provider = sidebar.provider
+    provider_info = sidebar.provider_info
   end
 
   if not is_open then
-    provider = providers.find_provider()
+    provider, provider_info = providers.find_provider()
   end
 
   ---@type outline.StatusContext
@@ -272,9 +273,10 @@ function M.show_status()
     priority = cfg.o.providers.priority,
     outline_open = is_open,
     provider = provider,
+    provider_info = provider_info,
   }
 
-  if vim.api.nvim_buf_is_valid(buf) then
+  if buf and vim.api.nvim_buf_is_valid(buf) then
     ctx.ft = vim.api.nvim_buf_get_option(buf, 'ft')
     ctx.filter = cfg.o.symbols.user_config_filter[ctx.ft]
     -- 'else' is handled in help.lua

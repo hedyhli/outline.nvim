@@ -140,7 +140,7 @@ function M.show_status(ctx)
     if p.get_status then
       table.insert(lines, 'Provider info:')
       table.insert(lines, '')
-      for _, line in ipairs(p.get_status()) do
+      for _, line in ipairs(p.get_status(ctx.provider_info)) do
         table.insert(lines, indent .. line)
       end
     end

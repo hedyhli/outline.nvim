@@ -6,52 +6,70 @@ local l = vim.lsp
 
 local M = {
   name = 'lsp',
-  ---@type lsp.client
-  client = nil,
 }
 
 local request_timeout = 2000
 
-function M.get_status()
-  if not M.client then
+---@param info table? Must be the table received from `supports_buffer`
+function M.get_status(info)
+  if not info then
     return { 'No clients' }
   end
-  return { 'client: ' .. M.client.name }
+  return { 'client: ' .. info.client.name }
 end
 
-local function get_appropriate_client(bufnr, capability)
-  local clients = l.get_active_clients({ bufnr = bufnr })
-  local use_client
+---@param client lsp.client
+---@param capability string
+---@return boolean
+local function _check_client(client, capability)
+  if cfg.is_client_blacklisted(client) then
+    return false
+  end
+  return client.server_capabilities[capability]
+end
 
-  for _, client in ipairs(clients) do
-    if cfg.is_client_blacklisted(client) then
-      goto continue
-    else
-      if client.server_capabilities[capability] then
+---@param bufnr integer
+---@param capability string
+---@return lsp.client?
+local function get_appropriate_client(bufnr, capability)
+  local clients, use_client
+
+  if _G._outline_nvim_has[8] then
+    clients = l.get_active_clients({ bufnr = bufnr })
+    for _, client in ipairs(clients) do
+      if _check_client(client, capability) then
         use_client = client
-        M.client = client
         break
       end
     end
-    ::continue::
+  else
+    -- Returns client_id:client pairs
+    ---@diagnostic disable-next-line
+    clients = l.buf_get_clients(bufnr)
+    for _, client in pairs(clients) do
+      if _check_client(client, capability) then
+        use_client = client
+        break
+      end
+    end
   end
+
   return use_client
 end
 
----@return boolean
+---@return boolean, table?
 function M.supports_buffer(bufnr)
   local client = get_appropriate_client(bufnr, 'documentSymbolProvider')
   if not client then
     return false
   end
-  return true
+  return true, { client = client }
 end
 
----@param response outline.ProviderSymbol[]
+---Include JSX symbols if applicable, and merge it with existing symbols
+---@param symbols outline.ProviderSymbol[]
 ---@return outline.ProviderSymbol[]
-local function postprocess_symbols(response)
-  local symbols = lsp_utils.flatten_response(response)
-
+local function postprocess_symbols(symbols)
   local jsx_symbols = jsx.get_symbols()
 
   if #jsx_symbols > 0 then
@@ -61,16 +79,31 @@ local function postprocess_symbols(response)
   end
 end
 
+-- XXX: Only one LSP client is supported here, to prevent checking blacklisting
+-- over again
 ---@param on_symbols fun(symbols?:outline.ProviderSymbol[], opts?:table)
----@param opts table
-function M.request_symbols(on_symbols, opts)
+---@param opts table?
+---@param info table? Must be the table received from `supports_buffer`
+function M.request_symbols(on_symbols, opts, info)
+  if not info then
+    return on_symbols(nil, opts)
+  end
+
   local params = {
     textDocument = l.util.make_text_document_params(),
   }
-  l.buf_request_all(0, 'textDocument/documentSymbol', params, function(response)
-    response = postprocess_symbols(response)
-    on_symbols(response, opts)
-  end)
+  -- XXX: Is bufnr=0 ok here?
+  local status = info.client.request('textDocument/documentSymbol', params, function(err, response)
+    if err or not response then
+      on_symbols(response, opts)
+    else
+      response = postprocess_symbols(response)
+      on_symbols(response, opts)
+    end
+  end, 0)
+  if not status then
+    on_symbols(nil, opts)
+  end
 end
 
 -- No good way to update outline when LSP action complete for now
@@ -97,6 +130,7 @@ end
 
 ---@see rename_symbol
 ---@param sidebar outline.Sidebar
+---@param client lsp.client
 ---@param node outline.FlatSymbol
 ---@return boolean success
 local function legacy_rename(sidebar, client, node)
@@ -113,7 +147,7 @@ local function legacy_rename(sidebar, client, node)
     newName = new_name,
   }
   local status, err =
-    client.request_sync('textDocument/rename', params, request_timeout, sidebar.code.buf)
+      client.request_sync('textDocument/rename', params, request_timeout, sidebar.code.buf)
   if status == nil or status.err or err or status.result == nil then
     return false
   end
@@ -141,8 +175,8 @@ function M.rename_symbol(sidebar)
     sidebar:wrap_goto_location(function()
       -- Options table with filter key only added in nvim-0.8
       -- Use vim.lsp's function because it has better support.
-      l.buf.rename(nil, { filter = function (client)
-        return not cfg.is_client_blacklisted(client)
+      l.buf.rename(nil, { filter = function (cl)
+        return not cfg.is_client_blacklisted(cl)
       end })
     end)
     return true

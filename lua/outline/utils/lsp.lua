@@ -12,13 +12,14 @@ function M.is_buf_markdown(bufnr)
 end
 
 --- Merge all client token lists in an LSP response
-function M.flatten_response(response)
+-- Currentlhy unused because we are only supporting receiving symbols
+-- from 1 LSP client.
+function M.merge_responses(responses)
   local all_results = {}
 
   -- flatten results to one giant table of symbols
-  for client_id, client_response in pairs(response) do
+  for client_id, client_response in pairs(responses) do
     if config.is_client_blacklisted(client_id) then
-      print('skipping client ' .. client_id)
       goto continue
     end
 

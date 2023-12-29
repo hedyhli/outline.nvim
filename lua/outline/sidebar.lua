@@ -26,6 +26,7 @@ local Sidebar = {}
 ---@field code outline.SidebarCodeState
 ---@field augroup integer
 ---@field provider outline.Provider?
+---@field provider_info table?
 ---@field preview outline.Preview|outline.LivePreview
 
 function Sidebar:new(id)
@@ -92,6 +93,7 @@ end
 ---@param opts outline.OutlineOpts?
 function Sidebar:initial_handler(response, opts)
   if response == nil or type(response) ~= 'table' or self.view:is_open() then
+    utils.echo("No response from provider when requesting symbols!")
     return
   end
 
@@ -311,6 +313,7 @@ end
 ---@param response outline.ProviderSymbol[]
 function Sidebar:refresh_handler(response)
   if response == nil or type(response) ~= 'table' then
+    utils.echo("No response from provider when requesting symbols!")
     return
   end
 
@@ -340,11 +343,11 @@ function Sidebar:__refresh()
   if ft == 'OutlineHelp' or not listed then
     return
   end
-  self.provider = providers.find_provider()
+  self.provider, self.provider_info = providers.find_provider()
   if self.provider then
     self.provider.request_symbols(function(res)
       self:refresh_handler(res)
-    end)
+    end, nil, self.provider_info)
     return
   end
   -- No provider
@@ -583,11 +586,11 @@ function Sidebar:open(opts)
 
   if not self.view:is_open() then
     self.preview.s = self
-    self.provider = providers.find_provider()
+    self.provider, self.provider_info = providers.find_provider()
     if self.provider then
       self.provider.request_symbols(function(...)
         self:initial_handler(...)
-      end, opts)
+      end, opts, self.provider_info)
       return
     else
       -- No provider

@@ -63,9 +63,9 @@
 
 ---@class outline.Provider
 ---@field name string
----@field get_status? fun():string[]
----@field supports_buffer fun(bufnr:integer):boolean
----@field request_symbols fun(on_symbols:fun(symbols?:outline.ProviderSymbol[], opts:table?), opts:table?)
+---@field get_status? fun(info:table?):string[]
+---@field supports_buffer fun(bufnr:integer):boolean,table?
+---@field request_symbols fun(on_symbols:fun(symbols?:outline.ProviderSymbol[], opts:table?, provider_info:table?), opts:table?)
 ---@field show_hover? fun(sidebar:outline.Sidebar):boolean
 ---@field rename_symbol? fun(sidebar:outline.Sidebar):boolean
 ---@field code_actions? fun(sidebar:outline.Sidebar):boolean
@@ -80,6 +80,7 @@
 
 ---@class outline.StatusContext
 ---@field provider outline.Provider?
+---@field provider_info table?
 ---@field outline_open boolean?
 ---@field code_win_active boolean?
 ---@field ft string?
