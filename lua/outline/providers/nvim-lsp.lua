@@ -147,7 +147,7 @@ local function legacy_rename(sidebar, client, node)
     newName = new_name,
   }
   local status, err =
-      client.request_sync('textDocument/rename', params, request_timeout, sidebar.code.buf)
+    client.request_sync('textDocument/rename', params, request_timeout, sidebar.code.buf)
   if status == nil or status.err or err or status.result == nil then
     return false
   end
@@ -175,9 +175,11 @@ function M.rename_symbol(sidebar)
     sidebar:wrap_goto_location(function()
       -- Options table with filter key only added in nvim-0.8
       -- Use vim.lsp's function because it has better support.
-      l.buf.rename(nil, { filter = function (cl)
-        return not cfg.is_client_blacklisted(cl)
-      end })
+      l.buf.rename(nil, {
+        filter = function(cl)
+          return not cfg.is_client_blacklisted(cl)
+        end,
+      })
     end)
     return true
   else

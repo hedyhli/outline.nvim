@@ -93,7 +93,7 @@ end
 ---@param opts outline.OutlineOpts?
 function Sidebar:initial_handler(response, opts)
   if response == nil or type(response) ~= 'table' or self.view:is_open() then
-    utils.echo("No response from provider when requesting symbols!")
+    utils.echo('No response from provider when requesting symbols!')
     return
   end
 
@@ -313,7 +313,7 @@ end
 ---@param response outline.ProviderSymbol[]
 function Sidebar:refresh_handler(response)
   if response == nil or type(response) ~= 'table' then
-    utils.echo("No response from provider when requesting symbols!")
+    utils.echo('No response from provider when requesting symbols!')
     return
   end
 
