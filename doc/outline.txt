@@ -1,4 +1,4 @@
-*outline.txt*           For NVIM v0.7.0          Last change: 2023 December 27
+*outline.txt*           For NVIM v0.7.0           Last change: 2024 January 22
 
 ==============================================================================
 Table of Contents                                  *outline-table-of-contents*
@@ -263,7 +263,7 @@ Show defaults ~
         -- winhl options for the preview window, see ':h winhl'
         winhl = 'NormalFloat:',
         -- Pseudo-transparency of the preview window, see ':h winblend'
-        winblend = 0
+        winblend = 0,
         -- Experimental feature that let's you edit the source content live
         -- in the preview window. Like VS Code's "peek editor".
         live = false
