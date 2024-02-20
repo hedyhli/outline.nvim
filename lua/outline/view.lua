@@ -18,17 +18,21 @@ function View:setup_view(split_command)
   -- create a scratch unlisted buffer
   self.buf = vim.api.nvim_create_buf(false, true)
 
+  -- set filetype
+  vim.api.nvim_buf_set_option(self.buf, 'filetype', 'Outline')
+
   -- delete buffer when window is closed / buffer is hidden
   vim.api.nvim_buf_set_option(self.buf, 'bufhidden', 'delete')
+
   -- create a split
   vim.cmd(split_command)
-
-  -- resize to a % of the current window size
-  vim.cmd('vertical resize ' .. cfg.o.outline_window.width)
 
   -- get current (outline) window and attach our buffer to it
   self.win = vim.api.nvim_get_current_win()
   vim.api.nvim_win_set_buf(self.win, self.buf)
+
+  -- resize to a % of the current window size
+  vim.cmd('vertical resize ' .. cfg.o.outline_window.width)
 
   -- window stuff
   vim.api.nvim_win_set_option(self.win, 'spell', false)
@@ -50,7 +54,6 @@ function View:setup_view(split_command)
   -- buffer stuff
   local tab = vim.api.nvim_get_current_tabpage()
   vim.api.nvim_buf_set_name(self.buf, 'OUTLINE_' .. tostring(tab))
-  vim.api.nvim_buf_set_option(self.buf, 'filetype', 'Outline')
   vim.api.nvim_buf_set_option(self.buf, 'modifiable', false)
 
   if cfg.o.outline_window.show_numbers or cfg.o.outline_window.show_relative_numbers then
