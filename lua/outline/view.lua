@@ -12,23 +12,10 @@ function View:new()
   return setmetatable({ buf = nil, win = nil }, { __index = View })
 end
 
----Creates the outline window and sets it up
----@param split_command string A valid split command that is to be executed in order to create the view.
-function View:setup_view(split_command)
-  -- create a scratch unlisted buffer
-  self.buf = vim.api.nvim_create_buf(false, true)
-
+--- setup options for for window and buf
+function View:setup_options()
   -- delete buffer when window is closed / buffer is hidden
   vim.api.nvim_buf_set_option(self.buf, 'bufhidden', 'delete')
-  -- create a split
-  vim.cmd(split_command)
-
-  -- resize to a % of the current window size
-  vim.cmd('vertical resize ' .. cfg.o.outline_window.width)
-
-  -- get current (outline) window and attach our buffer to it
-  self.win = vim.api.nvim_get_current_win()
-  vim.api.nvim_win_set_buf(self.win, self.buf)
 
   -- window stuff
   vim.api.nvim_win_set_option(self.win, 'spell', false)
@@ -52,6 +39,7 @@ function View:setup_view(split_command)
   vim.api.nvim_buf_set_name(self.buf, 'OUTLINE_' .. tostring(tab))
   vim.api.nvim_buf_set_option(self.buf, 'filetype', 'Outline')
   vim.api.nvim_buf_set_option(self.buf, 'modifiable', false)
+  vim.api.nvim_buf_set_option(self.buf, 'buftype', 'nofile')
 
   if cfg.o.outline_window.show_numbers or cfg.o.outline_window.show_relative_numbers then
     vim.api.nvim_win_set_option(self.win, 'nu', true)
@@ -65,6 +53,25 @@ function View:setup_view(split_command)
   if cl == true or cl == 'focus_in_outline' then
     vim.api.nvim_win_set_option(self.win, 'cursorline', true)
   end
+end
+
+---Creates the outline window and sets it up
+---@param split_command string A valid split command that is to be executed in order to create the view.
+function View:setup_view(split_command)
+  -- create a scratch unlisted buffer
+  self.buf = vim.api.nvim_create_buf(false, true)
+
+  -- create a split
+  vim.cmd(split_command)
+
+  -- resize to a % of the current window size
+  vim.cmd('vertical resize ' .. cfg.o.outline_window.width)
+
+  -- get current (outline) window and attach our buffer to it
+  self.win = vim.api.nvim_get_current_win()
+  vim.api.nvim_win_set_buf(self.win, self.buf)
+
+  self:setup_options()
 end
 
 ---Close view window and remove winnr/bufnr fields

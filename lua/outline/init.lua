@@ -11,11 +11,53 @@ local M = {
   current = nil,
 }
 
+local code_buf
 local function setup_global_autocmd()
   if utils.table_has_content(cfg.o.outline_items.auto_update_events.items) then
+    vim.api.nvim_create_autocmd('BufLeave', {
+      pattern = 'OUTLINE*',
+      callback = function()
+        local s = M._get_sidebar()
+        if s then
+          -- record s.code.buf, will be used to find the apprioriate window
+          -- to open new buffer which tries to replace Outline's buffer
+          code_buf = s.code.buf
+        end
+      end,
+    })
     vim.api.nvim_create_autocmd(cfg.o.outline_items.auto_update_events.items, {
       pattern = '*',
-      callback = function()
+      callback = function(data)
+        -- to prevent buf hijacked by other buffers
+        if data.event == 'BufEnter' then
+          local s = M._get_sidebar()
+          local w = vim.api.nvim_get_current_win()
+          if s and s.view.win == w and data.buf ~= s.view.buf then
+            vim.cmd('b' .. s.view.buf)
+            s.view:setup_options()
+            vim.schedule(function()
+              pcall(vim.cmd, 'bdelete ' .. data.buf)
+
+              -- find the window contains sidebar.code.buf,
+              local outline_buf_name = vim.api.nvim_buf_get_name(s.view.buf)
+
+              local tabpage =
+                tonumber(vim.split(outline_buf_name:match('OUTLINE%_.*'), '_', { plain = true })[2])
+              local wins = vim.api.nvim_tabpage_list_wins(tabpage)
+
+              for _, win in pairs(wins) do
+                if code_buf and vim.api.nvim_win_get_buf(win) == code_buf then
+                  vim.api.nvim_set_current_win(win)
+                  local bname = vim.api.nvim_buf_get_name(data.buf)
+                  if bname and vim.fn.filereadable(bname) == 1 then
+                    vim.cmd('e ' .. bname)
+                  end
+                  return
+                end
+              end
+            end)
+          end
+        end
         M._sidebar_do('_refresh')
       end,
     })
