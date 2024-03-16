@@ -18,7 +18,9 @@ local M = {
   ]],
 }
 
-function M.supports_buffer(bufnr)
+---@param bufnr integer
+---@param config table?
+function M.supports_buffer(bufnr, config)
   if vim.api.nvim_buf_get_option(bufnr, 'ft') ~= 'norg' then
     return false
   end

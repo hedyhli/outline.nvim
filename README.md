@@ -359,9 +359,14 @@ Pass a table to the setup call with your configuration options.
 
   providers = {
     priority = { 'lsp', 'coc', 'markdown', 'norg' },
+    -- Configuration for each provider (3rd party providers are supported)
     lsp = {
       -- Lsp client names to ignore
       blacklist_clients = {},
+    },
+    markdown = {
+      -- List of supported ft's to use the markdown provider
+      filetypes = {'markdown'},
     },
   },
 
@@ -494,9 +499,13 @@ path, for use as a provider.
 External providers from plugins should define the provider module at
 `lua/outline/providers/<name>.lua` with these functions:
 
-- `supports_buffer(bufnr: integer) -> boolean`
+- `supports_buffer(bufnr: integer, config: table?) -> boolean`
 
   This function could check buffer filetype, existence of required modules, etc.
+
+  The config table comes from the user's configuration in the
+  `providers['provider-name']` table where `provider-name` is the
+  `require('outline.providers.<name>').name`.
 
 - `get_status() -> string[]` (optional)
 

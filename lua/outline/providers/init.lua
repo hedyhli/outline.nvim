@@ -3,6 +3,8 @@ local import_prefix = 'outline/providers/'
 
 ---@return outline.Provider?, table?
 function M.find_provider()
+  local configs = require('outline.config').o.providers
+
   if not M.providers then
     M.providers = vim.tbl_map(function(p)
       return import_prefix .. p
@@ -11,7 +13,7 @@ function M.find_provider()
 
   for _, path in ipairs(M.providers) do
     local provider = require(path)
-    local ok, info = provider.supports_buffer(0)
+    local ok, info = provider.supports_buffer(0, configs[provider.name])
     if ok then
       return provider, info
     end

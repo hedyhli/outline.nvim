@@ -15,9 +15,19 @@ local M = {
   name = 'markdown',
 }
 
+---@param bufnr integer
+---@param config table?
 ---@return boolean ft_is_markdown
-function M.supports_buffer(bufnr)
-  return vim.api.nvim_buf_get_option(bufnr, 'ft') == 'markdown'
+function M.supports_buffer(bufnr, config)
+  local ft = vim.api.nvim_buf_get_option(bufnr, 'ft')
+  if config and config.filetypes then
+    for _, ft_check in ipairs(config.filetypes) do
+      if ft_check == ft then
+        return true
+      end
+    end
+  end
+  return ft == "markdown"
 end
 
 -- Parses markdown files and returns a table of SymbolInformation[] which is

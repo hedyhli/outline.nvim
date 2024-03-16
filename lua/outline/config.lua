@@ -94,6 +94,9 @@ M.defaults = {
     lsp = {
       blacklist_clients = {},
     },
+    markdown = {
+      filetypes = { 'markdown' },
+    },
   },
   symbols = {
     ---@type outline.FilterConfig?
@@ -325,6 +328,8 @@ function M.resolve_config()
     map[client] = true
   end
   M.o.providers.lsp.blacklist_clients = map
+  ----- LSP PROVIDER CONFIG NAME -----
+  M.o.providers['nvim-lsp'] = M.o.providers.lsp
 end
 
 ---Ensure l is either table, false, or nil. If not, print warning using given

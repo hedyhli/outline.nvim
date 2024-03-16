@@ -93,6 +93,10 @@
   the file and jumping elsewhere.
 - If auto-preview is enabled the preview window will automatically resize and
   reposition
+- Each provider can now handle its own configuration via the
+  `providers["provider-name"]` table. The first provider to make use of this will
+  be the markdown provider, which looks at `providers.markdown.filetypes` for
+  the list of filetypes to be supported for markdown outline symbols.
 
 ### Fixes
 
