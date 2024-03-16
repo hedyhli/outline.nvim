@@ -311,7 +311,7 @@ Pass a table to the setup call with your configuration options.
     -- winhl options for the preview window, see ':h winhl'
     winhl = 'NormalFloat:',
     -- Pseudo-transparency of the preview window, see ':h winblend'
-    winblend = 0
+    winblend = 0,
     -- Experimental feature that let's you edit the source content live
     -- in the preview window. Like VS Code's "peek editor".
     live = false
