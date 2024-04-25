@@ -10,7 +10,7 @@ local M = {
 ---@param bufnr integer
 function M.clear_all_ns(bufnr)
   if vim.api.nvim_buf_is_valid(bufnr) then
-      vim.api.nvim_buf_clear_namespace(bufnr, -1, 0, -1)
+    pcall(function() vim.api.nvim_buf_clear_namespace(bufnr, -1, 0, -1) end)
   end
 end
 
