@@ -297,6 +297,10 @@ function M.show_status()
   return require('outline.help').show_status(ctx)
 end
 
+function M.has_provider()
+  return providers.has_provider()
+end
+
 local function setup_commands()
   local cmd = function(n, c, o)
     vim.api.nvim_create_user_command('Outline' .. n, c, o)
