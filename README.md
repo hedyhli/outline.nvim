@@ -1,20 +1,21 @@
 <!-- panvimdoc-ignore-start -->
 
-# Fork status
+<details>
+<summary>⚠️  Coming from <strong>symbols-outline.nvim</strong>?</summary>
 
-This is a fork of the original **symbols-outline.nvim** which fixed a lot of
-bugs from the original repo, and also added many more features.
+This is a fork of the original **symbols-outline.nvim** with many fixes and
+improvements, you can see the full list in [#12 on
+github](https://github.com/hedyhli/outline.nvim/issues/12) with links to issues
+from the original repo, and after `outline.nvim` was detached as a fork, all
+changes are documented in the [changelog](./CHANGELOG.md).
 
-You can see all the changes from the original plugin before fork detach in [#12
-on github](https://github.com/hedyhli/outline.nvim/issues/12) and afterwards in
-the [changelog](./CHANGELOG.md).
-
-
-## Migrating from symbols-outline.nvim
+**Migrating your configuration**
 
 If you have existing setup opts for symbols-outline.nvim, you can convert it to
 be usable for outline.nvim using this script:
 [scripts/convert-symbols-outline-opts.lua](scripts/convert-symbols-outline-opts.lua).
+
+</details>
 
 <!-- panvimdoc-ignore-end -->
 
@@ -73,7 +74,6 @@ plugins](#related-plugins).
 * [Lua API](#lua-api)
 * [Tips](#tips)
 * [Recipes](#recipes)
-* [TODO](#todo)
 * [Neovim 0.7](#neovim-07)
 * [Limitations](#limitations)
 * [Related plugins](#related-plugins)
@@ -1097,41 +1097,10 @@ https://github.com/hedyhli/outline.nvim/assets/50042066/183fc5f9-b369-41e2-a831-
 Auto-preview with the feature is also supported, set `auto_preview = true` and
 press `K` to focus on the auto-opened preview window. `:q` to quit the window.
 
-
 <!-- panvimdoc-ignore-start -->
 
 ---
 Any other recipes you think others may also find useful? Feel free to open a PR.
-
-
-## TODO
-
-Key:
-```
--     : Idea
-- [ ] : Planned
-- [/] : WIP
-- ❌  : Was idea, found usable workaround
-- ✅  : Implemented
-```
-
-- Folds
-  - `[ ]` Org-like <kbd>shift+tab</kbd> behavior: Open folds level-by-level
-  - `[ ]` Optionally not opening all child nodes when opening parent node
-  - Fold siblings and siblings of parent on startup
-
-- Navigation
-  - ❌ Go to parent (as of now you can press `hl` to achieve the same
-    effect)
-  - ❌ Cycle siblings (as of now when reached the last sibling, you can use `hlj`
-    to go back to first sibling)
-
-- `[ ]` simrat39/symbols-outline.nvim#75: Handling of the outline window when attached
-  buffer is closed.
-
-  Maybe it should continue working, so that pressing enter can open a split to
-  the correct location like `NvimTree` does, and pressing `q` can properly
-  close the buffer.
 
 <!-- panvimdoc-ignore-end -->
 
