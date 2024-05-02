@@ -97,6 +97,10 @@
   `providers["provider-name"]` table. The first provider to make use of this will
   be the markdown provider, which looks at `providers.markdown.filetypes` for
   the list of filetypes to be supported for markdown outline symbols.
+- The `outline_window.split_command` config now supports including width
+  together with the command as supported by neovim. This removes a slight glitch
+  on some machines when the outline is opened.
+  ([#63](https://github.com/hedyhli/outline.nvim/issues/63))
 
 ### Fixes
 
