@@ -180,10 +180,12 @@ Pass a table to the setup call with your configuration options.
     -- `position` will not be considered if `split_command` is non-nil.
     -- This should be a valid vim command used for opening the split for the
     -- outline window. Eg, 'rightbelow vsplit'.
+    -- Width can be included (with will override the width setting below):
+    -- Eg, `topleft 20vsp` to prevent a flash of windows when resizing.
     split_command = nil,
 
     -- Percentage or integer of columns
-    width = 25, 
+    width = 25,
     -- Whether width is relative to the total width of nvim
     -- When relative_width = true, this means take 25% of the total
     -- screen width for outline window.
@@ -319,7 +321,7 @@ Pass a table to the setup call with your configuration options.
 
   -- These keymaps can be a string or a table for multiple keys.
   -- Set to `{}` to disable. (Using 'nil' will fallback to default keys)
-  keymaps = { 
+  keymaps = {
     show_help = '?',
     close = {'<Esc>', 'q'},
     -- Jump to symbol under cursor.
