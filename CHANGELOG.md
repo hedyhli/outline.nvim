@@ -1,6 +1,18 @@
 # Changelog
 
-## Main branch
+<!--
+### Breaking changes
+
+### Features
+
+### Fixes
+
+### Performance
+
+### Others
+-->
+
+## v1.0.0
 
 ### Breaking changes
 
