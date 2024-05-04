@@ -1,20 +1,21 @@
 <!-- panvimdoc-ignore-start -->
 
-# Fork status
+<details>
+<summary>⚠️  Coming from <strong>symbols-outline.nvim</strong>?</summary>
 
-This is a fork of the original **symbols-outline.nvim** which fixed a lot of
-bugs from the original repo, and also added many more features.
+This is a fork of the original **symbols-outline.nvim** with many fixes and
+improvements, you can see the full list in [#12 on
+github](https://github.com/hedyhli/outline.nvim/issues/12) with links to issues
+from the original repo, and after `outline.nvim` was detached as a fork, all
+changes are documented in the [changelog](./CHANGELOG.md).
 
-You can see all the changes from the original plugin before fork detach in [#12
-on github](https://github.com/hedyhli/outline.nvim/issues/12) and afterwards in
-the [changelog](./CHANGELOG.md).
-
-
-## Migrating from symbols-outline.nvim
+**Migrating your configuration**
 
 If you have existing setup opts for symbols-outline.nvim, you can convert it to
 be usable for outline.nvim using this script:
 [scripts/convert-symbols-outline-opts.lua](scripts/convert-symbols-outline-opts.lua).
+
+</details>
 
 <!-- panvimdoc-ignore-end -->
 
@@ -73,7 +74,6 @@ plugins](#related-plugins).
 * [Lua API](#lua-api)
 * [Tips](#tips)
 * [Recipes](#recipes)
-* [TODO](#todo)
 * [Neovim 0.7](#neovim-07)
 * [Limitations](#limitations)
 * [Related plugins](#related-plugins)
@@ -180,10 +180,12 @@ Pass a table to the setup call with your configuration options.
     -- `position` will not be considered if `split_command` is non-nil.
     -- This should be a valid vim command used for opening the split for the
     -- outline window. Eg, 'rightbelow vsplit'.
+    -- Width can be included (with will override the width setting below):
+    -- Eg, `topleft 20vsp` to prevent a flash of windows when resizing.
     split_command = nil,
 
     -- Percentage or integer of columns
-    width = 25, 
+    width = 25,
     -- Whether width is relative to the total width of nvim
     -- When relative_width = true, this means take 25% of the total
     -- screen width for outline window.
@@ -319,7 +321,7 @@ Pass a table to the setup call with your configuration options.
 
   -- These keymaps can be a string or a table for multiple keys.
   -- Set to `{}` to disable. (Using 'nil' will fallback to default keys)
-  keymaps = { 
+  keymaps = {
     show_help = '?',
     close = {'<Esc>', 'q'},
     -- Jump to symbol under cursor.
@@ -359,9 +361,14 @@ Pass a table to the setup call with your configuration options.
 
   providers = {
     priority = { 'lsp', 'coc', 'markdown', 'norg' },
+    -- Configuration for each provider (3rd party providers are supported)
     lsp = {
       -- Lsp client names to ignore
       blacklist_clients = {},
+    },
+    markdown = {
+      -- List of supported ft's to use the markdown provider
+      filetypes = {'markdown'},
     },
   },
 
@@ -494,9 +501,13 @@ path, for use as a provider.
 External providers from plugins should define the provider module at
 `lua/outline/providers/<name>.lua` with these functions:
 
-- `supports_buffer(bufnr: integer) -> boolean`
+- `supports_buffer(bufnr: integer, config: table?) -> boolean`
 
   This function could check buffer filetype, existence of required modules, etc.
+
+  The config table comes from the user's configuration in the
+  `providers['provider-name']` table where `provider-name` is the
+  `require('outline.providers.<name>').name`.
 
 - `get_status() -> string[]` (optional)
 
@@ -1086,41 +1097,10 @@ https://github.com/hedyhli/outline.nvim/assets/50042066/183fc5f9-b369-41e2-a831-
 Auto-preview with the feature is also supported, set `auto_preview = true` and
 press `K` to focus on the auto-opened preview window. `:q` to quit the window.
 
-
 <!-- panvimdoc-ignore-start -->
 
 ---
 Any other recipes you think others may also find useful? Feel free to open a PR.
-
-
-## TODO
-
-Key:
-```
--     : Idea
-- [ ] : Planned
-- [/] : WIP
-- ❌  : Was idea, found usable workaround
-- ✅  : Implemented
-```
-
-- Folds
-  - `[ ]` Org-like <kbd>shift+tab</kbd> behavior: Open folds level-by-level
-  - `[ ]` Optionally not opening all child nodes when opening parent node
-  - Fold siblings and siblings of parent on startup
-
-- Navigation
-  - ❌ Go to parent (as of now you can press `hl` to achieve the same
-    effect)
-  - ❌ Cycle siblings (as of now when reached the last sibling, you can use `hlj`
-    to go back to first sibling)
-
-- `[ ]` simrat39/symbols-outline.nvim#75: Handling of the outline window when attached
-  buffer is closed.
-
-  Maybe it should continue working, so that pressing enter can open a split to
-  the correct location like `NvimTree` does, and pressing `q` can properly
-  close the buffer.
 
 <!-- panvimdoc-ignore-end -->
 

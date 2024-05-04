@@ -26,13 +26,16 @@ function View:setup_view(split_command)
 
   -- create a split
   vim.cmd(split_command)
-
+  
   -- get current (outline) window and attach our buffer to it
   self.win = vim.api.nvim_get_current_win()
   vim.api.nvim_win_set_buf(self.win, self.buf)
 
-  -- resize to a % of the current window size
-  vim.cmd('vertical resize ' .. cfg.o.outline_window.width)
+  -- resize if split_command not specify width like "25vsplit"
+  if split_command:match("%d+") == nil then
+    -- resize to a % of the current window size
+    vim.cmd('vertical resize ' .. cfg.o.outline_window.width)
+  end
 
   -- window stuff
   vim.api.nvim_win_set_option(self.win, 'spell', false)

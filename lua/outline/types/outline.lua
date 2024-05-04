@@ -63,8 +63,9 @@
 
 ---@class outline.Provider
 ---@field name string
+---@field config table?
 ---@field get_status? fun(info:table?):string[]
----@field supports_buffer fun(bufnr:integer):boolean,table?
+---@field supports_buffer fun(bufnr:integer, config:table?):boolean,table?
 ---@field request_symbols fun(on_symbols:fun(symbols?:outline.ProviderSymbol[], opts:table?, provider_info:table?), opts:table?)
 ---@field show_hover? fun(sidebar:outline.Sidebar):boolean
 ---@field rename_symbol? fun(sidebar:outline.Sidebar):boolean
