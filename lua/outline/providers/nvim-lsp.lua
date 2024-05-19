@@ -35,7 +35,7 @@ local function get_appropriate_client(bufnr, capability)
   local clients, use_client
 
   if _G._outline_nvim_has[8] then
-    clients = l.get_active_clients({ bufnr = bufnr })
+    clients = l.get_clients({ bufnr = bufnr })
     for _, client in ipairs(clients) do
       if _check_client(client, capability) then
         use_client = client
