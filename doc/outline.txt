@@ -1,4 +1,4 @@
-*outline.txt*             For NVIM v0.7.0             Last change: 2024 May 02
+*outline.txt*             For NVIM v0.7.0             Last change: 2024 May 29
 
 ==============================================================================
 Table of Contents                                  *outline-table-of-contents*
@@ -529,6 +529,9 @@ COMMANDS                                                    *outline-commands*
     :belowright OutlineOpen  " opens with 'belowright vsplit'
     :OutlineOpen             " opens with 'topleft vsplit'
 <
+
+If the outline is already open, running this command without bang will focus on
+the outline window.
 
 - **:OutlineClose**: Close outline
 - **:OutlineFocus**: Toggle focus between outline and code/source window
