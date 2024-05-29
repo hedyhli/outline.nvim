@@ -591,6 +591,9 @@ future.
 :OutlineOpen             " opens with 'topleft vsplit'
 ```
 
+  If the outline is already open, running this command without bang will focus
+  on the outline window.
+
 - **:OutlineClose**: Close outline
 
 - **:OutlineFocus**: Toggle focus between outline and code/source window

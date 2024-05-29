@@ -600,6 +600,10 @@ function Sidebar:open(opts)
     if not cfg.o.outline_window.focus_on_open or not opts.focus_outline then
       vim.fn.win_gotoid(self.code.win)
     end
+  else
+    if cfg.o.outline_window.focus_on_open and opts.focus_outline then
+      self:focus()
+    end
   end
 end
 
