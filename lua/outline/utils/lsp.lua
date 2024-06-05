@@ -3,7 +3,12 @@ local config = require('outline.config')
 local M = {}
 
 function M.is_buf_attached_to_lsp(bufnr)
-  local clients = vim.lsp.get_active_clients({ bufnr = bufnr or 0 })
+  local clients
+  if _G._outline_nvim_has[10] then
+    clients = vim.lsp.get_clients({ bufnr = bufnr or 0 })
+  else
+    clients = vim.lsp.get_active_clients({ bufnr = bufnr or 0 })
+  end
   return clients ~= nil and #clients > 0
 end
 

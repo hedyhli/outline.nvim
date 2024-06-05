@@ -349,6 +349,7 @@ function M.setup(opts)
   _G._outline_nvim_has = {
     [8] = minor >= 8,
     [9] = minor >= 9,
+    [10] = minor >= 10,
   }
 
   cfg.setup(opts)
