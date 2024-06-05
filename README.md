@@ -1128,8 +1128,8 @@ was within a markdown code block, so what was previously not supposed to be
 code is now highlighted as code).
 
 If this poses a problem for you, you should try out the
-[live-preview](#live-editable-previews) feature, uses the code buffer directly
-for displaying the preview.
+[live-preview](#live-editable-previews) feature, which uses the code buffer
+directly for displaying the preview.
 
 ### Many outlines
 
