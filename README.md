@@ -127,7 +127,8 @@ This allows Lazy.nvim to lazy-load the plugin on commands `Outline`,
 Call the setup function with your configuration options.
 
 Note that a call to `.setup()` is **required** for this plugin to work
-(otherwise you might see this error: [simrat39/symbols-outline.nvim#213](/simrat39/symbols-outline.nvim#213)).
+(otherwise you might see this error:
+[simrat39/symbols-outline.nvim#213](https://github.com/simrat39/symbols-outline.nvim#213)).
 
 ```lua
 require("outline").setup({})
