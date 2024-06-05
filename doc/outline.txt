@@ -1025,7 +1025,7 @@ was within a markdown code block, so what was previously not supposed to be
 code is now highlighted as code).
 
 If this poses a problem for you, you should try out the |outline-live-preview|
-feature, uses the code buffer directly for displaying the preview.
+feature, which uses the code buffer directly for displaying the preview.
 
 
 MANY OUTLINES ~
