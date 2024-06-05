@@ -127,7 +127,7 @@ This allows Lazy.nvim to lazy-load the plugin on commands `Outline`,
 Call the setup function with your configuration options.
 
 Note that a call to `.setup()` is **required** for this plugin to work
-(otherwise you might see this error: [simrat39/symbols-outline.nvim#213](simrat39/symbols-outline.nvim#213)).
+(otherwise you might see this error: [simrat39/symbols-outline.nvim#213](/simrat39/symbols-outline.nvim#213)).
 
 ```lua
 require("outline").setup({})
@@ -1133,12 +1133,12 @@ directly for displaying the preview.
 
 ### Many outlines
 
-Outline.nvim does not support multiple outline windows in the same tabpage as
-of now However, this feature is
-[planned](https://github.com/hedyhli/outline.nvim/issues/26), and you can use a
-single outline that auto-updates on buffer switches.
-
-That said, per-tabpage outline is supported.
+Outline.nvim supports opening independent outline windows for different
+tabpages, but does not support multiple outline windows in the same tabpage as
+of now. However, this feature is
+[planned](https://github.com/hedyhli/outline.nvim/issues/26). Alternatively, you
+can use a single outline that auto-updates on buffer switches, which is turned
+on by default.
 
 ## Related plugins
 
