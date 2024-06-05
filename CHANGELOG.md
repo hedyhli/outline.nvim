@@ -16,8 +16,8 @@
 
 ### Features
 
-- `OutlineOpen` (and `outline.open`) will now focus on the outline is already
-  open when run.
+- `OutlineOpen` without `!`, (and `outline.open`) will now focus in the outline if it is
+  already open when invoked.
   ([#71](https://github.com/hedyhli/outline.nvim/issues/71))
 
 ## v1.0.0
