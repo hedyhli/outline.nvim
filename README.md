@@ -488,6 +488,7 @@ The current list of tested providers are:
    - For JSX support, `javascript` parser for treesitter is required
 1. Markdown (no external requirements)
 1. Norg (requires `norg` parser for treesitter)
+1. Vimdoc (requires `vimdoc` parser for treesitter)
 
 External providers:
 - [Asciidoc](https://github.com/msr1k/outline-asciidoc-provider.nvim) (no external requirements)
