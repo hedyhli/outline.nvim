@@ -90,7 +90,7 @@ M.defaults = {
     up_and_jump = '<C-k>',
   },
   providers = {
-    priority = { 'lsp', 'coc', 'markdown', 'norg' },
+    priority = { 'lsp', 'coc', 'markdown', 'norg', 'vimdoc'},
     lsp = {
       blacklist_clients = {},
     },
