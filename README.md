@@ -496,12 +496,14 @@ The current list of tested providers are:
 External providers:
 - [Asciidoc](https://github.com/msr1k/outline-asciidoc-provider.nvim) (no external requirements)
 
+<details>
+  <summary>How to implement an external provider</summary>
 
-### External providers
-
-External providers can be appended to the `providers.priority` list. Each
-item in the list is appended to `"outline.providers.<item>"` to form an import
-path, for use as a provider.
+External providers are separate plugins that users can install in addition to
+`outline.nvim`. Their names can be appended to the `providers.priority` list in
+the outline.nvim config. Each item in the `providers.priority` list is used
+to form an import path `"outline.providers.<item>"` and then `require()`'ed for
+use as a provider.
 
 External providers from plugins should define the provider module at
 `lua/outline/providers/<name>.lua` with these functions:
@@ -528,14 +530,16 @@ External providers from plugins should define the provider module at
   `opts` table.
   - param `opts` can be passed to `callback` without processing
 
-  Each symbol table in the list of symbols should have these fields:
-  - name: string
-  - kind: integer
+  The function should return a list of "symbol tables".
+
+  Each symbol table should have these fields:
+  - name: string -- displayed in the outline
+  - kind: integer -- determines the icon to use
   - selectionRange: table with fields `start` and `end`, each have fields
-  `line` and `character`, each integers
-  - range: table with fields `start` and `end`, each have fields `line` and
-  `character`, each integers
-  - children: list of table of symbols
+  `line` and `character`, each integers:
+  `{ start = { line = ?, character = ? }, ['end'] = { line = ?, character = ? } }`
+  - range: same as selectionRange
+  - children: list of symbol tables
   - detail: (optional) string, shown for `outline_items.show_symbol_details`
 
 The built-in [markdown](./lua/outline/providers/markdown.lua) provider is a
@@ -544,8 +548,8 @@ lines and uses regex; the built-in [norg](./lua/outline/providers/norg.lua)
 provider is an example which uses treesitter.
 
 All providers should support at least nvim 0.7. You can make use of
-`_G._outline_nvim_has` with fields `[8]` and `[9]` equivalent to
-`vim.fn.has('nvim-0.8') == 1` and  `vim.fn.has('nvim-0.9') == 1` respectively.
+`_G._outline_nvim_has` with fields `[8]`, `[9]`, and `[10]`. For instance,
+`_G._outline_nvim_has[8]` is equivalent to: `vim.fn.has('nvim-0.8') == 1`.
 
 If a higher nvim version is required, it is recommended to check for this
 requirement in the `supports_buffer` function.
@@ -557,6 +561,8 @@ your provider is active. See the built-in
 
 Other functions such as goto-location may also be delegated to providers in the
 future.
+
+</details>
 
 
 ## Commands
