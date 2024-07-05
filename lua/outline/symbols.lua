@@ -47,6 +47,7 @@ end
 
 ---@param kind string|integer
 ---@param bufnr integer
+---@return string icon
 function M.icon_from_kind(kind, bufnr)
   local kindstr = kind
   if type(kind) ~= 'string' then
