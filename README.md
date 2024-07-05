@@ -570,8 +570,8 @@ future.
 - **:Outline[!]** (✓ bang ✓ mods)
 
   Toggle outline. With bang (`!`) the cursor focus stays in your
-  original window after opening the outline window. Set `focus_on_open = true` to
-  always use this behaviour.
+  original window after opening the outline window. Set
+  `outline_window.focus_on_open = false` to always use this behaviour.
 
   You can use command modifiers `topleft`/`aboveleft`/`botright`/`belowright`
   on this command to control how the outline window split is created. Other
@@ -588,8 +588,8 @@ future.
 - **:OutlineOpen[!]** (✓ bang ✓ mods)
 
   Open outline. With bang (`!`) the cursor focus stays in your original
-  window after opening the outline window. Set `focus_on_open = true` to always
-  use this behaviour.
+  window after opening the outline window. Set `outline_window.focus_on_open =
+  false` to always use this behaviour.
 
   You can use command modifiers `topleft`/`aboveleft`/`botright`/`belowright`
   on this command to control how the outline window split is created. Other
