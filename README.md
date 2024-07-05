@@ -27,7 +27,7 @@ be usable for outline.nvim using this script:
 
 > *A sidebar with a tree-like outline of symbols from your code, powered by LSP.*
 
-https://github.com/hedyhli/outline.nvim/assets/50042066/88fbb3cf-27c1-4115-8a08-ba2e86c7fe9d
+https://github.com/hedyhli/outline.nvim/assets/50042066/f66fa661-b66a-4b48-84e8-37920a3d8d2c
 
 **Features**
 
