@@ -342,13 +342,14 @@ Show defaults ~
         -- You can use a custom function that returns the icon for each symbol kind.
         -- This function takes a kind (string) as parameter and should return an
         -- icon as string.
-        ---@param kind string
+        ---@param kind string Key of the icons table below
         ---@param bufnr integer Code buffer
-        ---@returns string|boolean The icon string (key of `icons` table), or `false`
+        ---@returns string|boolean The icon string to display, such as "f", or `false`
         ---                        to fallback to `icon_source`.
         icon_fetcher = nil,
-        -- 3rd party source for fetching icons. Fallback if icon_fetcher returned
-        -- empty string. Currently supported values: 'lspkind'
+        -- 3rd party source for fetching icons. This is used as a fallback if
+        -- icon_fetcher returned an empty string.
+        -- Currently supported values: 'lspkind'
         icon_source = nil,
         -- The next fallback if both icon_fetcher and icon_source has failed, is
         -- the custom mapping of icons specified below. The icons table is also
