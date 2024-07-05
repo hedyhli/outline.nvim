@@ -46,7 +46,8 @@ for k, v in pairs(M.kinds) do
 end
 
 ---@param kind string|integer
-function M.icon_from_kind(kind)
+---@param bufnr integer
+function M.icon_from_kind(kind, bufnr)
   local kindstr = kind
   if type(kind) ~= 'string' then
     kindstr = M.kinds[kind]
@@ -56,7 +57,7 @@ function M.icon_from_kind(kind)
   end
 
   if type(cfg.o.symbols.icon_fetcher) == 'function' then
-    local icon = cfg.o.symbols.icon_fetcher(kindstr)
+    local icon = cfg.o.symbols.icon_fetcher(kindstr, bufnr)
     -- Allow returning empty string
     if icon then
       return icon

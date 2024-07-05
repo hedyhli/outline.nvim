@@ -391,6 +391,10 @@ Pass a table to the setup call with your configuration options.
     -- You can use a custom function that returns the icon for each symbol kind.
     -- This function takes a kind (string) as parameter and should return an
     -- icon as string.
+    ---@param kind string
+    ---@param bufnr integer Code buffer
+    ---@returns string|boolean The icon string (key of `icons` table), or `false`
+    ---                        to fallback to `icon_source`.
     icon_fetcher = nil,
     -- 3rd party source for fetching icons. Fallback if icon_fetcher returned
     -- empty string. Currently supported values: 'lspkind'
@@ -890,6 +894,21 @@ symbols = {
 }
 ```
 
+  The `icon_fetcher` function may also accept a second parameter, the buffer
+  number of the code buffer. For example, you can use it to determine the icon
+  to use based on the filetype.
+
+```lua
+symbols = {
+  icon_fetcher = function(kind, bufnr)
+    local ft = vim.api.nvim_buf_get_option(bufnr, 'ft')
+    -- ...
+  end,
+}
+```
+
+  See [this section](#custom-icons) for other examples of this function.
+
 - You can customize the split command used for creating the outline window split
   using `outline_window.split_command`, such as `"topleft vsp"`. See `:h windows`
 
@@ -1046,7 +1065,7 @@ that simply returns in plain text, the first letter of the given kind.
 
 ```lua
 symbols = {
-  icon_fetcher = function(kind) return kind:sub(1,1) end
+  icon_fetcher = function(kind, bufnr) return kind:sub(1,1) end,
 }
 ```
 
@@ -1055,13 +1074,24 @@ and `icons` as fallback.
 
 <div align=center><img width="500" alt="outline with plain text icons" src="https://github.com/hedyhli/outline.nvim/assets/50042066/655b534b-da16-41a7-926e-f14475376a04"></div>
 
+### Different icons based on filetype
+
+```lua
+symbols = {
+  icon_fetcher = function(kind, bufnr)
+    local ft = vim.api.nvim_buf_get_option(bufnr, 'ft')
+    -- ...
+  end,
+}
+```
+
 ### Disable icons
 
 Disable all icons:
 
 ```lua
 symbols = {
-  icon_fetcher = function(_) return "" end,
+  icon_fetcher = function() return "" end,
 }
 ```
 
@@ -1069,7 +1099,7 @@ Disable icons for specific kinds, and for others use lspkind:
 
 ```lua
 symbols = {
-  icon_fetcher = function(k)
+  icon_fetcher = function(k, buf)
     if k == 'String' then
       return ""
     end
@@ -1080,6 +1110,24 @@ symbols = {
 ```
 
 <div align=center><img width="500" alt="outline with disabled icon for String" src="https://github.com/hedyhli/outline.nvim/assets/50042066/26d258c6-9530-43d4-b88b-963304e3bf2d"></div>
+
+### Disable icons for a specific filetype
+
+In this example, icons are disabled for markdown, and `lspkind` is used for
+other filetypes.
+
+```lua
+symbols = {
+  icon_fetcher = function(k, buf)
+    local ft = vim.api.nvim_buf_get_option(buf, "ft")
+    if ft == 'markdown' then
+      return ""
+    end
+    return false
+  end,
+  icon_source = "lspkind",
+}
+```
 
 ### Live, editable previews
 
