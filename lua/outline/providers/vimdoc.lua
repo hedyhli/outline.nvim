@@ -3,6 +3,7 @@ local M = {
 }
 
 local LANG = 'vimdoc'
+local MAX_LINES_COUNT = 1000000000
 
 ---@param bufnr integer
 ---@param _ table?
@@ -49,6 +50,13 @@ function M.request_symbols(on_symbols, opts)
   local root = { children = {}, level = 0, parent = nil }
   local current = root
 
+  local function updateRangeEnd(node, rangeEnd)
+    if node.range ~= nil and node.level <= 3 then
+      node.range['end'] = { character = node.range['end'], line = rangeEnd }
+      node.selectionRange = node.range
+    end
+  end
+
   for id, node, _, _ in query:iter_captures(rootNode, 0) do
     local capture = query.captures[id]
     local captureLevel = captureLevelMap[capture]
@@ -56,7 +64,15 @@ function M.request_symbols(on_symbols, opts)
     local row1, col1, row2, col2 = node:range()
     local captureString = vim.api.nvim_buf_get_text(0, row1, col1, row2, col2, {})[1]
 
+    local prevHeadingsRangeEnd = row1 - 1
+    local rangeStart = row1
+    if captureLevel <= 2 then
+      prevHeadingsRangeEnd = prevHeadingsRangeEnd - 1
+      rangeStart = rangeStart - 1
+    end
+
     while captureLevel <= current.level do
+      updateRangeEnd(current, prevHeadingsRangeEnd)
       current = current.parent
       assert(current ~= nil)
     end
@@ -70,11 +86,11 @@ function M.request_symbols(on_symbols, opts)
       -- account for current column position in addition to the line.
       -- FIXME: By the way the end character should be the EOL
       selectionRange = {
-        start = { character = col1, line = row1 },
+        start = { character = col1, line = rangeStart },
         ['end'] = { character = col2, line = row2 - 1 },
       },
       range = {
-        start = { character = col1, line = row1 },
+        start = { character = col1, line = rangeStart },
         ['end'] = { character = col2, line = row2 - 1 },
       },
       children = {},
@@ -85,6 +101,12 @@ function M.request_symbols(on_symbols, opts)
 
     table.insert(current.children, new)
     current = new
+  end
+
+  while current.level > 0 do
+    updateRangeEnd(current, MAX_LINES_COUNT)
+    current = current.parent
+    assert(current ~= nil)
   end
 
   local function removeExtraAttrs(node)
