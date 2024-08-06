@@ -3,7 +3,6 @@ local M = {
 }
 
 local LANG = 'vimdoc'
-local MAX_LINES_COUNT = 1000000000
 
 ---@param bufnr integer
 ---@param _ table?
@@ -103,8 +102,9 @@ function M.request_symbols(on_symbols, opts)
     current = new
   end
 
+  local lineCount = vim.api.nvim_buf_line_count(0)
   while current.level > 0 do
-    updateRangeEnd(current, MAX_LINES_COUNT)
+    updateRangeEnd(current, lineCount)
     current = current.parent
     assert(current ~= nil)
   end
