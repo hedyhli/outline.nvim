@@ -312,7 +312,7 @@ Show defaults ~
       },
     
       providers = {
-        priority = { 'lsp', 'coc', 'markdown', 'norg' },
+        priority = { 'lsp', 'coc', 'markdown', 'norg', 'vimdoc' },
         -- Configuration for each provider (3rd party providers are supported)
         lsp = {
           -- Lsp client names to ignore
@@ -435,10 +435,13 @@ A fallback is always used if the previous candidate returned a falsey value.
 
 PROVIDERS                                                  *outline-providers*
 
-The current list of tested providers are: 1. LSP (requires a suitable LSP
-server to be configured for the requested buffer) - For JSX support,
-`javascript` parser for treesitter is required 1. Markdown (no external
-requirements) 1. Norg (requires `norg` parser for treesitter)
+The current list of tested providers are:
+1. LSP (requires a suitable LSP server to be configured for the requested
+buffer)
+  - For JSX support, `javascript` parser for treesitter is required
+2. Markdown (no external requirements)
+3. Norg (requires `norg` parser for treesitter)
+4. Vimdoc (requires `vimdoc` parser for treesitter)
 
 External providers: - Asciidoc
 <https://github.com/msr1k/outline-asciidoc-provider.nvim> (no external
