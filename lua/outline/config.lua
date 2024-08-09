@@ -53,7 +53,9 @@ M.defaults = {
     width = 50,
     min_width = 50,
     relative_width = true,
+    height = 50,
     min_height = 10,
+    relative_height = true,
     border = 'single',
     open_hover_on_preview = false,
     winhl = 'NormalFloat:',
@@ -162,16 +164,31 @@ function M.get_window_width()
   return M.o.outline_window.width
 end
 
-function M.get_preview_width()
-  if M.o.preview_window.relative_width then
+---@param conf table
+function M.get_preview_width(conf)
+  if conf.relative_width then
     local relative_width = math.max(
-      math.ceil(vim.o.columns * (M.o.preview_window.width / 100)),
-      M.o.preview_window.min_width
+      math.ceil(vim.o.columns * (conf.width / 100)),
+      conf.min_width
     )
-
     return relative_width
   else
-    return M.o.preview_window.width
+    return conf.width
+  end
+end
+
+---@param conf table
+---@param outline_height integer
+---@return integer
+function M.get_preview_height(conf, outline_height)
+  if conf.relative_height then
+    local relative_height = math.max(
+      math.ceil(outline_height * (conf.height / 100)),
+      conf.min_height
+    )
+    return relative_height
+  else
+    return conf.height
   end
 end
 
@@ -318,8 +335,6 @@ function M.resolve_config()
       M.o.keymaps[action] = { keys }
     end
   end
-  ----- PREVIEW -----
-  M.o.preview_window.width = M.get_preview_width()
   ----- WINDOW -----
   M.o.outline_window.width = M.get_window_width()
   ----- LSP BLACKLIST -----
