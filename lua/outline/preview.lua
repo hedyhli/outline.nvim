@@ -1,3 +1,5 @@
+local cfg = require('outline.config')
+
 -- A floating window to preview the location of a symbol from the outline.
 -- Classical preview reads entire lines into a new buffer for preview. Live
 -- preview sets the buffer of floating window to the code buffer, which allows
@@ -95,8 +97,8 @@ local function update_size(self)
   end
 
   self.outline_height = vim.api.nvim_win_get_height(self.s.view.win)
-  self.width = self.conf.width
-  self.height = math.max(math.ceil(self.outline_height / 2), self.conf.min_height)
+  self.width = cfg.get_preview_width(self.conf)
+  self.height = cfg.get_preview_height(self.conf, self.outline_height)
   local row = calc_row(self)
   local col = calc_col(self)
   vim.api.nvim_win_set_config(self.win, {
@@ -117,8 +119,8 @@ function Preview:create()
     end,
   })
   self.outline_height = vim.api.nvim_win_get_height(self.s.view.win)
-  self.width = self.conf.width
-  self.height = math.max(math.ceil(self.outline_height / 2), self.conf.min_height)
+  self.width = cfg.get_preview_width(self.conf)
+  self.height = cfg.get_preview_height(self.conf, self.outline_height)
   self.win = vim.api.nvim_open_win(self.buf, false, {
     relative = 'editor',
     height = self.height,
@@ -221,8 +223,8 @@ function LivePreview:create()
   self.codewin = self.s.code.win
   self.initial_cursorline = vim.api.nvim_win_get_option(self.s.code.win, 'cursorline')
   self.outline_height = vim.api.nvim_win_get_height(self.s.view.win)
-  self.width = self.conf.width
-  self.height = math.max(math.ceil(self.outline_height / 2), self.conf.min_height)
+  self.width = cfg.get_preview_width(self.conf)
+  self.height = cfg.get_preview_height(self.conf, self.outline_height)
   self.win = vim.api.nvim_open_win(self.s.code.buf, false, {
     relative = 'editor',
     height = self.height,
