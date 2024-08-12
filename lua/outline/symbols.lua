@@ -45,6 +45,24 @@ for k, v in pairs(M.kinds) do
   M.str_to_kind[v] = k
 end
 
+---@return table
+local function get_lspkind()
+    local has_lspkind, lspkind = pcall(require, 'lspkind')
+    if has_lspkind then
+      return lspkind
+    end
+    vim.notify(
+      '[outline]: icon_source set to lspkind but failed to require lspkind!',
+      vim.log.levels.ERROR
+    )
+    -- return lspkind stub
+    return {
+      symbolic = function(kind, opts) return '' end
+    }
+end
+
+local lspkind = get_lspkind()
+
 ---@param kind string|integer
 ---@param bufnr integer
 ---@return string icon
@@ -66,17 +84,9 @@ function M.icon_from_kind(kind, bufnr)
   end
 
   if cfg.o.symbols.icon_source == 'lspkind' then
-    local has_lspkind, lspkind = pcall(require, 'lspkind')
-    if not has_lspkind then
-      vim.notify(
-        '[outline]: icon_source set to lspkind but failed to require lspkind!',
-        vim.log.levels.ERROR
-      )
-    else
-      local icon = lspkind.symbolic(kindstr, { with_text = false })
-      if icon and icon ~= '' then
-        return icon
-      end
+    local icon = lspkind.symbolic(kindstr, { with_text = false })
+    if icon and icon ~= '' then
+      return icon
     end
   end
 
