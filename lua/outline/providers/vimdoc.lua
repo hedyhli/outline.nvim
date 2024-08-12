@@ -1,8 +1,7 @@
-local M = {
-  name = 'vimdoc'
-}
+local symbols = require('outline.symbols')
 
 local LANG = 'vimdoc'
+local M = { name = LANG }
 
 ---@param bufnr integer
 ---@param _ table?
@@ -44,7 +43,10 @@ function M.request_symbols(on_symbols, opts)
   end
 
   local captureLevelMap = { h1 = 1, h2 = 2, h3 = 3, tag = 4 }
-  local kindMap = { h1 = 15, h2 = 15, h3 = 15, tag = 13 }
+
+  local strKind = symbols.str_to_kind['String']
+  local varKind = symbols.str_to_kind['Variable']
+  local kindMap = { h1 = strKind, h2 = strKind, h3 = strKind, tag = varKind }
 
   local root = { children = {}, level = 0, parent = nil }
   local current = root
