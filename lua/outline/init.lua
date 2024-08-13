@@ -3,6 +3,7 @@ local cfg = require('outline.config')
 local highlight = require('outline.highlight')
 local providers = require('outline.providers.init')
 local utils = require('outline.utils.init')
+local symbols = require('outline.symbols')
 
 local M = {
   ---@type outline.Sidebar[]
@@ -354,6 +355,7 @@ function M.setup(opts)
 
   cfg.setup(opts)
   highlight.setup()
+  symbols.setup()
 
   setup_global_autocmd()
   setup_commands()
