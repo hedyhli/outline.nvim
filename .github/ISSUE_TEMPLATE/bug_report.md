@@ -9,7 +9,11 @@ assignees: ''
 
 ## Description
 
-<!--Include steps to reproduce, what you expect to happen, and the actual result-->
+<!--
+  Include steps to reproduce, what you expect to happen, and the actual result with screenshots if you could.
+
+  If this issue is related to a particular filetype or provider (such as symbols not showing for a particular language or file), please include the output of `:OutlineStatus` on that particular buffer.
+-->
 
 
 ## Neovim setup
