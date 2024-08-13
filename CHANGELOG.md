@@ -19,6 +19,8 @@
 - `OutlineOpen` without `!`, (and `outline.open`) will now focus in the outline if it is
   already open when invoked.
   ([#71](https://github.com/hedyhli/outline.nvim/issues/71))
+- The `symbols.icon_fetcher` function now supports a second parameter, the code
+  buffer number. Use it to fetch icons based on buffer options such as filetype.
 
 ## v1.0.0
 

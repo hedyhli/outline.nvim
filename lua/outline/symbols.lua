@@ -45,8 +45,15 @@ for k, v in pairs(M.kinds) do
   M.str_to_kind[v] = k
 end
 
+-- use a stub if lspkind is missing or not configured
+local lspkind = {
+  symbolic = function(kind, opts) return '' end
+}
+
 ---@param kind string|integer
-function M.icon_from_kind(kind)
+---@param bufnr integer
+---@return string icon
+function M.icon_from_kind(kind, bufnr)
   local kindstr = kind
   if type(kind) ~= 'string' then
     kindstr = M.kinds[kind]
@@ -56,29 +63,33 @@ function M.icon_from_kind(kind)
   end
 
   if type(cfg.o.symbols.icon_fetcher) == 'function' then
-    local icon = cfg.o.symbols.icon_fetcher(kindstr)
+    local icon = cfg.o.symbols.icon_fetcher(kindstr, bufnr)
     -- Allow returning empty string
     if icon then
       return icon
     end
   end
 
+  local icon = lspkind.symbolic(kindstr, { with_text = false })
+  if icon and icon ~= '' then
+    return icon
+  end
+
+  return cfg.o.symbols.icons[kindstr].icon
+end
+
+function M.setup()
   if cfg.o.symbols.icon_source == 'lspkind' then
-    local has_lspkind, lspkind = pcall(require, 'lspkind')
-    if not has_lspkind then
+    local has_lspkind, _lspkind = pcall(require, 'lspkind')
+    if has_lspkind then
+      lspkind = _lspkind
+    else
       vim.notify(
         '[outline]: icon_source set to lspkind but failed to require lspkind!',
         vim.log.levels.ERROR
       )
-    else
-      local icon = lspkind.symbolic(kindstr, { with_text = false })
-      if icon and icon ~= '' then
-        return icon
-      end
     end
   end
-
-  return cfg.o.symbols.icons[kindstr].icon
 end
 
 return M
