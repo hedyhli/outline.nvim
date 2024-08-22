@@ -358,6 +358,18 @@ Pass a table to the setup call with your configuration options.
     -- j/k/<down>/<up>.
     down_and_jump = '<C-j>',
     up_and_jump = '<C-k>',
+    --
+    -- Below are special keymaps for use with a mouse. The default configuration is tested.
+    -- Other configurations may have weird edge cases and/or work poorly with other mouse
+    -- actions, such as selection extension on right click, pop-up menu on right click and other.
+    --
+    -- Move cursor to line under mouse cursor in Outline window. Does not jump to the location in code.
+    -- Equivalent to navigating with 'j', 'k', etc.
+    mouse_select = '<LeftMouse>',
+    -- Jump to symbol under mouse cursor. Equivalent to 'peek_location' keymap.
+    mouse_peek = '<RightMouse>',
+    -- Toggle fold with a mouse. By default, with a double left click.
+    mouse_fold_toggle = '<2-LeftMouse>',
   },
 
   providers = {

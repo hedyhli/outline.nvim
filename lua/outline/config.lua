@@ -88,6 +88,9 @@ M.defaults = {
     fold_reset = 'R',
     down_and_jump = '<C-j>',
     up_and_jump = '<C-k>',
+    mouse_select = '<LeftMouse>',
+    mouse_peek = '<RightMouse>',
+    mouse_fold_toggle = '<2-LeftMouse>',
   },
   providers = {
     priority = { 'lsp', 'coc', 'markdown', 'norg' },

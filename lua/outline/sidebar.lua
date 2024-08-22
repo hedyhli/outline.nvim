@@ -160,6 +160,9 @@ function Sidebar:setup_keymaps()
     hover_symbol = {
       providers.action, { self, 'show_hover', { self } }
     },
+    mouse_select = { '_mouse_select', {} },
+    mouse_peek = { '_mouse_peek', {} },
+    mouse_fold_toggle = { '_mouse_fold_toggle', {} },
   }) do
     ---@diagnostic disable-next-line param-type-mismatch
     self:nmap(name, meth[1], meth[2])
@@ -376,12 +379,9 @@ function Sidebar:_current_node()
   end
 end
 
+---@return outline.FlatSymbol?
 ---@param change_focus boolean Whether to switch to code window after setting cursor
-function Sidebar:__goto_location(change_focus)
-  if not self.provider then
-    return
-  end
-  local node = self:_current_node()
+function Sidebar:_goto_node(node, change_focus)
   if not node then
     return
   end
@@ -402,6 +402,14 @@ function Sidebar:__goto_location(change_focus)
   if change_focus then
     vim.fn.win_gotoid(self.code.win)
   end
+end
+
+---@param change_focus boolean Whether to switch to code window after setting cursor
+function Sidebar:__goto_location(change_focus)
+  if not self.provider then
+    return
+  end
+  self:_goto_node(self:_current_node(), change_focus)
 end
 
 ---Wraps __goto_location and handles auto_close.
@@ -440,19 +448,23 @@ function Sidebar:_move_and_jump(direction)
 end
 
 ---@param move_cursor boolean
+function Sidebar:__toggle_fold(node, move_cursor)
+  if not node then
+    return
+  end
+  local is_folded = folding.is_folded(node)
+  if folding.is_foldable(node) then
+    self:_set_folded(not is_folded, move_cursor)
+  end
+end
+
+---@param move_cursor boolean
 function Sidebar:_toggle_fold(move_cursor)
   if not self.provider then
     return
   end
   local node = self:_current_node()
-  if not node then
-    return
-  end
-  local is_folded = folding.is_folded(node)
-
-  if folding.is_foldable(node) then
-    self:_set_folded(not is_folded, move_cursor)
-  end
+  self:__toggle_fold(node, move_cursor)
 end
 
 ---@param folded boolean
@@ -563,6 +575,35 @@ function Sidebar:_map_follow_cursor()
   if not self:follow_cursor({ focus_outline = true }) then
     utils.echo('Code window no longer active. Try closing and reopening the outline.')
   end
+end
+
+function Sidebar:_mouse_select()
+  local pos_info = vim.api.nvim_call_function("getmousepos", {})
+  if pos_info.winid ~= self.view.win then
+    return
+  end
+  local node = self.flats[pos_info.line]
+  self:update_cursor_pos(node)
+end
+
+function Sidebar:_mouse_peek()
+  local pos_info = vim.api.nvim_call_function("getmousepos", {})
+  if pos_info.winid ~= self.view.win then
+    return
+  end
+  local node = self.flats[pos_info.line]
+  if node == nil then
+    return
+  end
+  self:_goto_node(node, false)
+  self:update_cursor_pos(node)
+  self:_highlight_current_item(self.code.win, cfg.o.outline_items.auto_set_cursor)
+end
+
+function Sidebar:_mouse_fold_toggle()
+  local pos_info = vim.api.nvim_call_function("getmousepos", {})
+  local node = self.flats[pos_info.line]
+  self:__toggle_fold(node, false)
 end
 
 ---@param opts outline.OutlineOpts?
