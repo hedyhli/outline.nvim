@@ -257,6 +257,11 @@ Show defaults ~
         -- screen width for preview window, ensure the result width is at least 50
         -- characters wide.
         relative_width = true,
+        height = 50,     -- Percentage or integer of lines
+        min_height = 10, -- Minimum number of lines
+        -- Similar to relative_width, except the height is relative to the outline
+        -- window's height.
+        relative_height = true,
         -- Border option for floating preview window.
         -- Options include: single/double/rounded/solid/shadow or an array of border
         -- characters.

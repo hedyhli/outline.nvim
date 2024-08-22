@@ -300,12 +300,17 @@ Pass a table to the setup call with your configuration options.
     -- below.
     open_hover_on_preview = false,
     width = 50,     -- Percentage or integer of columns
-    min_width = 50, -- This is the number of columns
+    min_width = 50, -- Minimum number of columns
     -- Whether width is relative to the total width of nvim.
     -- When relative_width = true, this means take 50% of the total
     -- screen width for preview window, ensure the result width is at least 50
     -- characters wide.
     relative_width = true,
+    height = 50,     -- Percentage or integer of lines
+    min_height = 10, -- Minimum number of lines
+    -- Similar to relative_width, except the height is relative to the outline
+    -- window's height.
+    relative_height = true,
     -- Border option for floating preview window.
     -- Options include: single/double/rounded/solid/shadow or an array of border
     -- characters.
