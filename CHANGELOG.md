@@ -21,11 +21,16 @@
   ([#71](https://github.com/hedyhli/outline.nvim/issues/71))
 - The `symbols.icon_fetcher` function now supports a second parameter, the code
   buffer number. Use it to fetch icons based on buffer options such as filetype.
+- New config options `preview_window.height,min_height,relative_height` that
+  match the existing options for width.
+  ([#85](https://github.com/hedyhli/outline.nvim/pull/85))
 
 ### Fixes
 
 - Show `lspkind` errors just once on startup.
-  ([#85](https://github.com/hedyhli/outline.nvim/pull/85) contributed by @oskarrrrrrr)
+  ([#85](https://github.com/hedyhli/outline.nvim/pull/85))
+- Allow the preview window's width and height adapt to nvim window's resize.
+  ([#85](https://github.com/hedyhli/outline.nvim/pull/85))
 
 ## v1.0.0
 
