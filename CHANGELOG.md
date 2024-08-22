@@ -22,6 +22,11 @@
 - The `symbols.icon_fetcher` function now supports a second parameter, the code
   buffer number. Use it to fetch icons based on buffer options such as filetype.
 
+### Fixes
+
+- Show `lspkind` errors just once on startup.
+  ([#85](https://github.com/hedyhli/outline.nvim/pull/85) contributed by @oskarrrrrrr)
+
 ## v1.0.0
 
 ### Breaking changes
