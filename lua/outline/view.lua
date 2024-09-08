@@ -76,9 +76,15 @@ end
 ---Close view window and remove winnr/bufnr fields
 function View:close()
   if self.win then
-    vim.api.nvim_win_close(self.win, true)
-    self.win = nil
-    self.buf = nil
+    local windows = vim.api.nvim_list_wins()
+    local win_count = #windows
+    if win_count == 1 then
+      vim.api.nvim_command('q')
+    else
+      vim.api.nvim_win_close(self.win, true)
+      self.win = nil
+      self.buf = nil
+    end
   end
 end
 
