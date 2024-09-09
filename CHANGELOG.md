@@ -32,8 +32,9 @@
 - Allow the preview window's width and height adapt to nvim window's resize.
   ([#85](https://github.com/hedyhli/outline.nvim/pull/85))
 - Keybinding to close the outline will exit neovim if it is the last window
-  remaining; previously this throwed an error.
+  remaining; previously this threw an error.
   ([#91](https://github.com/hedyhli/outline.nvim/pull/91))
+- Prevent an error on attempt to `goto_location` when code window is closed.
 
 ## v1.0.0
 
