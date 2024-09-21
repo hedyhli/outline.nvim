@@ -1,11 +1,15 @@
 ---
 name: Bug report
-about: Something isn't working
+about: Something isn't working as expected
 title: ''
-labels: bug
 assignees: ''
 
 ---
+
+<!--
+  PLEASE NOTE:
+  Only behaviour that is inconsistent with what is stated, or implied, in the docs should be considered a bug. I.e., it does not work as intended. Consider opening a normal issue when in doubt, thanks!
+-->
 
 ## Description
 
