@@ -1,4 +1,4 @@
-*outline.txt*          For NVIM v0.7.0
+*outline.txt*           For NVIM v0.7.0
 
 ==============================================================================
 Table of Contents                                  *outline-table-of-contents*
@@ -452,7 +452,8 @@ requirements) 1. Norg (requires `norg` parser for treesitter)
 
 External providers: - Asciidoc
 <https://github.com/msr1k/outline-asciidoc-provider.nvim> (no external
-requirements)
+requirements) - ctags <https://github.com/epheien/outline-ctags-provider.nvim>
+(require universal-ctags)
 
 How to implement an external provider ~
 
