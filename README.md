@@ -501,6 +501,7 @@ The current list of tested providers are:
 
 External providers:
 - [Asciidoc](https://github.com/msr1k/outline-asciidoc-provider.nvim) (no external requirements)
+- [ctags](https://github.com/epheien/outline-ctags-provider.nvim) (require universal-ctags)
 
 <details>
   <summary>How to implement an external provider</summary>
