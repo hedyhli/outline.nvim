@@ -47,7 +47,8 @@ function M.get_selection_range(token)
   -- support symbolinformation[]
   -- https://microsoft.github.io/language-server-protocol/specification#textdocument_documentsymbol
   if token.selectionRange == nil then
-    return token.location.range
+    -- fallback: selectionRange => location.range => range
+    return token.location and token.location.range or token.range
   end
 
   return token.selectionRange
