@@ -6,6 +6,15 @@ local utils = require('outline.utils.init')
 
 local M = {}
 
+local function norm_kind(kind)
+  if type(kind) == 'number' then
+    return kind
+  else
+    -- string
+    return symbols.str_to_kind[kind] or 21 -- fallback to Null
+  end
+end
+
 ---Parses result from LSP into a reorganized tree of symbols (not flattened,
 -- simply reoganized by merging each property table from the arguments into a
 -- table for each symbol)
@@ -20,6 +29,7 @@ local function parse_result(result, depth, hierarchy, parent, bufnr)
 
   for index, value in pairs(result) do
     -- FIXME: If a parent was excluded, all children will not be considered
+    value.kind = norm_kind(value.kind)
     if cfg.should_include_symbol(symbols.kinds[value.kind], bufnr) then
       -- the hierarchy is basically a table of booleans which
       -- tells whether the parent was the last in its group or
