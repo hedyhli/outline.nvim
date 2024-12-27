@@ -48,8 +48,8 @@ provider](https://github.com/epheien/outline-treesitter-provider.nvim).
 - Preview symbol location without visiting it
 - Neovim command modifiers on where to open outline (see `:h mods`)
 
-> **Still not sure whether to use this?** Read about [related
-plugins](#related-plugins).
+> Unconvinced? Check out the outline.nvim alternatives and [related
+> plugins](#related-plugins).
 
 <!-- panvimdoc-ignore-end -->
 
