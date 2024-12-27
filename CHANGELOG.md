@@ -24,10 +24,13 @@
 - New config options `preview_window.height,min_height,relative_height` that
   match the existing options for width.
   ([#85](https://github.com/hedyhli/outline.nvim/pull/85))
-- Mention new external provider for ctags
-  ([#103](https://github.com/hedyhli/outline.nvim/pull/103))
+- Mention new external providers for ctags and tree-sitter
+  ([#103](https://github.com/hedyhli/outline.nvim/pull/103) and
+  [#107](https://github.com/hedyhli/outline.nvim/pull/107))
 - Support symbol kind of type string from providers
   ([#106](https://github.com/hedyhli/outline.nvim/pull/106))
+- New provider for manpages
+  ([#104](https://github.com/hedyhli/outline.nvim/pull/104))
 
 ### Fixes
 
