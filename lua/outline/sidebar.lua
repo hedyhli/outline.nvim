@@ -255,7 +255,8 @@ function Sidebar:update_cursor_style()
 
   -- Set cursor color to CursorLine in normal mode
   if hide_cursor then
-    local cur = vim.o.guicursor:match('n.-:(.-)[-,]')
+    -- local cur = vim.o.guicursor:match('n.-:(.-)[-,]')
+    local cur = vim.o.guicursor:match('n.-:([^,]+)')
     vim.opt.guicursor:append('n:' .. cur .. '-Cursorline')
   end
 end
