@@ -33,7 +33,9 @@ https://github.com/hedyhli/outline.nvim/assets/50042066/f66fa661-b66a-4b48-84e8-
 
 - Auto-updates items and highlight for current symbol as the cursor moves
 - Supports **JSX** (treesitter), **Markdown**, **Norg** (treesitter), **Man**, in
-  addition to LSP, with other treesitter support coming soon
+  addition to LSP.
+- Support for other languages for treesitter through an [external
+provider](https://github.com/epheien/outline-treesitter-provider.nvim).
 - Outline window opened for each tabpage
 - Symbol hierarchy UI with collapsible nodes and automatic collapsing based on
   cursor movements
@@ -501,7 +503,7 @@ The current list of tested providers are:
 
 External providers:
 - [Asciidoc](https://github.com/msr1k/outline-asciidoc-provider.nvim) (no external requirements)
-- [treesitter](https://github.com/epheien/outline-treesitter-provider.nvim) (require treesitter)
+- [Treesitter](https://github.com/epheien/outline-treesitter-provider.nvim) (require treesitter)
 - [ctags](https://github.com/epheien/outline-ctags-provider.nvim) (require universal-ctags)
 
 <details>
@@ -1217,16 +1219,11 @@ on by default.
   Outline.nvim.
 
   Aerial does a great job at supercharging vim's built-in outline (`gO`). It
-  supports treesitter and manpages which Outline.nvim does not provide [by
-  default](#external-providers). (Note that Aerial also supports Norg through
-  treesitter like Outline.nvim, but as of writing it does not support JSX like
-  Outline.nvim does.)
+  supports treesitter which Outline.nvim does not provide [by
+  default](#external-providers), but can be added an external provider. (Note
+  that Aerial also supports Norg through treesitter like Outline.nvim, but as of
+  writing it does not support JSX like Outline.nvim does.)
 
-  - If you wish to prioritize treesitter as the provider ("backend" in Aerial's
-    terms) for your symbols, you should use Aerial. This lets you have symbols
-    for languages that you might not want to set up an LSP for, which is quite
-    useful. Treesitter support is a planned feature in Outline.nvim but might
-    not arrive very soon.
   - Aerial.nvim supports only Neovim 0.8 and above for the bleeding-edge
     features, as far as I know. You should use Outline.nvim (or the
     alternatives below) if you use Neovim 0.7 and wish to have equal support.
