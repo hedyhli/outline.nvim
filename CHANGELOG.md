@@ -24,6 +24,10 @@
 - New config options `preview_window.height,min_height,relative_height` that
   match the existing options for width.
   ([#85](https://github.com/hedyhli/outline.nvim/pull/85))
+- Mention new external provider for ctags
+  ([#103](https://github.com/hedyhli/outline.nvim/pull/103))
+- Support symbol kind of type string from providers
+  ([#106](https://github.com/hedyhli/outline.nvim/pull/106))
 
 ### Fixes
 
@@ -35,6 +39,11 @@
   remaining; previously this threw an error.
   ([#91](https://github.com/hedyhli/outline.nvim/pull/91))
 - Prevent an error on attempt to `goto_location` when code window is closed.
+- Fix `hide_cursor`
+  ([#100](https://github.com/hedyhli/outline.nvim/pull/100))
+- Use `token.location.range` and `token.range` fallback when selection range is
+  not provided.
+  ([#105](https://github.com/hedyhli/outline.nvim/pull/105))
 
 ## v1.0.0
 
