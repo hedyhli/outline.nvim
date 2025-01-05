@@ -12,7 +12,7 @@ M.fetch_symbols_sync = function(bufnr)
   local items = {}
   local last_header
   local prev_lnum = 0
-  local prev_line = ""
+  local prev_line = ''
   local function finalize_header()
     if last_header then
       last_header.range['end'].line = prev_lnum - 1
@@ -20,12 +20,12 @@ M.fetch_symbols_sync = function(bufnr)
     end
   end
   for lnum, line in ipairs(lines) do
-    local header = line:match("^[A-Z].+")
-    local padding, arg = line:match("^(%s+)(-.+)")
+    local header = line:match('^[A-Z].+')
+    local padding, arg = line:match('^(%s+)(-.+)')
     if header and lnum > 1 then
       finalize_header()
       local item = {
-        kind = str_to_kind["Interface"],
+        kind = str_to_kind['Interface'],
         name = header,
         level = 0,
         range = {
@@ -35,10 +35,10 @@ M.fetch_symbols_sync = function(bufnr)
       }
       item.selectionRange = item.range
       if
-          not config.post_parse_symbol
-          or config.post_parse_symbol(bufnr, item, {
-            backend_name = "man",
-            lang = "man",
+        not config.post_parse_symbol
+        or config.post_parse_symbol(bufnr, item, {
+            backend_name = 'man',
+            lang = 'man',
           })
           ~= false
       then
@@ -47,7 +47,7 @@ M.fetch_symbols_sync = function(bufnr)
       end
     elseif arg then
       local item = {
-        kind = str_to_kind["Interface"],
+        kind = str_to_kind['Interface'],
         name = arg,
         level = last_header and 1 or 0,
         parent = last_header,
@@ -58,10 +58,10 @@ M.fetch_symbols_sync = function(bufnr)
       }
       item.selectionRange = item.range
       if
-          not config.post_parse_symbol
-          or config.post_parse_symbol(bufnr, item, {
-            backend_name = "man",
-            lang = "man",
+        not config.post_parse_symbol
+        or config.post_parse_symbol(bufnr, item, {
+            backend_name = 'man',
+            lang = 'man',
           })
           ~= false
       then

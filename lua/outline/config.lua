@@ -167,10 +167,7 @@ end
 ---@param conf table
 function M.get_preview_width(conf)
   if conf.relative_width then
-    local relative_width = math.max(
-      math.ceil(vim.o.columns * (conf.width / 100)),
-      conf.min_width
-    )
+    local relative_width = math.max(math.ceil(vim.o.columns * (conf.width / 100)), conf.min_width)
     return relative_width
   else
     return conf.width
@@ -182,10 +179,8 @@ end
 ---@return integer
 function M.get_preview_height(conf, outline_height)
   if conf.relative_height then
-    local relative_height = math.max(
-      math.ceil(outline_height * (conf.height / 100)),
-      conf.min_height
-    )
+    local relative_height =
+      math.max(math.ceil(outline_height * (conf.height / 100)), conf.min_height)
     return relative_height
   else
     return conf.height

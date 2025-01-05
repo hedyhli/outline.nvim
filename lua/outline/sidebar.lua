@@ -388,7 +388,7 @@ function Sidebar:__goto_location(change_focus)
   end
 
   if not vim.api.nvim_win_is_valid(self.code.win) then
-    vim.notify("outline.nvim: Code window closed", vim.log.levels.WARN)
+    vim.notify('outline.nvim: Code window closed', vim.log.levels.WARN)
     return
   end
 

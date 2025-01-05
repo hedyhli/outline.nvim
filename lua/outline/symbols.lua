@@ -47,7 +47,9 @@ end
 
 -- use a stub if lspkind is missing or not configured
 local lspkind = {
-  symbolic = function(kind, opts) return '' end
+  symbolic = function(kind, opts)
+    return ''
+  end,
 }
 
 ---@param kind string|integer
