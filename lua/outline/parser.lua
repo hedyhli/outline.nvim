@@ -47,7 +47,7 @@ local function parse_result(result, depth, hierarchy, parent, bufnr)
       local node = {
         deprecated = value.deprecated,
         kind = value.kind,
-        icon = symbols.icon_from_kind(value.kind, bufnr),
+        icon = symbols.icon_from_kind(value.kind, bufnr, value),
         name = value.name or value.text,
         detail = value.detail,
         line = selectionRange.start.line,

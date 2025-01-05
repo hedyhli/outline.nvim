@@ -923,6 +923,24 @@ symbols = {
 }
 ```
 
+  The `icon_fetcher` function may also accept a third parameter, the symbol
+  which type is outline.Symbol. Provider can add extra info to symbol.
+  For example, access specifier information can be added at the icon location.
+
+```lua
+symbols = {
+  icon_fetcher = function(kind, bufnr, symbol)
+    local access_icons = { public = '○', protected = '◉', private = '●' }
+    local icon = require('outline.config').o.symbols.icons[kind].icon
+    -- ctags provider add `access` key
+    if symbol and symbol.access then
+      return icon .. ' ' .. access_icons[symbol.access]
+    end
+    return icon
+  end,
+}
+```
+
   See [this section](#custom-icons) for other examples of this function.
 
 - You can customize the split command used for creating the outline window split
