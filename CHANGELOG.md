@@ -31,6 +31,9 @@
   ([#106](https://github.com/hedyhli/outline.nvim/pull/106))
 - New provider for manpages
   ([#104](https://github.com/hedyhli/outline.nvim/pull/104))
+- Give `symbols.icon_fetcher` a third parameter of type `outline.Symbol` to
+  access extra information from provider.
+  ([#109](https://github.com/hedyhli/outline.nvim/pull/109))
 
 ### Fixes
 

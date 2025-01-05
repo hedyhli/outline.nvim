@@ -52,7 +52,7 @@ local lspkind = {
 
 ---@param kind string|integer
 ---@param bufnr integer
----@param symbol? outline.Symbol
+---@param symbol outline.Symbol
 ---@return string icon
 function M.icon_from_kind(kind, bufnr, symbol)
   local kindstr = kind

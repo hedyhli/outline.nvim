@@ -400,6 +400,7 @@ Pass a table to the setup call with your configuration options.
     -- icon as string.
     ---@param kind string Key of the icons table below
     ---@param bufnr integer Code buffer
+    ---@param symbol outline.Symbol The current symbol object
     ---@returns string|boolean The icon string to display, such as "f", or `false`
     ---                        to fallback to `icon_source`.
     icon_fetcher = nil,
@@ -910,29 +911,27 @@ symbols = {
 }
 ```
 
-  The `icon_fetcher` function may also accept a second parameter, the buffer
-  number of the code buffer. For example, you can use it to determine the icon
-  to use based on the filetype.
+  The `icon_fetcher` function may also accept a second and third parameter, the buffer
+  number of the code buffer, and the symbol object of type `outline.Symbol`. For
+  example, you can use it to determine the icon to use based on the filetype.
 
 ```lua
 symbols = {
-  icon_fetcher = function(kind, bufnr)
+  icon_fetcher = function(kind, bufnr, symbol)
     local ft = vim.api.nvim_buf_get_option(bufnr, 'ft')
     -- ...
   end,
 }
 ```
 
-  The `icon_fetcher` function may also accept a third parameter, the symbol
-  which type is outline.Symbol. Provider can add extra info to symbol.
-  For example, access specifier information can be added at the icon location.
+  Or display public, protected, and private symbols differently:
 
 ```lua
 symbols = {
   icon_fetcher = function(kind, bufnr, symbol)
     local access_icons = { public = '○', protected = '◉', private = '●' }
     local icon = require('outline.config').o.symbols.icons[kind].icon
-    -- ctags provider add `access` key
+    -- ctags provider might add an `access` key
     if symbol and symbol.access then
       return icon .. ' ' .. access_icons[symbol.access]
     end
@@ -1099,7 +1098,7 @@ that simply returns in plain text, the first letter of the given kind.
 
 ```lua
 symbols = {
-  icon_fetcher = function(kind, bufnr) return kind:sub(1,1) end,
+  icon_fetcher = function(kind, bufnr, symbol) return kind:sub(1,1) end,
 }
 ```
 
