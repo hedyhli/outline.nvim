@@ -368,7 +368,7 @@ Pass a table to the setup call with your configuration options.
   },
 
   providers = {
-    priority = { 'lsp', 'coc', 'markdown', 'norg' },
+    priority = { 'lsp', 'coc', 'markdown', 'norg', 'man' },
     -- Configuration for each provider (3rd party providers are supported)
     lsp = {
       -- Lsp client names to ignore
