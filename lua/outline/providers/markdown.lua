@@ -94,12 +94,12 @@ function M.handle_markdown()
       kind = 15,
       name = title,
       selectionRange = {
-        start = { character = 1, line = line - 1 },
-        ['end'] = { character = 1, line = line - 1 },
+        start = { character = 0, line = line - 1 },
+        ['end'] = { character = 0, line = line - 1 },
       },
       range = {
-        start = { character = 1, line = line - 1 },
-        ['end'] = { character = 1, line = line - 1 },
+        start = { character = 0, line = line - 1 },
+        ['end'] = { character = 0, line = line - 1 },
       },
       children = {},
     }
