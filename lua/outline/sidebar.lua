@@ -347,7 +347,9 @@ function Sidebar:__refresh()
   self.provider, self.provider_info = providers.find_provider()
   if self.provider then
     self.provider.request_symbols(function(res)
-      self:refresh_handler(res)
+      if self.view:is_open() then
+        self:refresh_handler(res)
+      end
     end, nil, self.provider_info)
     return
   end
