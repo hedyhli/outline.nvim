@@ -19,7 +19,7 @@ function Float:open(lines, hl, title, indent)
   indent = indent or 0
 
   self.bufnr = vim.api.nvim_create_buf(false, true)
-  vim.api.nvim_buf_set_option(self.bufnr, 'bufhidden', 'delete')
+  vim.api.nvim_set_option_value('bufhidden', 'delete', { buf = self.bufnr })
 
   local maxwidth = 0
   for _, l in ipairs(lines) do
@@ -60,22 +60,15 @@ function Float:open(lines, hl, title, indent)
     end
   end
 
-  vim.api.nvim_win_set_option(self.winnr, 'winfixwidth', true)
+  vim.api.nvim_set_option_value('winfixwidth', true, { win = self.winnr })
   vim.api.nvim_buf_set_lines(self.bufnr, 0, -1, false, lines)
-  vim.api.nvim_buf_set_option(self.bufnr, 'modifiable', false)
-  vim.api.nvim_buf_set_option(self.bufnr, 'ft', 'OutlineHelp')
+  vim.api.nvim_set_option_value('modifiable', false, { buf = self.bufnr })
+  vim.api.nvim_set_option_value('ft', 'OutlineHelp', { buf = self.bufnr })
 
   if hl then
     self.ns = vim.api.nvim_create_namespace('OutlineHelp')
     for _, h in ipairs(hl) do
-      vim.api.nvim_buf_add_highlight(
-        self.bufnr,
-        self.ns,
-        h.name,
-        h.line,
-        h.from + indent,
-        (h.to ~= -1 and h.to + indent) or -1
-      )
+      vim.hl.range(self.bufnr, self.ns, h.name, { h.line, h.from + indent }, { h.line, (h.to ~= -1 and h.to + indent) or -1 })
     end
   end
 end

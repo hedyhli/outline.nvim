@@ -278,7 +278,7 @@ function M.show_status()
   }
 
   if buf and vim.api.nvim_buf_is_valid(buf) then
-    ctx.ft = vim.api.nvim_buf_get_option(buf, 'ft')
+    ctx.ft = vim.api.nvim_get_option_value('ft', { buf = buf })
     ctx.filter = cfg.o.symbols.user_config_filter[ctx.ft]
     -- 'else' is handled in help.lua
   end

@@ -38,6 +38,7 @@ local function get_appropriate_client(bufnr, capability)
     if _G._outline_nvim_has[10] then
       clients = l.get_clients({ bufnr = bufnr })
     else
+      ---@diagnostic disable-next-line: deprecated
       clients = l.get_active_clients({ bufnr = bufnr })
     end
     for _, client in ipairs(clients) do
@@ -97,7 +98,7 @@ function M.request_symbols(on_symbols, opts, info)
     textDocument = l.util.make_text_document_params(),
   }
   -- XXX: Is bufnr=0 ok here?
-  local status = info.client.request('textDocument/documentSymbol', params, function(err, response)
+  local status = info.client:request('textDocument/documentSymbol', params, function(err, response)
     if err or not response then
       on_symbols(response, opts)
     else
@@ -151,7 +152,7 @@ local function legacy_rename(sidebar, client, node)
     newName = new_name,
   }
   local status, err =
-    client.request_sync('textDocument/rename', params, request_timeout, sidebar.code.buf)
+    client:request_sync('textDocument/rename', params, request_timeout, sidebar.code.buf)
   if status == nil or status.err or err or status.result == nil then
     return false
   end
@@ -210,7 +211,7 @@ function M.show_hover(sidebar)
     bufnr = sidebar.code.buf,
   }
 
-  local status, err = client.request_sync('textDocument/hover', params, request_timeout)
+  local status, err = client:request_sync('textDocument/hover', params, request_timeout)
   if status == nil or status.err or err or not status.result or not status.result.contents then
     return false
   end
@@ -226,7 +227,7 @@ function M.show_hover(sidebar)
     border = cfg.o.preview_window.border,
     width = code_width,
   })
-  vim.api.nvim_win_set_option(winnr, 'winhighlight', cfg.o.preview_window.winhl)
+  vim.api.nvim_set_option_value('winhighlight', cfg.o.preview_window.winhl, { win = winnr })
   return true
 end
 
