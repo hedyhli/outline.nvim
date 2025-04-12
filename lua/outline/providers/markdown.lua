@@ -19,7 +19,7 @@ local M = {
 ---@param config table?
 ---@return boolean ft_is_markdown
 function M.supports_buffer(bufnr, config)
-  local ft = vim.api.nvim_buf_get_option(bufnr, 'ft')
+  local ft = vim.api.nvim_get_option_value('ft', { buf = bufnr })
   if config and config.filetypes then
     for _, ft_check in ipairs(config.filetypes) do
       if ft_check == ft then
