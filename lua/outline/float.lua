@@ -68,7 +68,19 @@ function Float:open(lines, hl, title, indent)
   if hl then
     self.ns = vim.api.nvim_create_namespace('OutlineHelp')
     for _, h in ipairs(hl) do
-      vim.hl.range(self.bufnr, self.ns, h.name, { h.line, h.from + indent }, { h.line, (h.to ~= -1 and h.to + indent) or -1 })
+      if _G._outline_nvim_has[11] then
+        vim.hl.range(self.bufnr, self.ns, h.name, { h.line, h.from + indent }, { h.line, (h.to ~= -1 and h.to + indent) or -1 })
+      else
+        ---@diagnostic disable-next-line:deprecated
+        vim.api.nvim_buf_add_highlight(
+          self.bufnr,
+          self.ns,
+          h.name,
+          h.line,
+          h.from + indent,
+          (h.to ~= -1 and h.to + indent) or -1
+        )
+      end
     end
   end
 end

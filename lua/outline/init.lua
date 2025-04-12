@@ -351,6 +351,7 @@ function M.setup(opts)
     [8] = minor >= 8,
     [9] = minor >= 9,
     [10] = minor >= 10,
+    [11] = minor >= 11,
   }
 
   cfg.setup(opts)
