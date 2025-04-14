@@ -235,7 +235,12 @@ function M.show_hover(sidebar)
   end
 
   local md_lines = l.util.convert_input_to_markdown_lines(status.result.contents)
-  md_lines = l.util.trim_empty_lines(md_lines)
+  if _G._outline_nvim_has[10] then
+    md_lines = vim.split(status.result.contents, '\n', { trimempty = true });
+  else
+    ---@diagnostic disable-next-line:deprecated
+    md_lines = l.util.trim_empty_lines(md_lines)
+  end
   if vim.tbl_isempty(md_lines) then
     -- Request was successful, but there is no hover content
     return true
