@@ -40,8 +40,8 @@ function M.flash_highlight(winnr, lnum, durationMs, hl_group)
   local bufnr = vim.api.nvim_win_get_buf(winnr)
   local ns
   if _G._outline_nvim_has[11] then
-    ns = vim.api.nvim_create_namespace("_outline_nvim_flash")
-    vim.hl.range(bufnr, ns, hl_group, { lnum-1, 0 }, { lnum-1, -1 })
+    ns = vim.api.nvim_create_namespace('_outline_nvim_flash')
+    vim.hl.range(bufnr, ns, hl_group, { lnum - 1, 0 }, { lnum - 1, -1 })
   else
     ---@diagnostic disable-next-line:deprecated
     ns = vim.api.nvim_buf_add_highlight(bufnr, 0, hl_group, lnum - 1, 0, -1)

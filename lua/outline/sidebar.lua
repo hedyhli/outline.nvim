@@ -344,8 +344,8 @@ function Sidebar:__refresh()
   if focused_outline or not self.view:is_open() then
     return
   end
-  local ft = vim.api.nvim_get_option_value("ft", { buf = buf })
-  local listed = vim.api.nvim_get_option_value("ft", { buf = buf })
+  local ft = vim.api.nvim_get_option_value('ft', { buf = buf })
+  local listed = vim.api.nvim_get_option_value('ft', { buf = buf })
   if ft == 'OutlineHelp' or not (listed or ft == 'help') then
     return
   end

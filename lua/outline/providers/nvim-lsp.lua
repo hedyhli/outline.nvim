@@ -161,10 +161,12 @@ local function legacy_rename(sidebar, client, node)
   }
   local status, err
   if _G._outline_nvim_has[11] then
-    status, err = client:request_sync('textDocument/rename', params, request_timeout, sidebar.code.buf)
+    status, err =
+      client:request_sync('textDocument/rename', params, request_timeout, sidebar.code.buf)
   else
     ---@diagnostic disable-next-line
-    status, err = client.request_sync('textDocument/rename', params, request_timeout, sidebar.code.buf)
+    status, err =
+      client.request_sync('textDocument/rename', params, request_timeout, sidebar.code.buf)
   end
   if status == nil or status.err or err or status.result == nil then
     return false
@@ -236,7 +238,7 @@ function M.show_hover(sidebar)
 
   local md_lines = l.util.convert_input_to_markdown_lines(status.result.contents)
   if _G._outline_nvim_has[10] then
-    md_lines = vim.split(status.result.contents, '\n', { trimempty = true });
+    md_lines = vim.split(status.result.contents, '\n', { trimempty = true })
   else
     ---@diagnostic disable-next-line:deprecated
     md_lines = l.util.trim_empty_lines(md_lines)
