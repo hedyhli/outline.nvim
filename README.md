@@ -918,6 +918,7 @@ symbols = {
 ```lua
 symbols = {
   icon_fetcher = function(kind, bufnr, symbol)
+    -- Use nvim_buf_get_option(bufnr, 'ft') for nvim 0.7 users
     local ft = vim.api.nvim_get_option_value('ft', { buf = bufnr })
     -- ...
   end,
@@ -1112,6 +1113,7 @@ and `icons` as fallback.
 ```lua
 symbols = {
   icon_fetcher = function(kind, bufnr)
+    -- Use nvim_buf_get_option(bufnr, 'ft') for nvim 0.7 users
     local ft = vim.api.nvim_get_option_value('ft', { buf = bufnr })
     -- ...
   end,
@@ -1152,6 +1154,7 @@ other filetypes.
 ```lua
 symbols = {
   icon_fetcher = function(k, buf)
+    -- Use nvim_buf_get_option(bufnr, 'ft') for nvim 0.7 users
     local ft = vim.api.nvim_get_option_value("ft", { buf = buf })
     if ft == 'markdown' then
       return ""
