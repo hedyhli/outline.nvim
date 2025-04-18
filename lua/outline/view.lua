@@ -1,5 +1,6 @@
 local cfg = require('outline.config')
 local highlight = require('outline.highlight')
+local utils = require('outline.utils')
 
 ---@class outline.View
 local View = {}
@@ -19,10 +20,10 @@ function View:setup_view(split_command)
   self.buf = vim.api.nvim_create_buf(false, true)
 
   -- set filetype
-  vim.api.nvim_set_option_value('filetype', 'Outline', { buf = self.buf })
+  utils.buf_set_option(self.buf, 'filetype', 'Outline')
 
   -- delete buffer when window is closed / buffer is hidden
-  vim.api.nvim_set_option_value('bufhidden', 'delete', { buf = self.buf })
+  utils.buf_set_option(self.buf, 'bufhidden', 'delete')
 
   -- create a split
   vim.cmd(split_command)
@@ -38,38 +39,38 @@ function View:setup_view(split_command)
   end
 
   -- window stuff
-  vim.api.nvim_set_option_value('spell', false, { win = self.win })
-  vim.api.nvim_set_option_value('signcolumn', 'no', { win = self.win })
-  vim.api.nvim_set_option_value('foldcolumn', '0', { win = self.win })
-  vim.api.nvim_set_option_value('number', false, { win = self.win })
-  vim.api.nvim_set_option_value('relativenumber', false, { win = self.win })
-  vim.api.nvim_set_option_value('winfixwidth', true, { win = self.win })
-  vim.api.nvim_set_option_value('list', false, { win = self.win })
-  vim.api.nvim_set_option_value('wrap', cfg.o.outline_window.wrap, { win = self.win })
-  vim.api.nvim_set_option_value('winhl', cfg.o.outline_window.winhl, { win = self.win })
-  vim.api.nvim_set_option_value('linebreak', true, { win = self.win }) -- only has effect when wrap=true
-  vim.api.nvim_set_option_value('breakindent', true, { win = self.win }) -- only has effect when wrap=true
+  utils.win_set_option(self.win, 'spell', false)
+  utils.win_set_option(self.win, 'signcolumn', 'no')
+  utils.win_set_option(self.win, 'foldcolumn', '0')
+  utils.win_set_option(self.win, 'number', false)
+  utils.win_set_option(self.win, 'relativenumber', false)
+  utils.win_set_option(self.win, 'winfixwidth', true)
+  utils.win_set_option(self.win, 'list', false)
+  utils.win_set_option(self.win, 'wrap', cfg.o.outline_window.wrap)
+  utils.win_set_option(self.win, 'winhl', cfg.o.outline_window.winhl)
+  utils.win_set_option(self.win, 'linebreak', true) -- only has effect when wrap=true
+  utils.win_set_option(self.win, 'breakindent', true) -- only has effect when wrap=true
   --  Would be nice to use guides.markers.vertical as part of showbreak to keep
   --  continuity of the tree UI, but there's currently no way to style the
   --  color, apart from globally overriding hl-NonText, which will potentially
   --  mess with other theme/user settings. So just use empty spaces for now.
-  vim.api.nvim_set_option_value('showbreak', '      ', { win = self.win }) -- only has effect when wrap=true.
+  utils.win_set_option(self.win, 'showbreak', '      ') -- only has effect when wrap=true.
   -- buffer stuff
   local tab = vim.api.nvim_get_current_tabpage()
   vim.api.nvim_buf_set_name(self.buf, 'OUTLINE_' .. tostring(tab))
-  vim.api.nvim_set_option_value('modifiable', false, { buf = self.buf })
+  utils.buf_set_option(self.buf, 'modifiable', false)
 
   if cfg.o.outline_window.show_numbers or cfg.o.outline_window.show_relative_numbers then
-    vim.api.nvim_set_option_value('nu', true, { win = self.win })
+    utils.win_set_option(self.win, 'nu', true)
   end
 
   if cfg.o.outline_window.show_relative_numbers then
-    vim.api.nvim_set_option_value('rnu', true, { win = self.win })
+    utils.win_set_option(self.win, 'rnu', true)
   end
 
   local cl = cfg.o.outline_window.show_cursorline
   if cl == true or cl == 'focus_in_outline' then
-    vim.api.nvim_set_option_value('cursorline', true, { win = self.win })
+    utils.win_set_option(self.win, 'cursorline', true)
   end
 end
 
@@ -100,9 +101,9 @@ end
 ---@param lines string[]
 function View:rewrite_lines(lines)
   if self.buf and vim.api.nvim_buf_is_valid(self.buf) then
-    vim.api.nvim_set_option_value('modifiable', true, { buf = self.buf })
+    utils.buf_set_option(self.buf, 'modifiable', true)
     vim.api.nvim_buf_set_lines(self.buf, 0, -1, false, lines)
-    vim.api.nvim_set_option_value('modifiable', false, { buf = self.buf })
+    utils.buf_set_option(self.buf, 'modifiable', false)
   end
 end
 

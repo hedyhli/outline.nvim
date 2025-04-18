@@ -1,6 +1,7 @@
 local cfg = require('outline.config')
 local jsx = require('outline.providers.jsx')
 local lsp_utils = require('outline.utils.lsp')
+local utils = require('outline.utils')
 
 local l = vim.lsp
 
@@ -252,7 +253,7 @@ function M.show_hover(sidebar)
     border = cfg.o.preview_window.border,
     width = code_width,
   })
-  vim.api.nvim_set_option_value('winhighlight', cfg.o.preview_window.winhl, { win = winnr })
+  utils.win_set_option(winnr, 'winhighlight', cfg.o.preview_window.winhl)
   return true
 end
 

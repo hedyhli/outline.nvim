@@ -5,7 +5,7 @@ local folding = require('outline.folding')
 local parser = require('outline.parser')
 local providers = require('outline.providers.init')
 local symbols = require('outline.symbols')
-local utils = require('outline.utils.init')
+local utils = require('outline.utils')
 
 local strlen = vim.fn.strlen
 
@@ -249,7 +249,7 @@ function Sidebar:update_cursor_style()
   local hide_cursor = type(cl) ~= 'string'
 
   if cl == 'focus_in_outline' or cl == 'focus_in_code' then
-    vim.api.nvim_set_option_value('cursorline', cl == 'focus_in_outline', { win = 0 })
+    utils.win_set_option(0, 'cursorline', cl == 'focus_in_outline')
     hide_cursor = cl == 'focus_in_outline'
   end
 
@@ -265,7 +265,7 @@ function Sidebar:reset_cursor_style()
   local cl = cfg.o.outline_window.show_cursorline
 
   if cl == 'focus_in_outline' or cl == 'focus_in_code' then
-    vim.api.nvim_set_option_value('cursorline', cl ~= 'focus_in_outline', { win = 0 })
+    utils.win_set_option(0, 'cursorline', cl ~= 'focus_in_outline')
   end
   -- vim.opt doesn't seem to provide a way to remove last item, like a pop()
   -- vim.o.guicursor = vim.o.guicursor:gsub(",n.-:.-$", "")
@@ -344,8 +344,8 @@ function Sidebar:__refresh()
   if focused_outline or not self.view:is_open() then
     return
   end
-  local ft = vim.api.nvim_get_option_value('ft', { buf = buf })
-  local listed = vim.api.nvim_get_option_value('ft', { buf = buf })
+  local ft = utils.buf_get_option(buf, 'ft')
+  local listed = utils.buf_get_option(buf, 'ft')
   if ft == 'OutlineHelp' or not (listed or ft == 'help') then
     return
   end

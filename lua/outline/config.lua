@@ -208,7 +208,7 @@ end
 ---@param bufnr integer
 ---@return boolean include
 function M.should_include_symbol(kind, bufnr)
-  local ft = vim.api.nvim_get_option_value('ft', { buf = bufnr })
+  local ft = utils.buf_get_option(bufnr, 'ft')
   -- There can only be one kind in markdown and norg as of now
   if ft == 'markdown' or ft == 'norg' or kind == nil then
     return true

@@ -1,4 +1,5 @@
 local config = require('outline.config')
+local utils = require('outline.utils')
 
 local M = {}
 
@@ -14,7 +15,7 @@ function M.is_buf_attached_to_lsp(bufnr)
 end
 
 function M.is_buf_markdown(bufnr)
-  return vim.api.nvim_get_option_value('ft', { buf = bufnr }) == 'markdown'
+  return utils.buf_get_option(bufnr, 'ft') == 'markdown'
 end
 
 --- Merge all client token lists in an LSP response

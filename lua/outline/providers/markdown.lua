@@ -15,11 +15,13 @@ local M = {
   name = 'markdown',
 }
 
+local utils = require('outline.utils')
+
 ---@param bufnr integer
 ---@param config table?
 ---@return boolean ft_is_markdown
 function M.supports_buffer(bufnr, config)
-  local ft = vim.api.nvim_get_option_value('ft', { buf = bufnr })
+  local ft = utils.buf_get_option(bufnr, 'ft')
   if config and config.filetypes then
     for _, ft_check in ipairs(config.filetypes) do
       if ft_check == ft then

@@ -123,4 +123,54 @@ function M.deepcopy_excluding(t, keys)
   return res
 end
 
+--- Get option value of given buffer.
+--- @param bufnr integer
+--- @param name string
+--- @return any
+function M.buf_get_option(bufnr, name)
+  if _G._outline_nvim_has[10] then
+    return vim.api.nvim_get_option_value(name, { buf = bufnr })
+  else
+    ---@diagnostic disable-next-line:deprecated
+    return vim.api.nvim_buf_get_option(bufnr, name)
+  end
+end
+
+--- Set option value of given buffer.
+--- @param bufnr integer
+--- @param name string
+function M.buf_set_option(bufnr, name, value)
+  if _G._outline_nvim_has[10] then
+    return vim.api.nvim_set_option_value(name, value, { buf = bufnr })
+  else
+    ---@diagnostic disable-next-line:deprecated
+    return vim.api.nvim_buf_set_option(bufnr, name, value)
+  end
+end
+
+--- Get option value of given window.
+--- @param winnr integer
+--- @param name string
+--- @return any
+function M.win_get_option(winnr, name)
+  if _G._outline_nvim_has[10] then
+    return vim.api.nvim_get_option_value(name, { win = winnr })
+  else
+    ---@diagnostic disable-next-line:deprecated
+    return vim.api.nvim_buf_get_option(winnr, name)
+  end
+end
+
+--- Set option value of given window.
+--- @param winnr integer
+--- @param name string
+function M.win_set_option(winnr, name, value)
+  if _G._outline_nvim_has[10] then
+    return vim.api.nvim_set_option_value(name, value, { win = winnr })
+  else
+    ---@diagnostic disable-next-line:deprecated
+    return vim.api.nvim_win_set_option(winnr, name, value)
+  end
+end
+
 return M

@@ -1,4 +1,5 @@
 local cfg = require('outline.config')
+local utils = require('outline.utils')
 
 -- A floating window to preview the location of a symbol from the outline.
 -- Classical preview reads entire lines into a new buffer for preview. Live
@@ -151,12 +152,12 @@ end
 
 ---Set buf & win options, and setup highlight
 function Preview:setup()
-  vim.api.nvim_set_option_value('winhl', self.conf.winhl, { win = self.win })
-  vim.api.nvim_set_option_value('winblend', self.conf.winblend, { win = self.win })
+  utils.win_set_option(self.win, 'winhl', self.conf.winhl)
+  utils.win_set_option(self.win, 'winblend', self.conf.winblend)
 
   local code_buf = self.s.code.buf
-  local ft = vim.api.nvim_get_option_value('filetype', { buf = code_buf })
-  vim.api.nvim_set_option_value('syntax', ft, { buf = self.buf })
+  local ft = utils.buf_get_option(code_buf, 'filetype')
+  utils.buf_set_option(self.buf, 'syntax', ft)
 
   local ts_highlight_fn = vim.treesitter.start
   if not _G._outline_nvim_has[8] then
@@ -167,9 +168,9 @@ function Preview:setup()
   end
   pcall(ts_highlight_fn, self.buf, ft)
 
-  vim.api.nvim_set_option_value('bufhidden', 'delete', { buf = self.buf })
-  vim.api.nvim_set_option_value('modifiable', false, { buf = self.buf })
-  vim.api.nvim_set_option_value('cursorline', true, { win = self.win })
+  utils.buf_set_option(self.buf, 'bufhidden', 'delete')
+  utils.buf_set_option(self.buf, 'modifiable', false)
+  utils.win_set_option(self.win, 'cursorline', true)
 end
 
 function Preview:update()
@@ -180,9 +181,9 @@ function Preview:update()
   local lines = vim.api.nvim_buf_get_lines(self.s.code.buf, 0, -1, false)
 
   if self.buf ~= nil then
-    vim.api.nvim_set_option_value('modifiable', true, { buf = self.buf })
+    utils.buf_set_option(self.buf, 'modifiable', true)
     vim.api.nvim_buf_set_lines(self.buf, 0, -1, false, lines)
-    vim.api.nvim_set_option_value('modifiable', false, { buf = self.buf })
+    utils.buf_set_option(self.buf, 'modifiable', false)
     vim.api.nvim_win_set_cursor(self.win, { node.line + 1, node.character })
   end
 end
@@ -221,7 +222,7 @@ end
 ---Creates new preview window and sets the content. Calls setup and set_lines.
 function LivePreview:create()
   self.codewin = self.s.code.win
-  self.initial_cursorline = vim.api.nvim_get_option_value('cursorline', { win = self.s.code.win })
+  self.initial_cursorline = utils.win_get_option(self.s.code.win, 'cursorline')
   self.outline_height = vim.api.nvim_win_get_height(self.s.view.win)
   self.width = cfg.get_preview_width(self.conf)
   self.height = cfg.get_preview_height(self.conf, self.outline_height)
@@ -256,9 +257,9 @@ end
 
 ---Set buf & win options, and autocmds
 function LivePreview:setup()
-  vim.api.nvim_set_option_value('winhl', self.conf.winhl, { win = self.win })
-  vim.api.nvim_set_option_value('winblend', self.conf.winblend, { win = self.win })
-  vim.api.nvim_set_option_value('cursorline', true, { win = self.win })
+  utils.win_set_option(self.win, 'winhl', self.conf.winhl)
+  utils.win_set_option(self.win, 'winblend', self.conf.winblend)
+  utils.win_set_option(self.win, 'cursorline', true)
 
   vim.api.nvim_create_autocmd('WinClosed', {
     pattern = tostring(self.win),
@@ -273,7 +274,7 @@ function LivePreview:setup()
     once = true,
     callback = function()
       -- This doesn't work at all?
-      vim.api.nvim_set_option_value('cursorline', self.initial_cursorline, { win = self.win })
+      utils.win_set_option(self.win, 'cursorline', self.initial_cursorline)
     end,
   })
 end
@@ -286,7 +287,7 @@ end
 function LivePreview:focus()
   vim.api.nvim_set_current_win(self.win)
   -- Remove this when the autocmd for WinEnter works above
-  vim.api.nvim_set_option_value('cursorline', self.initial_cursorline, { win = self.win })
+  utils.win_set_option(self.win, 'cursorline', self.initial_cursorline)
 end
 
 ---Create, focus, or update preview
