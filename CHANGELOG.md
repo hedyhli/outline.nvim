@@ -1,6 +1,8 @@
 # Changelog
 
 <!--
+## Main branch
+
 ### Breaking changes
 
 ### Features
@@ -12,7 +14,7 @@
 ### Others
 -->
 
-## Main branch
+## v1.1.0
 
 ### Features
 
