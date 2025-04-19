@@ -50,6 +50,8 @@
 - Use `token.location.range` and `token.range` fallback when selection range is
   not provided.
   ([#105](https://github.com/hedyhli/outline.nvim/pull/105))
+- Neovim 0.11 support
+  ([#131](https://github.com/hedyhli/outline.nvim/pull/131))
 
 ## v1.0.0
 
