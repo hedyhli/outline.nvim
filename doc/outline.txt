@@ -1050,7 +1050,7 @@ other filetypes.
 >lua
     symbols = {
       icon_fetcher = function(k, buf)
-        -- Use nvim_buf_get_option(bufnr, 'ft') for nvim 0.7 users
+        -- Use nvim_buf_get_option(buf, 'ft') for nvim 0.7 users
         local ft = vim.api.nvim_get_option_value("ft", { buf = buf })
         if ft == 'markdown' then
           return ""
