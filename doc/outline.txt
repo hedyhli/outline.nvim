@@ -500,7 +500,7 @@ and uses regex; the built-in norg <./lua/outline/providers/norg.lua> provider
 is an example which uses treesitter.
 
 All providers should support at least nvim 0.7. You can make use of
-`_G._outline_nvim_has` with fields `[8]`, `[9]`, and `[10]`. For instance,
+`_G._outline_nvim_has` with fields `[8]`, `[9]`, `[10]`, and `[11]`. For instance,
 `_G._outline_nvim_has[8]` is equivalent to: `vim.fn.has('nvim-0.8') == 1`.
 
 If a higher nvim version is required, it is recommended to check for this
@@ -806,7 +806,8 @@ based on the filetype.
 >lua
     symbols = {
       icon_fetcher = function(kind, bufnr, symbol)
-        local ft = vim.api.nvim_buf_get_option(bufnr, 'ft')
+        -- Use nvim_buf_get_option_value(buf, 'ft') for nvim 0.7 users
+        local ft = vim.api.nvim_get_option_value('ft', { buf = bufnr })
         -- ...
       end,
     }
@@ -1007,7 +1008,8 @@ DIFFERENT ICONS BASED ON FILETYPE ~
 >lua
     symbols = {
       icon_fetcher = function(kind, bufnr)
-        local ft = vim.api.nvim_buf_get_option(bufnr, 'ft')
+        -- Use nvim_buf_get_option_value(buf, 'ft') for nvim 0.7 users
+        local ft = vim.api.nvim_get_option_value('ft', { buf = bufnr })
         -- ...
       end,
     }
@@ -1048,7 +1050,8 @@ other filetypes.
 >lua
     symbols = {
       icon_fetcher = function(k, buf)
-        local ft = vim.api.nvim_buf_get_option(buf, "ft")
+        -- Use nvim_buf_get_option_value(buf, 'ft') for nvim 0.7 users
+        local ft = vim.api.nvim_get_option_value("ft", { buf = buf })
         if ft == 'markdown' then
           return ""
         end

@@ -38,7 +38,14 @@ function M.flash_highlight(winnr, lnum, durationMs, hl_group)
     durationMs = 400
   end
   local bufnr = vim.api.nvim_win_get_buf(winnr)
-  local ns = vim.api.nvim_buf_add_highlight(bufnr, 0, hl_group, lnum - 1, 0, -1)
+  local ns
+  if _G._outline_nvim_has[11] then
+    ns = vim.api.nvim_create_namespace('_outline_nvim_flash')
+    vim.hl.range(bufnr, ns, hl_group, { lnum - 1, 0 }, { lnum - 1, -1 })
+  else
+    ---@diagnostic disable-next-line:deprecated
+    ns = vim.api.nvim_buf_add_highlight(bufnr, 0, hl_group, lnum - 1, 0, -1)
+  end
   local remove_highlight = function()
     pcall(vim.api.nvim_buf_clear_namespace, bufnr, ns, 0, -1)
   end
@@ -114,6 +121,56 @@ function M.deepcopy_excluding(t, keys)
   end
 
   return res
+end
+
+--- Get option value of given buffer.
+--- @param bufnr integer
+--- @param name string
+--- @return any
+function M.buf_get_option(bufnr, name)
+  if _G._outline_nvim_has[10] then
+    return vim.api.nvim_get_option_value(name, { buf = bufnr })
+  else
+    ---@diagnostic disable-next-line:deprecated
+    return vim.api.nvim_buf_get_option(bufnr, name)
+  end
+end
+
+--- Set option value of given buffer.
+--- @param bufnr integer
+--- @param name string
+function M.buf_set_option(bufnr, name, value)
+  if _G._outline_nvim_has[10] then
+    return vim.api.nvim_set_option_value(name, value, { buf = bufnr })
+  else
+    ---@diagnostic disable-next-line:deprecated
+    return vim.api.nvim_buf_set_option(bufnr, name, value)
+  end
+end
+
+--- Get option value of given window.
+--- @param winnr integer
+--- @param name string
+--- @return any
+function M.win_get_option(winnr, name)
+  if _G._outline_nvim_has[10] then
+    return vim.api.nvim_get_option_value(name, { win = winnr })
+  else
+    ---@diagnostic disable-next-line:deprecated
+    return vim.api.nvim_buf_get_option(winnr, name)
+  end
+end
+
+--- Set option value of given window.
+--- @param winnr integer
+--- @param name string
+function M.win_set_option(winnr, name, value)
+  if _G._outline_nvim_has[10] then
+    return vim.api.nvim_set_option_value(name, value, { win = winnr })
+  else
+    ---@diagnostic disable-next-line:deprecated
+    return vim.api.nvim_win_set_option(winnr, name, value)
+  end
 end
 
 return M

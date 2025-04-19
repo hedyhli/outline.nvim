@@ -1,4 +1,5 @@
 local config = require('outline.config')
+local utils = require('outline.utils')
 
 local M = {}
 
@@ -7,13 +8,14 @@ function M.is_buf_attached_to_lsp(bufnr)
   if _G._outline_nvim_has[10] then
     clients = vim.lsp.get_clients({ bufnr = bufnr or 0 })
   else
+    ---@diagnostic disable-next-line: deprecated
     clients = vim.lsp.get_active_clients({ bufnr = bufnr or 0 })
   end
   return clients ~= nil and #clients > 0
 end
 
 function M.is_buf_markdown(bufnr)
-  return vim.api.nvim_buf_get_option(bufnr, 'ft') == 'markdown'
+  return utils.buf_get_option(bufnr, 'ft') == 'markdown'
 end
 
 --- Merge all client token lists in an LSP response

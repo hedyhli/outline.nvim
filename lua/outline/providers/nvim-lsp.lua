@@ -1,6 +1,7 @@
 local cfg = require('outline.config')
 local jsx = require('outline.providers.jsx')
 local lsp_utils = require('outline.utils.lsp')
+local utils = require('outline.utils')
 
 local l = vim.lsp
 
@@ -18,7 +19,7 @@ function M.get_status(info)
   return { 'client: ' .. info.client.name }
 end
 
----@param client lsp.client
+---@param client vim.lsp.Client
 ---@param capability string
 ---@return boolean
 local function _check_client(client, capability)
@@ -30,7 +31,7 @@ end
 
 ---@param bufnr integer
 ---@param capability string
----@return lsp.client?
+---@return vim.lsp.Client?
 local function get_appropriate_client(bufnr, capability)
   local clients, use_client
 
@@ -38,6 +39,7 @@ local function get_appropriate_client(bufnr, capability)
     if _G._outline_nvim_has[10] then
       clients = l.get_clients({ bufnr = bufnr })
     else
+      ---@diagnostic disable-next-line: deprecated
       clients = l.get_active_clients({ bufnr = bufnr })
     end
     for _, client in ipairs(clients) do
@@ -97,14 +99,22 @@ function M.request_symbols(on_symbols, opts, info)
     textDocument = l.util.make_text_document_params(),
   }
   -- XXX: Is bufnr=0 ok here?
-  local status = info.client.request('textDocument/documentSymbol', params, function(err, response)
+  local method = 'textDocument/documentSymbol'
+  local callback = function(err, response)
     if err or not response then
       on_symbols(response, opts)
     else
       response = postprocess_symbols(response)
       on_symbols(response, opts)
     end
-  end, 0)
+  end
+  local bufnr = 0
+  local status
+  if _G._outline_nvim_has[11] then
+    status = info.client:request(method, params, callback, bufnr)
+  else
+    status = info.client.request(method, params, callback, bufnr)
+  end
   if not status then
     on_symbols(nil, opts)
   end
@@ -134,7 +144,7 @@ end
 
 ---@see rename_symbol
 ---@param sidebar outline.Sidebar
----@param client lsp.client
+---@param client vim.lsp.Client
 ---@param node outline.FlatSymbol
 ---@return boolean success
 local function legacy_rename(sidebar, client, node)
@@ -150,8 +160,15 @@ local function legacy_rename(sidebar, client, node)
     bufnr = sidebar.code.buf,
     newName = new_name,
   }
-  local status, err =
-    client.request_sync('textDocument/rename', params, request_timeout, sidebar.code.buf)
+  local status, err
+  if _G._outline_nvim_has[11] then
+    status, err =
+      client:request_sync('textDocument/rename', params, request_timeout, sidebar.code.buf)
+  else
+    ---@diagnostic disable-next-line
+    status, err =
+      client.request_sync('textDocument/rename', params, request_timeout, sidebar.code.buf)
+  end
   if status == nil or status.err or err or status.result == nil then
     return false
   end
@@ -210,13 +227,23 @@ function M.show_hover(sidebar)
     bufnr = sidebar.code.buf,
   }
 
-  local status, err = client.request_sync('textDocument/hover', params, request_timeout)
+  local status, err
+  if _G._outline_nvim_has[11] then
+    status, err = client:request_sync('textDocument/hover', params, request_timeout)
+  else
+    status, err = client.request_sync('textDocument/hover', params, request_timeout)
+  end
   if status == nil or status.err or err or not status.result or not status.result.contents then
     return false
   end
 
   local md_lines = l.util.convert_input_to_markdown_lines(status.result.contents)
-  md_lines = l.util.trim_empty_lines(md_lines)
+  if _G._outline_nvim_has[10] then
+    md_lines = vim.split(status.result.contents, '\n', { trimempty = true })
+  else
+    ---@diagnostic disable-next-line:deprecated
+    md_lines = l.util.trim_empty_lines(md_lines)
+  end
   if vim.tbl_isempty(md_lines) then
     -- Request was successful, but there is no hover content
     return true
@@ -226,7 +253,7 @@ function M.show_hover(sidebar)
     border = cfg.o.preview_window.border,
     width = code_width,
   })
-  vim.api.nvim_win_set_option(winnr, 'winhighlight', cfg.o.preview_window.winhl)
+  utils.win_set_option(winnr, 'winhighlight', cfg.o.preview_window.winhl)
   return true
 end
 

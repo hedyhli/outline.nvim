@@ -10,7 +10,9 @@ local M = {
 ---@param bufnr integer
 function M.clear_all_ns(bufnr)
   if vim.api.nvim_buf_is_valid(bufnr) then
-    pcall(function() vim.api.nvim_buf_clear_namespace(bufnr, -1, 0, -1) end)
+    pcall(function()
+      vim.api.nvim_buf_clear_namespace(bufnr, -1, 0, -1)
+    end)
   end
 end
 
@@ -29,9 +31,14 @@ function M.hovers(bufnr, nodes)
   for line, node in ipairs(nodes) do
     if node.hovered then
       -- stylua: ignore start
-      vim.api.nvim_buf_add_highlight(
-        bufnr, M.ns.hover, 'OutlineCurrent', line - 1, node.prefix_length, -1
-      )
+      if _G._outline_nvim_has[11] then
+        vim.hl.range(bufnr, M.ns.hover, 'OutlineCurrent', { line - 1, node.prefix_length }, { line - 1, -1 })
+      else
+        ---@diagnostic disable-next-line:deprecated
+        vim.api.nvim_buf_add_highlight(
+          bufnr, M.ns.hover, 'OutlineCurrent', line - 1, node.prefix_length, -1
+        )
+      end
       -- stylua: ignore end
     end
   end
@@ -43,9 +50,14 @@ end
 function M.items(bufnr, hl_list)
   for _, h in ipairs(hl_list) do
     -- stylua: ignore start
-    vim.api.nvim_buf_add_highlight(
-      bufnr, M.ns.items, h.name, h.line - 1, h.from, h.to
-    )
+    if _G._outline_nvim_has[11] then
+      vim.hl.range(bufnr, M.ns.items, h.name, { h.line - 1, h.from }, { h.line - 1, h.to })
+    else
+      ---@diagnostic disable-next-line:deprecated
+      vim.api.nvim_buf_add_highlight(
+        bufnr, M.ns.items, h.name, h.line - 1, h.from, h.to
+      )
+    end
     -- stylua: ignore end
   end
 end

@@ -1,6 +1,8 @@
 ---@class outline.Float
 local Float = {}
 
+local utils = require('outline.utils')
+
 ---@class outline.Float
 ---@field bufnr integer
 ---@field winnr integer
@@ -19,7 +21,7 @@ function Float:open(lines, hl, title, indent)
   indent = indent or 0
 
   self.bufnr = vim.api.nvim_create_buf(false, true)
-  vim.api.nvim_buf_set_option(self.bufnr, 'bufhidden', 'delete')
+  utils.buf_set_option(self.bufnr, 'bufhidden', 'delete')
 
   local maxwidth = 0
   for _, l in ipairs(lines) do
@@ -60,22 +62,33 @@ function Float:open(lines, hl, title, indent)
     end
   end
 
-  vim.api.nvim_win_set_option(self.winnr, 'winfixwidth', true)
+  utils.win_set_option(self.winnr, 'winfixwidth', true)
   vim.api.nvim_buf_set_lines(self.bufnr, 0, -1, false, lines)
-  vim.api.nvim_buf_set_option(self.bufnr, 'modifiable', false)
-  vim.api.nvim_buf_set_option(self.bufnr, 'ft', 'OutlineHelp')
+  utils.buf_set_option(self.bufnr, 'modifiable', false)
+  utils.buf_set_option(self.bufnr, 'ft', 'OutlineHelp')
 
   if hl then
     self.ns = vim.api.nvim_create_namespace('OutlineHelp')
     for _, h in ipairs(hl) do
-      vim.api.nvim_buf_add_highlight(
-        self.bufnr,
-        self.ns,
-        h.name,
-        h.line,
-        h.from + indent,
-        (h.to ~= -1 and h.to + indent) or -1
-      )
+      if _G._outline_nvim_has[11] then
+        vim.hl.range(
+          self.bufnr,
+          self.ns,
+          h.name,
+          { h.line, h.from + indent },
+          { h.line, (h.to ~= -1 and h.to + indent) or -1 }
+        )
+      else
+        ---@diagnostic disable-next-line:deprecated
+        vim.api.nvim_buf_add_highlight(
+          self.bufnr,
+          self.ns,
+          h.name,
+          h.line,
+          h.from + indent,
+          (h.to ~= -1 and h.to + indent) or -1
+        )
+      end
     end
   end
 end

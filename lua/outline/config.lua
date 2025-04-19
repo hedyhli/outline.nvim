@@ -208,7 +208,7 @@ end
 ---@param bufnr integer
 ---@return boolean include
 function M.should_include_symbol(kind, bufnr)
-  local ft = vim.api.nvim_buf_get_option(bufnr, 'ft')
+  local ft = utils.buf_get_option(bufnr, 'ft')
   -- There can only be one kind in markdown and norg as of now
   if ft == 'markdown' or ft == 'norg' or kind == nil then
     return true
@@ -232,7 +232,7 @@ function M.should_include_symbol(kind, bufnr)
   return filter_table[kind] ~= false
 end
 
----@param client lsp.client|number
+---@param client vim.lsp.Client|number
 function M.is_client_blacklisted(client)
   if not client then
     return false

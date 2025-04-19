@@ -3,7 +3,7 @@ local cfg = require('outline.config')
 local highlight = require('outline.highlight')
 local providers = require('outline.providers.init')
 local symbols = require('outline.symbols')
-local utils = require('outline.utils.init')
+local utils = require('outline.utils')
 
 local M = {
   ---@type outline.Sidebar[]
@@ -278,7 +278,7 @@ function M.show_status()
   }
 
   if buf and vim.api.nvim_buf_is_valid(buf) then
-    ctx.ft = vim.api.nvim_buf_get_option(buf, 'ft')
+    ctx.ft = utils.buf_get_option(buf, 'ft')
     ctx.filter = cfg.o.symbols.user_config_filter[ctx.ft]
     -- 'else' is handled in help.lua
   end
@@ -351,6 +351,7 @@ function M.setup(opts)
     [8] = minor >= 8,
     [9] = minor >= 9,
     [10] = minor >= 10,
+    [11] = minor >= 11,
   }
 
   cfg.setup(opts)

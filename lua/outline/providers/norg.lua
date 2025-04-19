@@ -17,11 +17,12 @@ local M = {
   ]
   ]],
 }
+local utils = require('outline.utils')
 
 ---@param bufnr integer
 ---@param config table?
 function M.supports_buffer(bufnr, config)
-  if vim.api.nvim_buf_get_option(bufnr, 'ft') ~= 'norg' then
+  if utils.buf_get_option(bufnr, 'ft') ~= 'norg' then
     return false
   end
 

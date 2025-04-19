@@ -15,11 +15,13 @@ local M = {
   name = 'markdown',
 }
 
+local utils = require('outline.utils')
+
 ---@param bufnr integer
 ---@param config table?
 ---@return boolean ft_is_markdown
 function M.supports_buffer(bufnr, config)
-  local ft = vim.api.nvim_buf_get_option(bufnr, 'ft')
+  local ft = utils.buf_get_option(bufnr, 'ft')
   if config and config.filetypes then
     for _, ft_check in ipairs(config.filetypes) do
       if ft_check == ft then
@@ -27,7 +29,7 @@ function M.supports_buffer(bufnr, config)
       end
     end
   end
-  return ft == "markdown"
+  return ft == 'markdown'
 end
 
 -- Parses markdown files and returns a table of SymbolInformation[] which is
@@ -47,8 +49,8 @@ function M.handle_markdown()
       goto nextline
     end
 
-    local next_value = lines[line+1]
-    local is_emtpy_line = #value:gsub("^%s*(.-)%s*$", "%1") == 0
+    local next_value = lines[line + 1]
+    local is_emtpy_line = #value:gsub('^%s*(.-)%s*$', '%1') == 0
 
     local header, title = string.match(value, '^(#+)%s+(.+)$')
     if not header and next_value and not is_emtpy_line then
