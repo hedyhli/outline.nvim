@@ -236,6 +236,8 @@ Pass a table to the setup call with your configuration options.
     -- See :help 'winhl'
     -- To change background color to "CustomHl" for example, use "Normal:CustomHl".
     winhl = '',
+    -- Message displayed when there are no providers avialable.
+    no_provider_message = 'No supported provider...'
   },
 
   outline_items = {
