@@ -1,4 +1,4 @@
-*outline.txt*            For NVIM v0.7.0
+*outline.txt*             For NVIM v0.7.0
 
 ==============================================================================
 Table of Contents                                  *outline-table-of-contents*
@@ -185,6 +185,8 @@ Show defaults ~
         -- See :help 'winhl'
         -- To change background color to "CustomHl" for example, use "Normal:CustomHl".
         winhl = '',
+        -- Message displayed when there are no providers avialable.
+        no_provider_message = 'No supported provider...'
       },
     
       outline_items = {
