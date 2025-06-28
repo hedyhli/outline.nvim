@@ -14,6 +14,21 @@
 ### Others
 -->
 
+## Main branch
+
+### Features
+
+- New configuration option `outline_window.no_provider_message` for the message
+  shown when there are no available providers for the current file. Set it to an
+  empty string to disable the message.
+  ([#135](https://github.com/hedyhli/outline.nvim/pull/135))
+
+### Fixes
+
+- Minor fix to prevent other plugins from using the outline sidebar window.
+  ([#136](https://github.com/hedyhli/outline.nvim/pull/136))
+
+
 ## v1.1.0
 
 ### Features
