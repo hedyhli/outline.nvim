@@ -46,6 +46,7 @@ M.defaults = {
     winhl = '',
     jump_highlight_duration = 400,
     center_on_jump = true,
+    no_provider_message = 'No supported provider...',
   },
   preview_window = {
     live = false,
