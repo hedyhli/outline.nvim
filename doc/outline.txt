@@ -458,7 +458,9 @@ External providers: - Asciidoc
 requirements) - Treesitter
 <https://github.com/epheien/outline-treesitter-provider.nvim> (require
 treesitter) - ctags <https://github.com/epheien/outline-ctags-provider.nvim>
-(require universal-ctags)
+(require universal-ctags) - Test blocks
+<https://github.com/bngarren/outline-test-blocks-provider.nvim> (For showing
+`describe(...)`, `it(...)` in the outline)
 
 How to implement an external provider ~
 
