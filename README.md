@@ -508,6 +508,8 @@ External providers:
 - [Asciidoc](https://github.com/msr1k/outline-asciidoc-provider.nvim) (no external requirements)
 - [Treesitter](https://github.com/epheien/outline-treesitter-provider.nvim) (require treesitter)
 - [ctags](https://github.com/epheien/outline-ctags-provider.nvim) (require universal-ctags)
+- [Test blocks](https://github.com/bngarren/outline-test-blocks-provider.nvim)
+(For showing `describe(...)`, `it(...)` in the outline)
 
 <details>
   <summary>How to implement an external provider</summary>
