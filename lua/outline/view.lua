@@ -24,6 +24,9 @@ function View:setup_view(split_command)
 
   -- delete buffer when window is closed / buffer is hidden
   utils.buf_set_option(self.buf, 'bufhidden', 'delete')
+  utils.buf_set_option(self.buf, 'buflisted', false)
+  utils.buf_set_option(self.buf, 'buftype', 'nofile')
+  utils.buf_set_option(self.buf, 'modifiable', false)
 
   -- create a split
   vim.cmd(split_command)
@@ -50,6 +53,10 @@ function View:setup_view(split_command)
   utils.win_set_option(self.win, 'winhl', cfg.o.outline_window.winhl)
   utils.win_set_option(self.win, 'linebreak', true) -- only has effect when wrap=true
   utils.win_set_option(self.win, 'breakindent', true) -- only has effect when wrap=true
+  -- this setting pins the window to the buffer not allowing to open any other buffers 
+  -- which helps to prevent situation when external pickers (e.g. telescope) opens file 
+  -- in the outline window sidebar
+  utils.win_set_option(self.win, 'winfixbuf', true)
   --  Would be nice to use guides.markers.vertical as part of showbreak to keep
   --  continuity of the tree UI, but there's currently no way to style the
   --  color, apart from globally overriding hl-NonText, which will potentially
