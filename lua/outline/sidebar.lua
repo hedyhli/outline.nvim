@@ -1,3 +1,4 @@
+local Picker = require('outline.pickers')
 local Preview = require('outline.preview')
 local View = require('outline.view')
 local cfg = require('outline.config')
@@ -151,6 +152,7 @@ function Sidebar:setup_keymaps()
     fold_all = { '_set_all_folded', { true } },
     unfold_all = { '_set_all_folded', { false } },
     fold_reset = { '_set_all_folded', {} },
+    filter_symbols = { '_filter_kind_symbols', {} },
     rename_symbol = {
       providers.action, { self, 'rename_symbol', { self } }
     },
@@ -621,6 +623,10 @@ function Sidebar:open(opts)
       self:focus()
     end
   end
+end
+
+function Sidebar:_filter_kind_symbols()
+  Picker.select_symbols(cfg, self)
 end
 
 ---@see outline.close_outline
