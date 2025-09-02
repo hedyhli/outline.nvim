@@ -275,7 +275,12 @@ end
 ---Set the cursor to current.line_in_outline and column to a convenient place
 ---@param current outline.FlatSymbol?
 function Sidebar:update_cursor_pos(current)
+  if not self.code.win or not self.view.win then
+    return
+  end
+
   local col = 0
+
   local buf = vim.api.nvim_win_get_buf(self.code.win)
   if cfg.o.outline_items.show_symbol_lineno then
     -- Padding area between lineno column and start of guides
