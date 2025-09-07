@@ -128,6 +128,10 @@ end
 ---@param details string[]
 ---@param linenos string[]
 function View:add_hl_and_ns(hl, nodes, details, linenos)
+  if not self.buf then
+    return
+  end
+
   highlight.items(self.buf, hl)
   if cfg.o.outline_items.highlight_hovered_item then
     highlight.hovers(self.buf, nodes)
