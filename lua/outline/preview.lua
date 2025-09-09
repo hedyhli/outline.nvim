@@ -285,6 +285,11 @@ function LivePreview:update(node)
 end
 
 function LivePreview:focus()
+  if not self.win then
+    Preview:show()
+    return
+  end
+
   vim.api.nvim_set_current_win(self.win)
   -- Remove this when the autocmd for WinEnter works above
   utils.win_set_option(self.win, 'cursorline', self.initial_cursorline)
@@ -292,15 +297,18 @@ end
 
 ---Create, focus, or update preview
 function LivePreview:show()
-  if not self.s:has_focus() or #vim.api.nvim_list_wins() < 2 then
+  if (self.s and not self.s:has_focus()) or #vim.api.nvim_list_wins() < 2 then
     return
   end
 
-  if
-    not vim.api.nvim_win_is_valid(self.s.code.win)
-    or (self.codewin and not vim.api.nvim_win_is_valid(self.codewin))
-    or not self.s.provider
-  then
+  if self.codewin and not vim.api.nvim_win_is_valid(self.codewin) then
+    local cur_win = vim.api.nvim_get_current_win()
+    if self.s and cur_win ~= self.s.code.win then
+      self.codewin = cur_win
+    end
+  end
+
+  if not vim.api.nvim_win_is_valid(self.s.code.win) or not self.s.provider then
     return
   end
 
