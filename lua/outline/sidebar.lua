@@ -86,6 +86,12 @@ function Sidebar:initial_setup(opts)
   self:setup_keymaps()
   self:setup_buffer_autocmd()
   self:setup_attached_buffer_autocmd()
+
+  -- Add buffer-local command to pick filter dynamically at runtime
+  vim.api.nvim_buf_create_user_command(self.view.buf, "OutlinePickFilter", function()
+    self:pick_filter()
+  end, { desc = "Pick outline filter" })
+
 end
 
 ---Handler for provider request_symbols when outline is opened for the first time.
@@ -103,6 +109,7 @@ function Sidebar:initial_handler(response, opts)
 
   self:initial_setup(opts)
 
+  self.curbuf = self.code.buf
   local items = parser.parse(response, self.code.buf)
   self.items = items
 
@@ -151,6 +158,7 @@ function Sidebar:setup_keymaps()
     fold_all = { '_set_all_folded', { true } },
     unfold_all = { '_set_all_folded', { false } },
     fold_reset = { '_set_all_folded', {} },
+    filter_menu = { 'pick_filter', {} },
     rename_symbol = {
       providers.action, { self, 'rename_symbol', { self } }
     },
@@ -330,6 +338,7 @@ function Sidebar:refresh_handler(response)
 
   local newbuf = self:refresh_setup()
 
+  self.curbuf = curbuf
   local items = parser.parse(response, curbuf)
   self:_merge_items(items)
 
@@ -902,6 +911,63 @@ function Sidebar:build_outline(find_node)
   self.view:add_hl_and_ns(hl, self.flats, details, linenos)
 
   return put_cursor
+end
+
+---
+-- Open Telescope picker to select sidebar filter
+-- On selection update config filter and refresh outline
+function Sidebar:pick_filter()
+  local ok, telescope = pcall(require, 'telescope')
+  if not ok then
+    vim.notify('Telescope is not installed!', vim.log.levels.ERROR)
+    return
+  end
+  local pickers = require('telescope.pickers')
+  local finders = require('telescope.finders')
+  local actions = require('telescope.actions')
+  local action_state = require('telescope.actions.state')
+  local icons = require('outline.config').o.symbols.icons
+  local filters = { 'all' }
+  for kind, icon in pairs(icons) do
+    local display = string.format('%s %s', icon.icon, kind)
+    table.insert(filters, display)
+  end
+  -- put "all" as first selected element
+  table.sort(filters, function(a, b)
+    if a == 'all' then return true end
+    if b == 'all' then return false end
+    return a < b
+  end)
+  pickers.new({}, {
+    prompt_title = 'Select Outline Filter',
+    finder = finders.new_table { results = filters },
+    sorter = require('telescope.config').values.generic_sorter({}),
+    attach_mappings = function(_, _)
+      actions.select_default:replace(function(prompt_bufnr)
+        local selection = action_state.get_selected_entry()
+        local filter_table = require('outline.config').o.symbols.filter
+        -- get filetype of file we currently outline, check if it has special filterconf, if yes then override, otherwise override default
+        local filetype = vim.api.nvim_buf_get_option(self.curbuf, 'filetype') -- TODO move to nvim_get_option_value
+        local configLocation = "default"
+        if filter_table[filetype] then
+          configLocation = filetype
+        end
+        if selection then
+          local selected_kind = selection[1]:match('%s(.+)$') or selection[1]
+          local kinds = filter_table[filetype] or filter_table["default"]
+
+          -- Toggle the selected kind
+          kinds[selected_kind] = not kinds[selected_kind]
+
+          require('outline.config').o.symbols.filter[configLocation] = kinds
+        end
+        actions.close(prompt_bufnr)
+      end)
+      return true
+    end,
+  }):find()
+  local filter = require('outline.config').o.symbols.filter
+  self:_update_lines(true)
 end
 
 return Sidebar
