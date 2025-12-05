@@ -143,6 +143,7 @@ M.defaults = {
       Macro = { icon = ' ', hl = 'Function' },
     },
   },
+  picker = 'default', -- default | telescope
 }
 
 M.o = {}

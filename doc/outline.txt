@@ -311,6 +311,9 @@ Show defaults ~
         fold_all = 'W',
         unfold_all = 'E',
         fold_reset = 'R',
+        -- Open menu for dynamically changing the filtering options
+        -- changes the filterlist for the selected filetype first if there is one set
+        filter_menu = 'f',
         -- Move down/up by one line and peek_location immediately.
         -- You can also use outline_window.auto_jump=true to do this for any
         -- j/k/<down>/<up>.
@@ -397,6 +400,9 @@ Show defaults ~
           Macro = { icon = ' ', hl = 'Function' },
         },
       },
+    
+      -- default | telescope
+      picker = 'default',
     }
 <
 
@@ -434,6 +440,10 @@ Note how the python filter list and the default filter list is NOT merged.
 
 Setting any filter list to `nil` or `false` means include all symbols, where a
 filter list is an array of strings with an optional `exclude` field.
+
+To dynamically filter the displayed symbols use the filtermenu keybind in the outline-window.
+Changing a single entry there toggles its filterstatus, all entries can be selected using `all`
+and deselected by selecting `none`.
 
 **icons**
 
@@ -603,6 +613,7 @@ You can open a floating window showing the following list of keymaps using the
   W             Fold all symbols
   E             Unfold all symbols
   R             Reset all folding
+  f             Open filtermenu
   Ctrl+k        Go up and peek location
   Ctrl+j        Go down and peek location
   ?             Show current keymaps in a floating window
