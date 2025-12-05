@@ -103,7 +103,6 @@ function Sidebar:initial_handler(response, opts)
 
   self:initial_setup(opts)
 
-  self.curbuf = self.code.buf
   local items = parser.parse(response, self.code.buf)
   self.items = items
 
@@ -332,7 +331,6 @@ function Sidebar:refresh_handler(response)
 
   local newbuf = self:refresh_setup()
 
-  self.curbuf = curbuf
   local items = parser.parse(response, curbuf)
   self:_merge_items(items)
 
@@ -928,7 +926,7 @@ function Sidebar:_pick_filter()
   local filter_table = cfg.o.symbols.filter
   -- get filetype of file we currently outline, check if it has special filterconf
   -- if yes then override, otherwise override default
-  local filetype = vim.api.nvim_get_option_value('filetype', { buf = self.curbuf })
+  local filetype = vim.api.nvim_get_option_value('filetype', { buf = self.code.buf })
   local conf_location = filter_table[filetype] and filetype or 'default'
   local kinds = filter_table[conf_location]
 
@@ -974,12 +972,12 @@ function Sidebar:_pick_filter()
           kinds[kind] = false
         end
       else
-        -- Toggle singlechoice-Keys
+        -- Toggle individual symbolkinds
         kinds[selected_kind] = not kinds[selected_kind]
       end
+      self:_update_lines(true)
     end,
   }
-  self:_update_lines(true)
 end
 
 return Sidebar
