@@ -25,6 +25,7 @@ local Sidebar = {}
 ---@field original_cursor string
 ---@field code outline.SidebarCodeState
 ---@field augroup integer
+---@field max_line_size integer
 ---@field provider outline.Provider?
 ---@field provider_info table?
 ---@field preview outline.Preview|outline.LivePreview
@@ -39,6 +40,7 @@ function Sidebar:new(id)
     flats = {},
     hovered = {},
     original_cursor = vim.o.guicursor,
+    max_line_size = 0,
   }, { __index = Sidebar })
 end
 
@@ -55,6 +57,7 @@ function Sidebar:reset_state()
   self.flats = {}
   self.original_cursor = vim.o.guicursor
   self.provider = nil
+  self.max_line_size = 0
   self:delete_autocmds()
 end
 
@@ -691,6 +694,33 @@ function Sidebar:has_provider()
   return providers.has_provider()
 end
 
+function Sidebar:update_width(content_width)
+  -- exit early if view is closed or dynamic changing is disabled
+  if not self.view:is_open() or not cfg.o.outline_window.shrinkwrap.enabled then
+    return
+  end
+
+  -- Add some padding respecting min-max constraints
+  local padding = 2
+  local min_width = cfg.o.outline_window.width
+  local configured_max_width = cfg.o.outline_window.shrinkwrap.max_width
+
+  local max_width
+  if cfg.o.outline_window.relative_width then
+    max_width = math.floor(vim.o.columns * (configured_max_width / 100))
+  else
+    max_width = configured_max_width
+  end
+
+  local new_width = math.min(max_width, math.max(min_width, content_width + padding))
+
+  -- Only resize if change is significant (avoid constant small adjustments, have padding for that)
+  local current_width = vim.api.nvim_win_get_width(self.view.win)
+  if math.abs(new_width - current_width) > 1 then
+    vim.api.nvim_win_set_width(self.view.win, new_width)
+  end
+end
+
 function Sidebar:_highlight_current_item(winnr, update_cursor)
   local has_provider = self:has_provider()
   local has_outline_open = self.view:is_open()
@@ -753,6 +783,9 @@ function Sidebar:build_outline(find_node)
   local details = {} ---@type string[]
   local linenos = {} ---@type string[]
   local hl = {} ---@type outline.HL[]
+
+  -- Reset every update as largest line recorded could have shrunk
+  self.max_line_size = 0
 
   -- Find the prefix for each line needed for the lineno space.
   -- Use [max width of [max_line-1]] + 1 space padding.
@@ -888,7 +921,18 @@ function Sidebar:build_outline(find_node)
     -- Each line passed to nvim_buf_set_lines cannot contain newlines
     line = line:gsub('\n', ' ')
     table.insert(lines, line)
+
+    if cfg.o.outline_window.shrinkwrap.enabled then
+      local line_width = vim.fn.strwidth(line)
+      if cfg.o.outline_window.shrinkwrap.width_include_inlay and node.detail then
+        line_width = line_width + vim.fn.strwidth(node.detail)
+      end
+      self.max_line_size = math.max(self.max_line_size, line_width)
+    end
   end
+
+  -- Update window width if needed
+  self:update_width(self.max_line_size)
 
   -- PERF:
   -- * Is setting individual lines is not as good as rewriting entire buffer?
