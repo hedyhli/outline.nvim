@@ -696,14 +696,14 @@ end
 
 function Sidebar:update_width(content_width)
   -- exit early if view is closed or dynamic changing is disabled
-  if not self.view:is_open() or not cfg.o.outline_window.shrinkwrap.enabled then
+  if not self.view:is_open() or not cfg.o.outline_window.auto_width.enabled then
     return
   end
 
   -- Add some padding respecting min-max constraints
   local padding = 2
   local min_width = cfg.o.outline_window.width
-  local configured_max_width = cfg.o.outline_window.shrinkwrap.max_width
+  local configured_max_width = cfg.o.outline_window.auto_width.max_width
 
   local max_width
   if cfg.o.outline_window.relative_width then
@@ -922,9 +922,9 @@ function Sidebar:build_outline(find_node)
     line = line:gsub('\n', ' ')
     table.insert(lines, line)
 
-    if cfg.o.outline_window.shrinkwrap.enabled then
+    if cfg.o.outline_window.auto_width.enabled then
       local line_width = vim.fn.strwidth(line)
-      if cfg.o.outline_window.shrinkwrap.width_include_inlay and node.detail then
+      if cfg.o.outline_window.auto_width.include_inlay_hints and node.detail then
         line_width = line_width + vim.fn.strwidth(node.detail)
       end
       self.max_line_size = math.max(self.max_line_size, line_width)

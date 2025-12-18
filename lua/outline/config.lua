@@ -33,12 +33,12 @@ M.defaults = {
     position = 'right',
     split_command = nil,
     width = 25,
-    shrinkwrap = {
+    auto_width = {
       enabled = false,
       max_width = 40,
-      width_include_inlay = false,
+      include_inlay_hints = false,
     },
-    relative_width = false,
+    relative_width = true,
     wrap = false,
     focus_on_open = true,
     auto_close = false,
