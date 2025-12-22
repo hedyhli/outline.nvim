@@ -350,7 +350,7 @@ function Sidebar:__refresh()
     return
   end
   local ft = utils.buf_get_option(buf, 'ft')
-  local listed = utils.buf_get_option(buf, 'ft')
+  local listed = utils.buf_get_option(buf, 'buflisted')
   if ft == 'OutlineHelp' or not (listed or ft == 'help') then
     return
   end
