@@ -237,9 +237,9 @@ function M.show_hover(sidebar)
     return false
   end
 
-  local md_lines = l.util.convert_input_to_markdown_lines(status.result.contents)
+  local md_lines = l.util.convert_input_to_markdown_lines(status.result.contents.value)
   if _G._outline_nvim_has[10] then
-    md_lines = vim.split(status.result.contents, '\n', { trimempty = true })
+    md_lines = vim.split(status.result.contents.value, '\n', { trimempty = true })
   else
     ---@diagnostic disable-next-line:deprecated
     md_lines = l.util.trim_empty_lines(md_lines)
