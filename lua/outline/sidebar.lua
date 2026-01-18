@@ -74,7 +74,7 @@ function Sidebar:initial_setup(opts)
   self.code.buf = vim.api.nvim_get_current_buf()
 
   local sc = opts.split_command or cfg.get_split_command()
-  self.view:setup_view(sc)
+  self.view:setup_view(sc, opts.use_float)
 
   -- clear state when buffer is closed
   vim.api.nvim_buf_attach(self.view.buf, false, {

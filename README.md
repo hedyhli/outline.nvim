@@ -47,6 +47,7 @@ provider](https://github.com/epheien/outline-treesitter-provider.nvim).
   [screenshot](#blend-cursor-with-cursorline))
 - Preview symbol location without visiting it
 - Neovim command modifiers on where to open outline (see `:h mods`)
+- Support for opening outline as a floating window (see `:OutlineOpenFloat`)
 
 > Unconvinced? Check out the outline.nvim alternatives and [related
 > plugins](#related-plugins).
@@ -238,6 +239,31 @@ Pass a table to the setup call with your configuration options.
     winhl = '',
     -- Message displayed when there are no providers avialable.
     no_provider_message = 'No supported provider...'
+
+    -- Floating window options
+    float = {
+      -- Percentage or integer of columns
+      width = 30,
+      -- Percentage or integer of lines
+      height = 80,
+      -- Whether width is relative to the total width of nvim
+      relative_width = true,
+      -- Whether height is relative to the total height of nvim
+      relative_height = true,
+      -- Configuration passed directly to nvim_open_win
+      -- Can be a table or a function that returns a table
+      win_config = {
+        relative = 'editor',
+        border = 'rounded',
+        zindex = 50,
+        focusable = true,
+        style = 'minimal',
+        title = 'Outline',
+        title_pos = 'center',
+      },
+      -- Additional window options (set via nvim_win_set_option)
+      win_options = {},
+    },
   },
 
   outline_items = {
@@ -657,6 +683,16 @@ future.
   This is automatically triggered on events
   `outline_items.auto_update_events.refresh`.
 
+- **:OutlineOpenFloat[!]** (✓ bang × mods)
+
+  Open outline as a floating window. With bang (`!`) the cursor focus stays in your
+  original window after opening the outline window.
+
+- **:OutlineToggleFloat[!]** (✓ bang × mods)
+
+  Toggle outline as a floating window. With bang (`!`) the cursor focus stays in
+  your original window after opening the outline window.
+
 
 ## Default keymaps
 
@@ -848,7 +884,19 @@ require'outline'
   This is automatically called on events
   `outline_items.auto_update_events.refresh` from config.
 
-- **get_breadcrumb(opts)**
+- **open_outline_float(opts)**
+
+  Open the outline window as a floating window.
+
+  If `opts.focus_outline=false`, keep focus on previous window.
+
+- **toggle_outline_float(opts)**
+
+  Toggle opening/closing of outline window as a floating window.
+
+  If `opts.focus_outline=false`, keep focus on previous window.
+
+ - **get_breadcrumb(opts)**
 
   Return a string concatenated from hovered symbols hierarchy representing code
   location.
@@ -1188,6 +1236,51 @@ https://github.com/hedyhli/outline.nvim/assets/50042066/183fc5f9-b369-41e2-a831-
 
 Auto-preview with the feature is also supported, set `auto_preview = true` and
 press `K` to focus on the auto-opened preview window. `:q` to quit the window.
+
+### Floating window
+
+Open outline as a floating window instead of a split window:
+
+```lua
+-- Using command
+:OutlineOpenFloat
+```
+
+Or using the Lua API:
+
+```lua
+require('outline').open_outline_float()
+```
+
+You can customize the floating window appearance using the `outline_window.float`
+configuration:
+
+```lua
+outline_window = {
+  float = {
+    width = 40,
+    height = 80,
+    relative_width = true,
+    relative_height = true,
+    win_config = {
+      relative = 'editor',
+      border = 'rounded',
+      zindex = 50,
+      focusable = true,
+      style = 'minimal',
+      title = 'Outline',
+      title_pos = 'center',
+    },
+    win_options = {
+      winblend = 10,  -- Pseudo-transparency
+    },
+  },
+}
+```
+
+The `win_config` table is passed directly to `nvim_open_win()`, so you can use any
+options supported by that function. You can also provide a function that returns
+the configuration table for dynamic configuration.
 
 <!-- panvimdoc-ignore-start -->
 
