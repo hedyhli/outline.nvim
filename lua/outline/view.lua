@@ -125,14 +125,14 @@ function View:setup_float_view()
     })
   end
 
-  -- Merge with default config
-  local final_win_config =
-    vim.tbl_deep_extend('force', cfg.defaults.outline_window.float.win_config, {
-      width = width,
-      height = height,
-      row = row,
-      col = col,
-    }, win_config or {})
+  -- Cannot be merged into the default settings because some configurations are
+  -- difficult to override.
+  local final_win_config = vim.tbl_deep_extend('force', {
+    width = width,
+    height = height,
+    row = row,
+    col = col,
+  }, win_config or {})
 
   -- Create floating window
   self.win = vim.api.nvim_open_win(self.buf, false, final_win_config)
