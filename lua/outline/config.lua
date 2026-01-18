@@ -47,6 +47,26 @@ M.defaults = {
     jump_highlight_duration = 400,
     center_on_jump = true,
     no_provider_message = 'No supported provider...',
+    -- Floating window options
+    float = {
+      width = 30,
+      height = 80,
+      relative_width = true,
+      relative_height = true,
+      -- Configuration passed directly to nvim_open_win
+      -- Can be a table or a function that returns a table
+      win_config = {
+        relative = 'editor',
+        border = 'rounded',
+        zindex = 50,
+        focusable = true,
+        style = 'minimal',
+        title = 'Outline',
+        title_pos = 'center',
+      },
+      -- Additional window options (set via nvim_win_set_option)
+      win_options = {},
+    },
   },
   preview_window = {
     live = false,
@@ -163,6 +183,20 @@ function M.get_window_width()
     return math.ceil(vim.o.columns * (M.o.outline_window.width / 100))
   end
   return M.o.outline_window.width
+end
+
+function M.get_float_window_height()
+  if M.o.outline_window.float.relative_height then
+    return math.ceil(vim.o.lines * (M.o.outline_window.float.height / 100))
+  end
+  return M.o.outline_window.float.height
+end
+
+function M.get_float_window_width()
+  if M.o.outline_window.float.relative_width then
+    return math.ceil(vim.o.columns * (M.o.outline_window.float.width / 100))
+  end
+  return M.o.outline_window.float.width
 end
 
 ---@param conf table

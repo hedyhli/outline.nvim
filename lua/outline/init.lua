@@ -147,6 +147,25 @@ end
 
 M.open = M.open_outline
 
+---Open the outline window as a floating window.
+---@param opts outline.OutlineOpts? Field focus_outline=false means don't focus on outline window after opening. If opts is not provided, focus will be on outline window after opening.
+function M.open_outline_float(opts)
+  return M.open_outline(vim.tbl_deep_extend('force', opts or {}, { use_float = true }))
+end
+
+---Toggle the outline window (floating version), and return whether the outline window is open
+---after this operation.
+---@param opts outline.OutlineOpts? Table of options
+---@return boolean is_open Whether outline window is now open
+function M.toggle_outline_float(opts)
+  local sidebar = M._get_sidebar()
+  if not sidebar then
+    M.open_outline_float(opts)
+    return true
+  end
+  return sidebar:toggle(vim.tbl_deep_extend('force', opts or {}, { use_float = true }))
+end
+
 ---@return boolean? has_focus Nil when no outline opened yet, otherwise returns whether cursor is in outline window.
 function M.is_focus_in_outline()
   return M._sidebar_do('has_focus')
@@ -335,6 +354,19 @@ With bang, don't switch cursor focus to outline window.",
   cmd('Refresh', M.refresh_outline, {
     desc = 'Trigger manual outline refresh of items.',
     nargs = 0,
+  })
+  -- Floating window commands
+  cmd('OpenFloat', _cmd_open_with_mods(M.open_outline_float), {
+    desc = 'Open outline as a floating window. \
+With bang, keep focus on initial window after opening.',
+    nargs = 0,
+    bang = true,
+  })
+  cmd('ToggleFloat', _cmd_open_with_mods(M.toggle_outline_float), {
+    desc = 'Toggle outline as a floating window. \
+With bang, keep focus on initial window after opening.',
+    nargs = 0,
+    bang = true,
   })
 end
 

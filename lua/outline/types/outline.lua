@@ -94,6 +94,7 @@
 ---@class outline.OutlineOpts
 ---@field focus_outline boolean?  Whether to focus on outline of after some operation. If nil, defaults to true
 ---@field split_command string?
+---@field use_float boolean? Whether to use floating window
 
 ---@class outline.BreadcrumbOpts
 ---@field depth integer?
