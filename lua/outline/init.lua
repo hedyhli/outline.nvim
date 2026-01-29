@@ -339,6 +339,7 @@ With bang, don't switch cursor focus to outline window.",
 end
 
 ---Set up configuration options for outline.
+---@param opts? outline.SetupOpts
 function M.setup(opts)
   local minor = vim.version().minor
 

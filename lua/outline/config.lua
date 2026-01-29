@@ -5,15 +5,19 @@ local M = {}
 local all_kinds = {'File', 'Module', 'Namespace', 'Package', 'Class', 'Method', 'Property', 'Field', 'Constructor', 'Enum', 'Interface', 'Function', 'Variable', 'Constant', 'String', 'Number', 'Boolean', 'Array', 'Object', 'Key', 'Null', 'EnumMember', 'Struct', 'Event', 'Operator', 'TypeParameter', 'Component', 'Fragment', 'TypeAlias', 'Parameter', 'StaticMethod', 'Macro'}
 -- stylua: ignore end
 
+---@class outline.SetupOpts
+---@field guides? outline.SetupOpts.Guides
+---@field outline_items? outline.SetupOpts.OutlineItems
+---@field outline_window? outline.SetupOpts.OutlineWindow
+---@field symbol_folding? outline.SetupOpts.SymbolFolding
+---@field preview_window? outline.SetupOpts.PreviewWindow
+---@field keymaps? outline.SetupOpts.Keymaps
+---@field providers? outline.SetupOpts.Providers
+---@field symbols? outline.SetupOpts.Symbols
 M.defaults = {
   guides = {
     enabled = true,
-    markers = {
-      bottom = '└',
-      middle = '├',
-      vertical = '│',
-      horizontal = '─',
-    },
+    markers = { bottom = '└', middle = '├', vertical = '│', horizontal = '─' },
   },
   outline_items = {
     show_symbol_details = true,
@@ -40,7 +44,6 @@ M.defaults = {
     auto_jump = false,
     show_numbers = false,
     show_relative_numbers = false,
-    ---@type boolean|string?
     show_cursorline = true,
     hide_cursor = false,
     winhl = '',
@@ -64,11 +67,7 @@ M.defaults = {
   },
   symbol_folding = {
     autofold_depth = 1,
-    auto_unfold = {
-      hovered = true,
-      ---@type boolean|integer
-      only = true,
-    },
+    auto_unfold = { hovered = true, only = true },
     markers = { '', '' },
   },
   keymaps = {
@@ -102,7 +101,6 @@ M.defaults = {
     },
   },
   symbols = {
-    ---@type outline.FilterConfig?
     filter = nil,
     icon_source = nil,
     icon_fetcher = nil,
@@ -450,6 +448,7 @@ function M.resolve_filter_config()
   end
 end
 
+---@param options? outline.SetupOpts
 function M.setup(options)
   vim.g.outline_loaded = 1
   M.o = vim.tbl_deep_extend('force', {}, M.defaults, options or {})
