@@ -237,11 +237,13 @@ function M.is_client_blacklisted(client)
     return false
   end
   if type(client) == 'number' then
+    ---@cast client integer
     client = vim.lsp.get_client_by_id(client)
     if not client then
       return false
     end
   end
+  ---@cast client vim.lsp.Client
   return M.o.providers.lsp.blacklist_clients[client.name] == true
 end
 
