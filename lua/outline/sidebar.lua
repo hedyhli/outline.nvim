@@ -960,20 +960,22 @@ function Sidebar:_pick_filter()
     items = items,
     title = 'Select/Toggle Outline Filter',
     on_select = function(selected)
-      -- Extract kindname, ignore prefix and icon, do this by capturing last non-whitespace sequence
-      local selected_kind = selected:match('(%S+)$') or selected
-      -- All selects, none deselects everything
-      if selected_kind == "all" then
-        for kind, _ in pairs(kinds) do
-          kinds[kind] = true
+      for _, sel in ipairs(selected) do
+        -- Extract kindname, ignore prefix and icon, do this by capturing last non-whitespace sequence
+        local selected_kind = sel:match('(%S+)$') or selected
+        -- All selects, none deselects everything
+        if selected_kind == "all" then
+          for kind, _ in pairs(kinds) do
+            kinds[kind] = true
+          end
+        elseif selected_kind == "none" then
+          for kind, _ in pairs(kinds) do
+            kinds[kind] = false
+          end
+        else
+          -- Toggle individual symbolkinds
+          kinds[selected_kind] = not kinds[selected_kind]
         end
-      elseif selected_kind == "none" then
-        for kind, _ in pairs(kinds) do
-          kinds[kind] = false
-        end
-      else
-        -- Toggle individual symbolkinds
-        kinds[selected_kind] = not kinds[selected_kind]
       end
       self:_update_lines(true)
     end,
