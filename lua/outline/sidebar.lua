@@ -26,8 +26,8 @@ local Sidebar = {}
 ---@field code outline.SidebarCodeState
 ---@field augroup integer
 ---@field max_line_size integer
----@field provider outline.Provider?
----@field provider_info table?
+---@field provider? outline.Provider
+---@field provider_info? table
 ---@field preview outline.Preview|outline.LivePreview
 
 function Sidebar:new(id)
