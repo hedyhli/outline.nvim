@@ -189,13 +189,13 @@ Pass a table to the setup call with your configuration options.
 
     -- Percentage or integer of columns, sets min-width for auto_width option
     width = 25,
-    -- Note: When auto_width is enabled, 'width' acts as the minimum windowwidth
+    -- Note: When auto_width is enabled, 'width' acts as the minimum window width
     auto_width = {
       -- Dynamically resize window width to fit content
       enabled = false,
       -- Maximum width (columns or percent if relative_width)
       max_width = 40,
-      -- Include inlay-details in widthcalculation
+      -- Include inlay-details in width calculation
       include_inlay_hints = false,
     },
     -- Whether width is relative to the total width of nvim
