@@ -160,13 +160,18 @@ function Preview:setup()
   utils.buf_set_option(self.buf, 'syntax', ft)
 
   local ts_highlight_fn = vim.treesitter.start
-  if not _G._outline_nvim_has[8] then
+  local lang = vim.treesitter.language.get_lang(ft)
+  local ok, has_parser = pcall(vim.treesitter.language.add, lang)
+
+  if ok and has_parser then
+    pcall(ts_highlight_fn, self.buf, lang)
+  elseif not _G._outline_nvim_has[8] then
     local ok, ts_highlight = pcall(require, 'nvim-treesitter.highlight')
     if ok then
       ts_highlight_fn = ts_highlight.attach
     end
+    pcall(ts_highlight_fn, self.buf, ft)
   end
-  pcall(ts_highlight_fn, self.buf, ft)
 
   utils.buf_set_option(self.buf, 'bufhidden', 'delete')
   utils.buf_set_option(self.buf, 'modifiable', false)
