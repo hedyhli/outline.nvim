@@ -16,7 +16,7 @@ end
 ---@param lines string[]
 ---@param hl outline.HL[]
 ---@param title string
----@param indent integer?
+---@param indent? integer
 function Float:open(lines, hl, title, indent)
   indent = indent or 0
 
