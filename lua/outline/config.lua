@@ -36,7 +36,7 @@ M.defaults = {
     auto_width = {
       enabled = false,
       max_width = 40,
-      include_inlay_hints = false,
+      include_symbol_details = false,
     },
     relative_width = true,
     wrap = false,

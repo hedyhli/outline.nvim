@@ -712,7 +712,7 @@ function Sidebar:update_width(content_width)
     max_width = configured_max_width
   end
 
-  local new_width = math.min(max_width, math.max(min_width, content_width + padding))
+  local new_width = math.min(max_width, math.max(min_width, self.max_line_size + padding))
 
   -- Only resize if change is significant (avoid constant small adjustments, have padding for that)
   local current_width = vim.api.nvim_win_get_width(self.view.win)
@@ -924,7 +924,7 @@ function Sidebar:build_outline(find_node)
 
     if cfg.o.outline_window.auto_width.enabled then
       local line_width = vim.fn.strwidth(line)
-      if cfg.o.outline_window.auto_width.include_inlay_hints and node.detail then
+      if cfg.o.outline_window.auto_width.include_symbol_details and node.detail then
         line_width = line_width + vim.fn.strwidth(node.detail)
       end
       self.max_line_size = math.max(self.max_line_size, line_width)
@@ -932,7 +932,7 @@ function Sidebar:build_outline(find_node)
   end
 
   -- Update window width if needed
-  self:update_width(self.max_line_size)
+  self:update_width()
 
   -- PERF:
   -- * Is setting individual lines is not as good as rewriting entire buffer?

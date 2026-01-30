@@ -195,8 +195,8 @@ Pass a table to the setup call with your configuration options.
       enabled = false,
       -- Maximum width (columns or percent if relative_width)
       max_width = 40,
-      -- Include inlay-details in width calculation
-      include_inlay_hints = false,
+      -- Include symbol details in width calculation
+      include_symbol_details = false,
     },
     -- Whether width is relative to the total width of nvim
     -- When relative_width = true, this means take 25% of the total
