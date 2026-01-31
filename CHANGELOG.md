@@ -22,11 +22,18 @@
   shown when there are no available providers for the current file. Set it to an
   empty string to disable the message.
   ([#135](https://github.com/hedyhli/outline.nvim/pull/135))
+- Dynamic width setting of outline window based on outline content length
+  ([#155](https://github.com/hedyhli/outline.nvim/pull/155))
+- Fully type-annotated setup options
+  ([#159](https://github.com/hedyhli/outline.nvim/pull/159))
 
 ### Fixes
 
 - Minor fix to prevent other plugins from using the outline sidebar window.
   ([#136](https://github.com/hedyhli/outline.nvim/pull/136))
+- `winfixbuf` compatibility fix
+- Treesitter highlighting on custom filetypes
+  ([#157](https://github.com/hedyhli/outline.nvim/pull/157))
 
 
 ## v1.1.0
