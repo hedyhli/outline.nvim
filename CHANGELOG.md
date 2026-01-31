@@ -14,7 +14,7 @@
 ### Others
 -->
 
-## Main branch
+## v1.2.0
 
 ### Features
 
