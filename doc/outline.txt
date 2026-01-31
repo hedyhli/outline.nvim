@@ -1,4 +1,4 @@
-*outline.txt*             For NVIM v0.7.0
+*outline.txt*           For NVIM v0.7.0
 
 ==============================================================================
 Table of Contents                                  *outline-table-of-contents*
@@ -136,10 +136,11 @@ Show defaults ~
         -- Eg, `topleft 20vsp` to prevent a flash of windows when resizing.
         split_command = nil,
     
-        -- Percentage (if relative_width) or integer number of columns.
-        -- Acts as the minimum window width when auto_width is enabled,
-        -- and as the exact/default window width when auto_width is disabled.
+        -- Percentage or integer of columns; serves as the base/minimum width
+        -- for the outline window (and for auto_width calculations)
         width = 25,
+        -- When auto_width.enabled = true, 'width' is the minimum window width.
+        -- When auto_width.enabled = false, 'width' is the exact/default window width.
         auto_width = {
           -- Dynamically resize window width to fit content
           enabled = false,
