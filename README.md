@@ -187,8 +187,19 @@ Pass a table to the setup call with your configuration options.
     -- Eg, `topleft 20vsp` to prevent a flash of windows when resizing.
     split_command = nil,
 
-    -- Percentage or integer of columns
+    -- Percentage or integer of columns; serves as the base/minimum width
+    -- for the outline window (and for auto_width calculations)
     width = 25,
+    -- When auto_width.enabled = true, 'width' is the minimum window width.
+    -- When auto_width.enabled = false, 'width' is the exact/default window width.
+    auto_width = {
+      -- Dynamically resize window width to fit content
+      enabled = false,
+      -- Maximum width (columns or percent if relative_width)
+      max_width = 40,
+      -- Include symbol details in width calculation
+      include_symbol_details = false,
+    },
     -- Whether width is relative to the total width of nvim
     -- When relative_width = true, this means take 25% of the total
     -- screen width for outline window.

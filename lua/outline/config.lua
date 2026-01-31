@@ -37,6 +37,11 @@ M.defaults = {
     position = 'right',
     split_command = nil,
     width = 25,
+    auto_width = {
+      enabled = false,
+      max_width = 40,
+      include_symbol_details = false,
+    },
     relative_width = true,
     wrap = false,
     focus_on_open = true,
