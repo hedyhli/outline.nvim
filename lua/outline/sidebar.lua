@@ -92,8 +92,8 @@ function Sidebar:initial_setup(opts)
 end
 
 ---Handler for provider request_symbols when outline is opened for the first time.
----@param response outline.ProviderSymbol[]?
----@param opts outline.OutlineOpts?
+---@param response? outline.ProviderSymbol[]
+---@param opts? outline.OutlineOpts
 function Sidebar:initial_handler(response, opts)
   if response == nil or type(response) ~= 'table' or self.view:is_open() then
     utils.echo('No response from provider when requesting symbols!')
@@ -276,7 +276,7 @@ function Sidebar:reset_cursor_style()
 end
 
 ---Set the cursor to current.line_in_outline and column to a convenient place
----@param current outline.FlatSymbol?
+---@param current? outline.FlatSymbol
 function Sidebar:update_cursor_pos(current)
   if not self.code.win or not self.view.win then
     return
@@ -296,8 +296,8 @@ end
 
 ---Calls build_outline and then calls update_cursor_pos if update_cursor is
 ---not false
----@param update_cursor boolean?
----@param set_cursor_to_node outline.Symbol|outline.FlatSymbol?
+---@param update_cursor? boolean
+---@param set_cursor_to_node? outline.Symbol|outline.FlatSymbol
 function Sidebar:_update_lines(update_cursor, set_cursor_to_node)
   local current = self:build_outline(set_cursor_to_node)
   if update_cursor ~= false then
@@ -353,7 +353,7 @@ function Sidebar:__refresh()
     return
   end
   local ft = utils.buf_get_option(buf, 'ft')
-  local listed = utils.buf_get_option(buf, 'ft')
+  local listed = utils.buf_get_option(buf, 'buflisted')
   if ft == 'OutlineHelp' or not (listed or ft == 'help') then
     return
   end
@@ -384,7 +384,7 @@ function Sidebar:no_providers_ui()
 end
 
 ---Currently hovered node in outline
----@return outline.FlatSymbol?
+---@return outline.FlatSymbol|nil
 function Sidebar:_current_node()
   local current_line = vim.api.nvim_win_get_cursor(self.view.win)[1]
   if self.flats then
@@ -524,7 +524,7 @@ function Sidebar:_toggle_all_fold(nodes)
   self:_set_all_folded(not folded, nodes)
 end
 
----@param folded boolean?
+---@param folded? boolean
 ---@param nodes? outline.Symbol[]
 function Sidebar:_set_all_folded(folded, nodes)
   if not self.provider then
@@ -559,7 +559,7 @@ function Sidebar:has_code_win()
 end
 
 ---@see outline.follow_cursor
----@param opts outline.OutlineOpts?
+---@param opts? outline.OutlineOpts
 ---@return boolean ok
 function Sidebar:follow_cursor(opts)
   if not self.view:is_open() then
@@ -589,7 +589,7 @@ function Sidebar:_map_follow_cursor()
   end
 end
 
----@param opts outline.OutlineOpts?
+---@param opts? outline.OutlineOpts
 ---@return boolean is_open
 function Sidebar:toggle(opts)
   if self.view:is_open() then
@@ -602,7 +602,7 @@ function Sidebar:toggle(opts)
 end
 
 ---@see outline.open_outline
----@param opts outline.OutlineOpts?
+---@param opts? outline.OutlineOpts
 function Sidebar:open(opts)
   if not opts then
     opts = { focus_outline = true }
@@ -770,8 +770,8 @@ end
 ---@note Ensure new outlines are already set to `self.items` before calling
 ---this function. `self.flats` will be overwritten and current line is obtained
 ---from `win_get_cursor` using `self.code.win`.
----@param find_node outline.FlatSymbol|outline.Symbol? Find a given node rather than node matching cursor position in codewin
----@return outline.FlatSymbol? set_cursor_to_this_node
+---@param find_node? outline.FlatSymbol|outline.Symbol Find a given node rather than node matching cursor position in codewin
+---@return outline.FlatSymbol|nil set_cursor_to_this_node
 function Sidebar:build_outline(find_node)
   ---@type integer 0-indexed
   local hovered_line = vim.api.nvim_win_get_cursor(self.code.win)[1] - 1
