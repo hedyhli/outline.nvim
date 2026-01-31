@@ -694,7 +694,7 @@ function Sidebar:has_provider()
   return providers.has_provider()
 end
 
-function Sidebar:update_width(content_width)
+function Sidebar:update_width()
   -- exit early if view is closed or dynamic changing is disabled
   if not self.view:is_open() or not cfg.o.outline_window.auto_width.enabled then
     return

@@ -187,9 +187,11 @@ Pass a table to the setup call with your configuration options.
     -- Eg, `topleft 20vsp` to prevent a flash of windows when resizing.
     split_command = nil,
 
-    -- Percentage or integer of columns, sets min-width for auto_width option
+    -- Percentage or integer of columns; serves as the base/minimum width
+    -- for the outline window (and for auto_width calculations)
     width = 25,
-    -- Note: When auto_width is enabled, 'width' acts as the minimum window width
+    -- When auto_width.enabled = true, 'width' is the minimum window width.
+    -- When auto_width.enabled = false, 'width' is the exact/default window width.
     auto_width = {
       -- Dynamically resize window width to fit content
       enabled = false,
