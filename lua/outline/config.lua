@@ -93,6 +93,7 @@ M.defaults = {
     fold_all = 'W',
     unfold_all = 'E',
     fold_reset = 'R',
+    filter_menu = 'f',
     down_and_jump = '<C-j>',
     up_and_jump = '<C-k>',
   },
@@ -145,6 +146,7 @@ M.defaults = {
       Macro = { icon = ' ', hl = 'Function' },
     },
   },
+  picker = 'default', -- default | telescope
 }
 
 M.o = {}
