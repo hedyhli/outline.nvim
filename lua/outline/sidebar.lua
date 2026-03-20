@@ -414,6 +414,12 @@ function Sidebar:__goto_location(change_focus)
 
   if cfg.o.outline_window.center_on_jump then
     vim.fn.win_execute(self.code.win, 'normal! zz')
+  else
+    -- Ensure cursor is visible in code window. Without this,
+    -- splitkeep="screen" can prevent the viewport from scrolling
+    -- to reveal the new cursor position.
+    vim.fn.win_execute(self.code.win, 'normal! zv')
+    vim.fn.win_execute(self.code.win, 'redraw')
   end
 
   utils.flash_highlight(
