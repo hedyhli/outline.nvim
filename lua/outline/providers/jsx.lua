@@ -122,6 +122,10 @@ function M.get_symbols(bufnr)
     return {}
   end
 
+  if not vim.list_contains({ 'javascript', 'typescript', 'tsx' }, parser:lang()) then
+    return {}
+  end
+
   local root = parser:parse()[1]:root()
 
   if root == nil then
