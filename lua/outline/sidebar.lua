@@ -154,6 +154,7 @@ function Sidebar:setup_keymaps()
     fold_all = { '_set_all_folded', { true } },
     unfold_all = { '_set_all_folded', { false } },
     fold_reset = { '_set_all_folded', {} },
+    filter_menu = { '_pick_filter', {} },
     rename_symbol = {
       providers.action, { self, 'rename_symbol', { self } }
     },
@@ -946,6 +947,83 @@ function Sidebar:build_outline(find_node)
   self.view:add_hl_and_ns(hl, self.flats, details, linenos)
 
   return put_cursor
+end
+
+---
+-- Open picker to select sidebar filter, use ui-select as default/fallback for no deps
+-- On selection update config filter and refresh outline
+function Sidebar:_pick_filter()
+  local picker_choice = cfg.o.picker or 'default'
+  local ok, picker = pcall(require, 'outline.pickers.' .. picker_choice)
+  if not ok then
+    -- Try to fallback to default picker, should work without deps
+    ok, picker = pcall(require, 'outline.pickers.default')
+    if not ok then
+      vim.notify('No picker is available!', vim.log.levels.ERROR)
+      return
+    else
+      vim.notify(string.format("Picker '%s' not available, falling back to default picker.", picker_choice), vim.log.levels.WARN)
+    end
+  end
+
+  local icons = cfg.o.symbols.icons
+  local filter_table = cfg.o.symbols.filter
+  -- get filetype of file we currently outline, check if it has special filterconf
+  -- if yes then override, otherwise override default
+  local filetype = vim.api.nvim_get_option_value('filetype', { buf = self.code.buf })
+  local conf_location = filter_table[filetype] and filetype or 'default'
+  local kinds = filter_table[conf_location]
+
+  local items = { 'none', 'all' }
+  for kind, icon in pairs(icons) do
+    local enabled = kinds[kind]
+    -- Checkmark as prefix for selected items
+    local prefix = enabled and "✓" or " "
+    local display = string.format('%s %s %s', prefix, icon.icon, kind)
+    table.insert(items, display)
+  end
+
+  table.sort(items, function(a, b)
+    local a_enabled = a:sub(1,1) ~= " "
+    local b_enabled = b:sub(1,1) ~= " "
+    if a_enabled ~= b_enabled then
+      return a_enabled
+    end
+    -- For "all" and "none" keep them at the top
+    if a:match("all$") then return true end
+    if b:match("all$") then return false end
+    if a:match("none$") then return true end
+    if b:match("none$") then return false end
+    -- Otherwise sort alphabetically by kind name
+    local a_kind = a:match("(%S+)$") or a
+    local b_kind = b:match("(%S+)$") or b
+    return a_kind < b_kind
+  end)
+
+  picker.pick_item {
+    items = items,
+    title = 'Select/Toggle Outline Filter',
+    on_select = function(selected)
+      for _, sel in ipairs(selected) do
+        -- Extract kindname, ignore prefix and icon, do this by capturing last non-whitespace sequence
+        local selected_kind = sel:match('(%S+)$') or selected
+        -- All selects, none deselects everything
+        if selected_kind == "all" then
+          for kind, _ in pairs(kinds) do
+            kinds[kind] = true
+          end
+        elseif selected_kind == "none" then
+          for kind, _ in pairs(kinds) do
+            kinds[kind] = false
+          end
+        else
+          -- Toggle individual symbolkinds
+          kinds[selected_kind] = not kinds[selected_kind]
+        end
+      end
+      self:_update_lines(true)
+    end,
+  }
 end
 
 return Sidebar
