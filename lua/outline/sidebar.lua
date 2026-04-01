@@ -410,10 +410,17 @@ function Sidebar:__goto_location(change_focus)
   -- XXX: There will be strange problems when using `nvim_buf_set_mark()`.
   vim.fn.win_execute(self.code.win, "normal! m'")
 
+  -- Temporarily override splitkeep so that cursor movement and window
+  -- switching don't fight over the viewport position.
+  local saved_splitkeep = vim.o.splitkeep
+  vim.o.splitkeep = 'cursor'
+
   vim.api.nvim_win_set_cursor(self.code.win, { node.line + 1, node.character })
 
   if cfg.o.outline_window.center_on_jump then
     vim.fn.win_execute(self.code.win, 'normal! zz')
+  else
+    vim.fn.win_execute(self.code.win, 'normal! zv')
   end
 
   utils.flash_highlight(
@@ -426,6 +433,8 @@ function Sidebar:__goto_location(change_focus)
   if change_focus then
     vim.fn.win_gotoid(self.code.win)
   end
+
+  vim.o.splitkeep = saved_splitkeep
 end
 
 ---Wraps __goto_location and handles auto_close.
