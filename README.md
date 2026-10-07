@@ -974,6 +974,24 @@ to achieve it.
 Code snippets in this section are to be placed in `.setup({ <HERE> })` directly
 unless specified otherwise.
 
+### Mouse support
+
+You can add `<LeftRelease>` to your keymap for `goto_location`:
+```lua
+keymaps = {
+  -- ...
+  goto_location = {"<CR>", "<LeftRelease>"},
+  -- ...
+}
+```
+
+This lets you jump to the symbol location on single mouse clicks.
+
+Alternatively, use `peek_location` rather than `goto_location` to prevent the cursor moving to the source window when jumping.
+
+https://github.com/hedyhli/outline.nvim/assets/50042066/07d5416c-b19d-4923-98e7-b0d2a2e0ad12
+
+
 ### Unfold others
 
 (Now a default behaviour, different to symbols-outline.nvim.)
