@@ -1,4 +1,5 @@
-*outline.txt*           For NVIM v0.7.0
+*outline.txt*
+                               For NVIM v0.7.0    Last change: 2026 October 07
 
 ==============================================================================
 Table of Contents                                  *outline-table-of-contents*
@@ -23,7 +24,7 @@ PREREQUISITES                                          *outline-prerequisites*
 
 - Neovim 0.7+
     - Note that it is recommended to use Neovim 0.8+ for all the features and fixes.
-        See details |outline-here|. Everything else works as normal in Neovim 0.7.
+        See details here. Everything else works as normal in Neovim 0.7.
 - To use outline.nvim with LSP, a properly configured LSP client is required.
 
 
@@ -42,7 +43,7 @@ Lazy.nvim example:
         -- Example mapping to toggle outline
         vim.keymap.set("n", "<leader>o", "<cmd>Outline<CR>",
           { desc = "Toggle Outline" })
-    
+
         require("outline").setup {
           -- Your setup opts here (leave empty to use defaults)
         }
@@ -82,7 +83,7 @@ Note that a call to `.setup()` is **required** for this plugin to work
     require("outline").setup({})
 <
 
-|outline-skip-to-commands|
+Skip to commands |outline-commands|
 
 
 CONFIGURATION                                          *outline-configuration*
@@ -112,7 +113,7 @@ configuration.
 - **Follow**: Update hover highlight and cursor position in outline to match
     position in code. Opposite of 'jump'.
 
-|outline-skip-to-commands|
+Skip to commands |outline-commands|
 
 
 DEFAULT OPTIONS ~
@@ -135,7 +136,7 @@ Show defaults ~
         -- Width can be included (with will override the width setting below):
         -- Eg, `topleft 20vsp` to prevent a flash of windows when resizing.
         split_command = nil,
-    
+
         -- Percentage or integer of columns; serves as the base/minimum width
         -- for the outline window (and for auto_width calculations)
         width = 25,
@@ -153,7 +154,7 @@ Show defaults ~
         -- When relative_width = true, this means take 25% of the total
         -- screen width for outline window.
         relative_width = true,
-    
+
         -- Auto close the outline window if goto_location is triggered and not for
         -- peek_location
         auto_close = false,
@@ -165,12 +166,12 @@ Show defaults ~
         -- Whether to center the cursor line vertically in the screen when
         -- jumping/focusing. Executes zz.
         center_on_jump = true,
-    
+
         -- Vim options for the outline window
         show_numbers = false,
         show_relative_numbers = false,
         wrap = false,
-    
+
         -- true/false/'focus_in_outline'/'focus_in_code'.
         -- The last two means only show cursorline when the focus is in outline/code.
         -- 'focus_in_outline' can be used if the outline_items.auto_set_cursor
@@ -183,7 +184,7 @@ Show defaults ~
         -- wasn't focused on the outline window.
         -- This feature is experimental.
         hide_cursor = false,
-    
+
         -- Whether to auto-focus on the outline window when it is opened.
         -- Set to false to *always* retain focus on your previous buffer when opening
         -- outline.
@@ -199,7 +200,7 @@ Show defaults ~
         -- Message displayed when there are no providers avialable.
         no_provider_message = 'No supported provider...'
       },
-    
+
       outline_items = {
         -- Show extra details with the symbols (lsp dependent) as virtual next
         show_symbol_details = true,
@@ -228,7 +229,7 @@ Show defaults ~
           items = { 'InsertLeave', 'WinEnter', 'BufEnter', 'BufWinEnter', 'TabEnter', 'BufWritePost' },
         },
       },
-    
+
       -- Options for outline guides which help show tree hierarchy of symbols
       guides = {
         enabled = true,
@@ -240,7 +241,7 @@ Show defaults ~
           vertical = '│',
         },
       },
-    
+
       symbol_folding = {
         -- Depth past which nodes will be folded by default. Set to false to unfold all on open.
         autofold_depth = 1,
@@ -254,7 +255,7 @@ Show defaults ~
         },
         markers = { '', '' },
       },
-    
+
       preview_window = {
         -- Automatically open preview of code location when navigating outline window
         auto_preview = false,
@@ -288,7 +289,7 @@ Show defaults ~
         -- in the preview window. Like VS Code's "peek editor".
         live = false
       },
-    
+
       -- These keymaps can be a string or a table for multiple keys.
       -- Set to `{}` to disable. (Using 'nil' will fallback to default keys)
       keymaps = {
@@ -328,7 +329,7 @@ Show defaults ~
         down_and_jump = '<C-j>',
         up_and_jump = '<C-k>',
       },
-    
+
       providers = {
         priority = { 'lsp', 'coc', 'markdown', 'norg', 'man' },
         -- Configuration for each provider (3rd party providers are supported)
@@ -341,7 +342,7 @@ Show defaults ~
           filetypes = {'markdown'},
         },
       },
-    
+
       symbols = {
         -- Filter by kinds (string) for symbols in the outline.
         -- Possible kinds are the Keys in the icons table below.
@@ -356,7 +357,7 @@ Show defaults ~
         --   filter = { 'Package', 'Module', 'Function' }
         -- See more examples below.
         filter = nil,
-    
+
         -- You can use a custom function that returns the icon for each symbol kind.
         -- This function takes a kind (string) as parameter and should return an
         -- icon as string.
@@ -493,7 +494,7 @@ External providers from plugins should define the provider module at
     Return a list of lines to be included in `:OutlineStatus` as supplementary
     information when this provider is active.
     See an example of this function in the LSP
-    <./lua/outline/providers/nvim-lsp.lua> provider.
+<./lua/outline/providers/nvim-lsp.lua> provider.
 - `request_symbols(callback: function, opts: table)`
     - param `callback` is a function that receives a list of symbols and the
         `opts` table.
@@ -540,12 +541,13 @@ COMMANDS                                                    *outline-commands*
     this command to control how the outline window split is created. Other
     modifiers are ignored.
     Example:
-    >vim
+
+>vim
         " in config: position='right'
         :topleft Outline     " opens with 'topleft vsplit'
         :belowright Outline  " opens with 'belowright vsplit'
         :Outline             " opens with 'botright vsplit'
-    <
+<
 - **:OutlineOpen[!]** (✓ bang ✓ mods)
     Open outline. With bang (`!`) the cursor focus stays in your original window
     after opening the outline window. Set `outline_window.focus_on_open = false` to
@@ -680,7 +682,7 @@ is called (say by a theme), the following links are used:
 For `OutlineCurrent`, foreground is set to String and background CursorLine.
 
 To customize colors of the symbol icons, use the `symbols.icons` table. See
-|outline-config|.
+config |outline-configuration|.
 
 
 PREVIEW WINDOW ~
@@ -844,7 +846,7 @@ Or display public, protected, and private symbols differently:
     }
 <
 
-See |outline-this-section| for other examples of this function.
+See this section for other examples of this function.
 
 - You can customize the split command used for creating the outline window split
     using `outline_window.split_command`, such as `"topleft vsp"`. See |windows|
@@ -861,6 +863,27 @@ to achieve it.
 
 Code snippets in this section are to be placed in `.setup({ <HERE> })` directly
 unless specified otherwise.
+
+
+MOUSE SUPPORT ~
+
+You can add `<LeftRelease>` to your keymap for `goto_location`:
+
+>lua
+    keymaps = {
+      -- ...
+      goto_location = {"<CR>", "<LeftRelease>"},
+      -- ...
+    }
+<
+
+This lets you jump to the symbol location on single mouse clicks.
+
+Alternatively, use `peek_location` rather than `goto_location` to prevent the
+cursor moving to the source window when jumping.
+
+
+https://github.com/hedyhli/outline.nvim/assets/50042066/07d5416c-b19d-4923-98e7-b0d2a2e0ad12
 
 
 UNFOLD OTHERS ~
@@ -975,7 +998,7 @@ Show line numbers next to each symbol to jump to that symbol quickly
 <
 
 The default highlight group for the line numbers is `LineNr`, you can customize
-it using `outline_window.winhl`: please see |outline-highlights|.
+it using `outline_window.winhl`: please see highlights.
 
 
 
@@ -1103,7 +1126,7 @@ NEOVIM 0.7                                                *outline-neovim-0.7*
 
 The following features and fixes are not included in Neovim 0.7.
 
-- |outline-command| modifiers (`:rightbel Outline`).
+- Command |outline-commands| modifiers (`:rightbel Outline`).
 - Rename methods in golang from outline window
     (#42 <https://github.com/hedyhli/outline.nvim/issues/42>)
 
@@ -1121,8 +1144,8 @@ instead, there would be highlighting issues (say the calculated starting line
 was within a markdown code block, so what was previously not supposed to be
 code is now highlighted as code).
 
-If this poses a problem for you, you should try out the |outline-live-preview|
-feature, which uses the code buffer directly for displaying the preview.
+If this poses a problem for you, you should try out the live-preview feature,
+which uses the code buffer directly for displaying the preview.
 
 
 MANY OUTLINES ~
@@ -1147,10 +1170,10 @@ RELATED PLUGINS                                      *outline-related-plugins*
     a few example use-cases where you may want to use Aerial, and others
     Outline.nvim.
     Aerial does a great job at supercharging vim’s built-in outline (`gO`). It
-    supports treesitter which Outline.nvim does not provide |outline-by-default|,
-    but can be added an external provider. (Note that Aerial also supports Norg
-    through treesitter like Outline.nvim, but as of writing it does not support JSX
-    like Outline.nvim does.)
+    supports treesitter which Outline.nvim does not provide by default, but can be
+    added an external provider. (Note that Aerial also supports Norg through
+    treesitter like Outline.nvim, but as of writing it does not support JSX like
+    Outline.nvim does.)
     - Aerial.nvim supports only Neovim 0.8 and above for the bleeding-edge
         features, as far as I know. You should use Outline.nvim (or the
         alternatives below) if you use Neovim 0.7 and wish to have equal support.
@@ -1160,7 +1183,7 @@ RELATED PLUGINS                                      *outline-related-plugins*
     - Outline.nvim supports both inclusive and exclusive symbol filtering.
     In addition to these, Aerial also supports a `AerialNav` window which gives you
     a miller column view of symbol hierarchy similar to nvim-navbuddy
-    <https://github.com/SmiteshP/nvim-navbuddy>. This feature might never be
+<https://github.com/SmiteshP/nvim-navbuddy>. This feature might never be
     supported in Outline.nvim because I personally feel that it is out of scope of
     a "outline window" plugin, and to keep the codebase simple. If you don’t want
     to install a second plugin for this feature, you should use Aerial.
@@ -1168,7 +1191,7 @@ RELATED PLUGINS                                      *outline-related-plugins*
     nvim-navic gives you fully customizable breadcrumb section for you
     winbar/statusline. However, as far as I am aware it only supports LSP. To have
     other providers built-in you can try Aerial, or dropbar.nvim
-    <https://github.com/Bekaboo/dropbar.nvim>.
+<https://github.com/Bekaboo/dropbar.nvim>.
 - **nvim-navbuddy** <https://github.com/SmiteshP/nvim-navbuddy>
     Miller columns popup for LSP navigation. Again as far as I know only LSP is
     supported.
