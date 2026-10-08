@@ -95,6 +95,9 @@ end
 ---@param response? outline.ProviderSymbol[]
 ---@param opts? outline.OutlineOpts
 function Sidebar:initial_handler(response, opts)
+  if not self.view then
+    return
+  end
   if response == nil or type(response) ~= 'table' or self.view:is_open() then
     utils.echo('No response from provider when requesting symbols!')
     return
@@ -347,6 +350,9 @@ end
 
 ---Re-request symbols from provider
 function Sidebar:__refresh()
+  if not self.view then
+    return
+  end
   local buf = vim.api.nvim_get_current_buf()
   local focused_outline = self.view.buf == buf
   if focused_outline or not self.view:is_open() then
@@ -360,7 +366,7 @@ function Sidebar:__refresh()
   self.provider, self.provider_info = providers.find_provider()
   if self.provider then
     self.provider.request_symbols(function(res)
-      if self.view:is_open() then
+      if self.view and self.view:is_open() then
         self:refresh_handler(res)
       end
     end, nil, self.provider_info)
