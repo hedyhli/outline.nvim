@@ -416,10 +416,17 @@ function Sidebar:__goto_location(change_focus)
   -- XXX: There will be strange problems when using `nvim_buf_set_mark()`.
   vim.fn.win_execute(self.code.win, "normal! m'")
 
+  -- Temporarily override splitkeep so that cursor movement and window
+  -- switching don't fight over the viewport position.
+  local saved_splitkeep = vim.o.splitkeep
+  vim.o.splitkeep = 'cursor'
+
   vim.api.nvim_win_set_cursor(self.code.win, { node.line + 1, node.character })
 
   if cfg.o.outline_window.center_on_jump then
     vim.fn.win_execute(self.code.win, 'normal! zz')
+  else
+    vim.fn.win_execute(self.code.win, 'normal! zv')
   end
 
   utils.flash_highlight(
@@ -432,6 +439,8 @@ function Sidebar:__goto_location(change_focus)
   if change_focus then
     vim.fn.win_gotoid(self.code.win)
   end
+
+  vim.o.splitkeep = saved_splitkeep
 end
 
 ---Wraps __goto_location and handles auto_close.
@@ -439,7 +448,10 @@ end
 ---@param change_focus boolean
 function Sidebar:_goto_location(change_focus)
   self:__goto_location(change_focus)
-  if change_focus and cfg.o.outline_window.auto_close then
+  -- Floating outline always closes on jump: it overlays the code, so there's
+  -- nothing to keep it open for once focus moves (unlike a sidebar).
+  local should_close = cfg.o.outline_window.auto_close or cfg.o.outline_window.position == 'float'
+  if change_focus and should_close then
     self:close()
   end
 end
@@ -701,8 +713,13 @@ function Sidebar:has_provider()
 end
 
 function Sidebar:update_width()
-  -- exit early if view is closed or dynamic changing is disabled
-  if not self.view:is_open() or not cfg.o.outline_window.auto_width.enabled then
+  -- exit early if view is closed, dynamic changing is disabled, or window is
+  -- floating (auto_width assumes a split; recentering a float isn't handled)
+  if
+    not self.view:is_open()
+    or not cfg.o.outline_window.auto_width.enabled
+    or cfg.o.outline_window.position == 'float'
+  then
     return
   end
 

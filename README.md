@@ -175,7 +175,7 @@ Pass a table to the setup call with your configuration options.
 ```lua
 {
   outline_window = {
-    -- Where to open the split window: right/left
+    -- Where to open the outline window: right/left/float
     position = 'right',
     -- The default split commands used are 'topleft vs' and 'botright vs'
     -- depending on `position`. You can change this by providing your own
@@ -185,13 +185,16 @@ Pass a table to the setup call with your configuration options.
     -- outline window. Eg, 'rightbelow vsplit'.
     -- Width can be included (with will override the width setting below):
     -- Eg, `topleft 20vsp` to prevent a flash of windows when resizing.
+    -- Ignored when position = 'float'.
     split_command = nil,
 
     -- Percentage or integer of columns; serves as the base/minimum width
     -- for the outline window (and for auto_width calculations)
+    -- Ignored when position = 'float' (see outline_window.float below).
     width = 25,
     -- When auto_width.enabled = true, 'width' is the minimum window width.
     -- When auto_width.enabled = false, 'width' is the exact/default window width.
+    -- Ignored when position = 'float'.
     auto_width = {
       -- Dynamically resize window width to fit content
       enabled = false,
@@ -203,7 +206,21 @@ Pass a table to the setup call with your configuration options.
     -- Whether width is relative to the total width of nvim
     -- When relative_width = true, this means take 25% of the total
     -- screen width for outline window.
+    -- Ignored when position = 'float'.
     relative_width = true,
+
+    -- Only used when position = 'float'. Ignored otherwise.
+    float = {
+      -- Percentage or integer of columns/lines for the floating window
+      width = 60,
+      height = 80,
+      -- Whether width/height above are a percentage of nvim's screen size
+      relative_width = true,
+      relative_height = true,
+      -- Passed straight to nvim_open_win
+      border = 'rounded',
+      winblend = 0,
+    },
 
     -- Auto close the outline window if goto_location is triggered and not for
     -- peek_location
