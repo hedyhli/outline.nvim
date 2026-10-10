@@ -36,13 +36,13 @@ local function setup_global_autocmd()
   })
   vim.api.nvim_create_autocmd('TabClosed', {
     pattern = '*',
-    callback = function(o)
-      local tab = tonumber(o.file)
-      local s = M.sidebars[tab]
-      if s then
-        s:destroy()
+    callback = function()
+      for tab, sidebar in pairs(M.sidebars) do
+        if not vim.api.nvim_tabpage_is_valid(tab) then
+          sidebar:destroy()
+          M.sidebars[tab] = nil
+        end
       end
-      M.sidebars[tab] = nil
     end,
   })
 end
