@@ -913,7 +913,12 @@ function Sidebar:build_outline(find_node)
     -- Start from left of icon col
     local hl_start = #pref_str + #lineno_prefix + icon_pref
     local hl_end = hl_start + #node.icon -- until after icon
-    local hl_type = cfg.o.symbols.icons[symbols.kinds[node.kind]].hl
+    local hl_type = ''
+    if symbols.kinds[node.kind] == nil then
+      -- This occurs for example on some Constants in odin for some unknown reason
+    else
+      hl_type = cfg.o.symbols.icons[symbols.kinds[node.kind]].hl
+    end
     -- stylua: ignore start
     table.insert(hl, {
       line = line_count, name = hl_type,
