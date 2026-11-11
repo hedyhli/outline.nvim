@@ -1,6 +1,7 @@
 local cfg = require('outline.config')
 local jsx = require('outline.providers.jsx')
 local lsp_utils = require('outline.utils.lsp')
+local markdown = require('outline.providers.markdown')
 local utils = require('outline.utils')
 
 local l = vim.lsp
@@ -85,6 +86,23 @@ local function postprocess_symbols(symbols)
   end
 end
 
+---Some servers answer documentSymbol with nothing at all for buffers they are
+---attached to. Marksman does that for any path containing '#' since it cuts the
+---path at the '#' (https://github.com/artempyanykh/marksman/issues/466), which
+---leaves the outline closed with no way to open it. Our own markdown parser
+---does not depend on the server, so use it for those buffers.
+---@param on_symbols fun(symbols?:outline.ProviderSymbol[], opts?:table)
+---@param opts table?
+---@return boolean handled
+local function fallback_markdown(on_symbols, opts)
+  if not markdown.supports_buffer(0, cfg.o.providers.markdown) then
+    return false
+  end
+
+  markdown.request_symbols(on_symbols, opts)
+  return true
+end
+
 -- XXX: Only one LSP client is supported here, to prevent checking blacklisting
 -- over again
 ---@param on_symbols fun(symbols?:outline.ProviderSymbol[], opts?:table)
@@ -102,6 +120,9 @@ function M.request_symbols(on_symbols, opts, info)
   local method = 'textDocument/documentSymbol'
   local callback = function(err, response)
     if err or not response then
+      if fallback_markdown(on_symbols, opts) then
+        return
+      end
       on_symbols(response, opts)
     else
       response = postprocess_symbols(response)
