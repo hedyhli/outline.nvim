@@ -1141,6 +1141,45 @@ and `icons` as fallback.
 
 <div align=center><img width="500" alt="outline with plain text icons" src="https://github.com/hedyhli/outline.nvim/assets/50042066/655b534b-da16-41a7-926e-f14475376a04"></div>
 
+### Icons without a Nerd Font
+
+The default icons are Nerd Font glyphs, so without a patched font a few kinds
+render as empty boxes. Replacing the ones you actually run into in the
+`symbols.icons` table is enough, since kinds you leave out keep their defaults:
+
+```lua
+symbol_folding = {
+  markers = { '🞂', '🞃' },
+},
+symbols = {
+  icons = {
+    File = { icon = '🗈', hl = 'Identifier' },
+    Module = { icon = '▣', hl = 'Include' },
+    Namespace = { icon = '{}', hl = 'Include' },
+    Package = { icon = '📦', hl = 'Include' },
+    Property = { icon = '⛬', hl = 'Identifier' },
+    Field = { icon = '⬧', hl = 'Identifier' },
+    Interface = { icon = '⚙', hl = 'Type' },
+    Variable = { icon = 'α', hl = 'Constant' },
+    Constant = { icon = '💎', hl = 'Constant' },
+    Array = { icon = '[]', hl = 'Constant' },
+    Key = { icon = '🗝', hl = 'Type' },
+    Null = { icon = '∅', hl = 'Type' },
+    Component = { icon = '⟨⟩', hl = 'Function' },
+    Fragment = { icon = '❲❳', hl = 'Constant' },
+    TypeAlias = { icon = '🏷', hl = 'Type' },
+    Parameter = { icon = '⟨T⟩', hl = 'Identifier' },
+    StaticMethod = { icon = '🧊', hl = 'Function' },
+  },
+},
+```
+
+The table is the last of the three icon sources, so an `icon_fetcher` function
+is checked before it, and so is lspkind if you have `symbols.icon_source` set
+to `'lspkind'`. Drop that option if you want the table to win.
+
+Thanks to @shmerl for the set.
+
 ### Different icons based on filetype
 
 ```lua
