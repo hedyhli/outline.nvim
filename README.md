@@ -507,6 +507,67 @@ The order in which the sources for icons are checked is:
 
 A fallback is always used if the previous candidate returned a falsey value.
 
+**Default icons**
+
+The icons below are the values of the default `symbols.icons` table, with the
+codepoint of each one. A glyph that no installed font covers shows up as an
+empty box in the outline, and copying it back out of the terminal is not always
+possible, so the codepoint is the reliable way to name the icon you want to
+replace. In insert mode `<C-v>u` takes four hex digits and `<C-v>U` eight, e.g.
+`<C-v>UF0214` for the `File` icon.
+
+| Kind          | Icon | Codepoint                   | Source       |
+| ------------- | ---- | --------------------------- | ------------ |
+| File          | 󰈔    | U+F0214                     | Nerd Font v3 |
+| Module        | 󰆧    | U+F01A7                     | Nerd Font v3 |
+| Namespace     | 󰅪    | U+F016A                     | Nerd Font v3 |
+| Package       | 󰏗    | U+F03D7                     | Nerd Font v3 |
+| Class         | 𝓒    | U+1D4D2                     | Unicode      |
+| Method        | ƒ    | U+0192                      | Unicode      |
+| Property      |     | U+E624                      | Nerd Font    |
+| Field         | 󰆨    | U+F01A8                     | Nerd Font v3 |
+| Constructor   |     | U+E20F                      | Nerd Font    |
+| Enum          | ℰ    | U+2130                      | Unicode      |
+| Interface     | 󰜰    | U+F0730                     | Nerd Font v3 |
+| Function      |     | U+F09A                      | Nerd Font    |
+| Variable      |     | U+E79B                      | Nerd Font    |
+| Constant      |     | U+E22C                      | Nerd Font    |
+| String        | 𝓐    | U+1D4D0                     | Unicode      |
+| Number        | #    | U+0023                      | Unicode      |
+| Boolean       | ⊨    | U+22A8                      | Unicode      |
+| Array         | 󰅪    | U+F016A                     | Nerd Font v3 |
+| Object        | ⦿    | U+29BF                      | Unicode      |
+| Key           | 🔐    | U+1F510                     | Unicode      |
+| Null          | NULL | U+004E U+0055 U+004C U+004C | Unicode      |
+| EnumMember    |     | U+F15D                      | Nerd Font    |
+| Struct        | 𝓢    | U+1D4E2                     | Unicode      |
+| Event         | 🗲    | U+1F5F2                     | Unicode      |
+| Operator      | +    | U+002B                      | Unicode      |
+| TypeParameter | 𝙏    | U+1D64F                     | Unicode      |
+| Component     | 󰅴    | U+F0174                     | Nerd Font v3 |
+| Fragment      | 󰅴    | U+F0174                     | Nerd Font v3 |
+| TypeAlias     |     | U+E75E                      | Nerd Font    |
+| Parameter     |     | U+EA92                      | Nerd Font    |
+| StaticMethod  |     | U+EA8C                      | Nerd Font    |
+| Macro         |     | U+F136                      | Nerd Font    |
+
+The `Nerd Font` and `Nerd Font v3` rows are Private Use Area glyphs, which only
+render with a Nerd Font installed. `Nerd Font` covers the `U+E000` to `U+F8FF`
+range; `Nerd Font v3` is needed for the Material Design icons in the
+Supplementary Private Use Area-A (`U+F0000` to `U+FFFFD`), which Nerd Fonts v2
+does not carry. The `Unicode` rows are ordinary characters; the two pictographs
+(`Key`, `Event`) still need a font that covers their code point.
+
+The four ccls kinds (`TypeAlias`, `Parameter`, `StaticMethod`, `Macro`) keep a
+trailing space in the default table, so their icon is followed by an empty
+column.
+
+Two further defaults are Nerd Font glyphs: `symbol_folding.markers` is
+`{ '\uf460', '\uf47c' }` (collapsed, expanded). The `guides.markers` defaults
+are box-drawing characters instead — `bottom = '└'` (U+2514), `middle = '├'`
+(U+251C), `vertical = '│'` (U+2502) and `horizontal = '─'` (U+2500) — and render
+without a Nerd Font.
+
 ## Providers
 
 The current list of tested providers are:
