@@ -3,6 +3,7 @@ local utils = require('outline.utils')
 
 local M = {}
 
+---@param bufnr? integer
 function M.is_buf_attached_to_lsp(bufnr)
   local clients
   if _G._outline_nvim_has[10] then
@@ -14,6 +15,7 @@ function M.is_buf_attached_to_lsp(bufnr)
   return clients ~= nil and #clients > 0
 end
 
+---@param bufnr? integer
 function M.is_buf_markdown(bufnr)
   return utils.buf_get_option(bufnr, 'ft') == 'markdown'
 end

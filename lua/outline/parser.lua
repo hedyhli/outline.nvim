@@ -19,9 +19,9 @@ end
 -- simply reoganized by merging each property table from the arguments into a
 -- table for each symbol)
 ---@param result outline.ProviderSymbol The result from a language server.
----@param depth number? The current depth of the symbol in the hierarchy.
----@param hierarchy table? A table of booleans which tells if a symbols parent was the last in its group.
----@param parent table? A reference to the current symbol's parent in the function's recursion
+---@param depth? number The current depth of the symbol in the hierarchy.
+---@param hierarchy? table A table of booleans which tells if a symbols parent was the last in its group.
+---@param parent? table A reference to the current symbol's parent in the function's recursion
 ---@param bufnr integer The buffer number which the result was from
 ---@return outline.Symbol[]
 local function parse_result(result, depth, hierarchy, parent, bufnr)
@@ -94,7 +94,7 @@ end
 ---Iterator that traverses the tree parent first before children, returning each node.
 -- Essentailly 'flatten' items, but returns an iterator.
 ---@param items outline.Symbol[] Tree of symbols parsed by parse_result
----@param children_check function? Takes a node and return whether the children should be explored.
+---@param children_check? function Takes a node and return whether the children should be explored.
 ---Note that the root node (param items) is always explored regardless of children_check.
 function M.preorder_iter(items, children_check)
   local node = { children = items, _i = 1, depth = 1, is_root = true }

@@ -25,8 +25,9 @@ local Sidebar = {}
 ---@field original_cursor string
 ---@field code outline.SidebarCodeState
 ---@field augroup integer
----@field provider outline.Provider?
----@field provider_info table?
+---@field max_line_size integer
+---@field provider? outline.Provider
+---@field provider_info? table
 ---@field preview outline.Preview|outline.LivePreview
 
 function Sidebar:new(id)
@@ -39,6 +40,7 @@ function Sidebar:new(id)
     flats = {},
     hovered = {},
     original_cursor = vim.o.guicursor,
+    max_line_size = 0,
   }, { __index = Sidebar })
 end
 
@@ -55,6 +57,7 @@ function Sidebar:reset_state()
   self.flats = {}
   self.original_cursor = vim.o.guicursor
   self.provider = nil
+  self.max_line_size = 0
   self:delete_autocmds()
 end
 
@@ -89,9 +92,12 @@ function Sidebar:initial_setup(opts)
 end
 
 ---Handler for provider request_symbols when outline is opened for the first time.
----@param response outline.ProviderSymbol[]?
----@param opts outline.OutlineOpts?
+---@param response? outline.ProviderSymbol[]
+---@param opts? outline.OutlineOpts
 function Sidebar:initial_handler(response, opts)
+  if not self.view then
+    return
+  end
   if response == nil or type(response) ~= 'table' or self.view:is_open() then
     utils.echo('No response from provider when requesting symbols!')
     return
@@ -273,7 +279,7 @@ function Sidebar:reset_cursor_style()
 end
 
 ---Set the cursor to current.line_in_outline and column to a convenient place
----@param current outline.FlatSymbol?
+---@param current? outline.FlatSymbol
 function Sidebar:update_cursor_pos(current)
   if not self.code.win or not self.view.win then
     return
@@ -293,8 +299,8 @@ end
 
 ---Calls build_outline and then calls update_cursor_pos if update_cursor is
 ---not false
----@param update_cursor boolean?
----@param set_cursor_to_node outline.Symbol|outline.FlatSymbol?
+---@param update_cursor? boolean
+---@param set_cursor_to_node? outline.Symbol|outline.FlatSymbol
 function Sidebar:_update_lines(update_cursor, set_cursor_to_node)
   local current = self:build_outline(set_cursor_to_node)
   if update_cursor ~= false then
@@ -344,6 +350,9 @@ end
 
 ---Re-request symbols from provider
 function Sidebar:__refresh()
+  if not self.view then
+    return
+  end
   local buf = vim.api.nvim_get_current_buf()
   local focused_outline = self.view.buf == buf
   if focused_outline or not self.view:is_open() then
@@ -357,7 +366,7 @@ function Sidebar:__refresh()
   self.provider, self.provider_info = providers.find_provider()
   if self.provider then
     self.provider.request_symbols(function(res)
-      if self.view:is_open() then
+      if self.view and self.view:is_open() then
         self:refresh_handler(res)
       end
     end, nil, self.provider_info)
@@ -381,7 +390,7 @@ function Sidebar:no_providers_ui()
 end
 
 ---Currently hovered node in outline
----@return outline.FlatSymbol?
+---@return outline.FlatSymbol|nil
 function Sidebar:_current_node()
   local current_line = vim.api.nvim_win_get_cursor(self.view.win)[1]
   if self.flats then
@@ -521,7 +530,7 @@ function Sidebar:_toggle_all_fold(nodes)
   self:_set_all_folded(not folded, nodes)
 end
 
----@param folded boolean?
+---@param folded? boolean
 ---@param nodes? outline.Symbol[]
 function Sidebar:_set_all_folded(folded, nodes)
   if not self.provider then
@@ -556,7 +565,7 @@ function Sidebar:has_code_win()
 end
 
 ---@see outline.follow_cursor
----@param opts outline.OutlineOpts?
+---@param opts? outline.OutlineOpts
 ---@return boolean ok
 function Sidebar:follow_cursor(opts)
   if not self.view:is_open() then
@@ -586,7 +595,7 @@ function Sidebar:_map_follow_cursor()
   end
 end
 
----@param opts outline.OutlineOpts?
+---@param opts? outline.OutlineOpts
 ---@return boolean is_open
 function Sidebar:toggle(opts)
   if self.view:is_open() then
@@ -599,7 +608,7 @@ function Sidebar:toggle(opts)
 end
 
 ---@see outline.open_outline
----@param opts outline.OutlineOpts?
+---@param opts? outline.OutlineOpts
 function Sidebar:open(opts)
   if not opts then
     opts = { focus_outline = true }
@@ -691,6 +700,33 @@ function Sidebar:has_provider()
   return providers.has_provider()
 end
 
+function Sidebar:update_width()
+  -- exit early if view is closed or dynamic changing is disabled
+  if not self.view:is_open() or not cfg.o.outline_window.auto_width.enabled then
+    return
+  end
+
+  -- Add some padding respecting min-max constraints
+  local padding = 2
+  local min_width = cfg.o.outline_window.width
+  local configured_max_width = cfg.o.outline_window.auto_width.max_width
+
+  local max_width
+  if cfg.o.outline_window.relative_width then
+    max_width = math.floor(vim.o.columns * (configured_max_width / 100))
+  else
+    max_width = configured_max_width
+  end
+
+  local new_width = math.min(max_width, math.max(min_width, self.max_line_size + padding))
+
+  -- Only resize if change is significant (avoid constant small adjustments, have padding for that)
+  local current_width = vim.api.nvim_win_get_width(self.view.win)
+  if math.abs(new_width - current_width) > 1 then
+    vim.api.nvim_win_set_width(self.view.win, new_width)
+  end
+end
+
 function Sidebar:_highlight_current_item(winnr, update_cursor)
   local has_provider = self:has_provider()
   local has_outline_open = self.view:is_open()
@@ -740,8 +776,8 @@ end
 ---@note Ensure new outlines are already set to `self.items` before calling
 ---this function. `self.flats` will be overwritten and current line is obtained
 ---from `win_get_cursor` using `self.code.win`.
----@param find_node outline.FlatSymbol|outline.Symbol? Find a given node rather than node matching cursor position in codewin
----@return outline.FlatSymbol? set_cursor_to_this_node
+---@param find_node? outline.FlatSymbol|outline.Symbol Find a given node rather than node matching cursor position in codewin
+---@return outline.FlatSymbol|nil set_cursor_to_this_node
 function Sidebar:build_outline(find_node)
   ---@type integer 0-indexed
   local hovered_line = vim.api.nvim_win_get_cursor(self.code.win)[1] - 1
@@ -753,6 +789,9 @@ function Sidebar:build_outline(find_node)
   local details = {} ---@type string[]
   local linenos = {} ---@type string[]
   local hl = {} ---@type outline.HL[]
+
+  -- Reset every update as largest line recorded could have shrunk
+  self.max_line_size = 0
 
   -- Find the prefix for each line needed for the lineno space.
   -- Use [max width of [max_line-1]] + 1 space padding.
@@ -874,7 +913,12 @@ function Sidebar:build_outline(find_node)
     -- Start from left of icon col
     local hl_start = #pref_str + #lineno_prefix + icon_pref
     local hl_end = hl_start + #node.icon -- until after icon
-    local hl_type = cfg.o.symbols.icons[symbols.kinds[node.kind]].hl
+    local hl_type = ''
+    if symbols.kinds[node.kind] == nil then
+      -- This occurs for example on some Constants in odin for some unknown reason
+    else
+      hl_type = cfg.o.symbols.icons[symbols.kinds[node.kind]].hl
+    end
     -- stylua: ignore start
     table.insert(hl, {
       line = line_count, name = hl_type,
@@ -888,7 +932,18 @@ function Sidebar:build_outline(find_node)
     -- Each line passed to nvim_buf_set_lines cannot contain newlines
     line = line:gsub('\n', ' ')
     table.insert(lines, line)
+
+    if cfg.o.outline_window.auto_width.enabled then
+      local line_width = vim.fn.strwidth(line)
+      if cfg.o.outline_window.auto_width.include_symbol_details and node.detail then
+        line_width = line_width + vim.fn.strwidth(node.detail)
+      end
+      self.max_line_size = math.max(self.max_line_size, line_width)
+    end
   end
+
+  -- Update window width if needed
+  self:update_width()
 
   -- PERF:
   -- * Is setting individual lines is not as good as rewriting entire buffer?

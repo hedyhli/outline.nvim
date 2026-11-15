@@ -36,20 +36,20 @@ local function setup_global_autocmd()
   })
   vim.api.nvim_create_autocmd('TabClosed', {
     pattern = '*',
-    callback = function(o)
-      local tab = tonumber(o.file)
-      local s = M.sidebars[tab]
-      if s then
-        s:destroy()
+    callback = function()
+      for tab, sidebar in pairs(M.sidebars) do
+        if not vim.api.nvim_tabpage_is_valid(tab) then
+          sidebar:destroy()
+          M.sidebars[tab] = nil
+        end
       end
-      M.sidebars[tab] = nil
     end,
   })
 end
 
 ---Obtain the sidebar object for current tabpage
----@param set_current boolean? Set to false to disable setting M.current
----@return outline.Sidebar?
+---@param set_current? boolean Set to false to disable setting M.current
+---@return outline.Sidebar|nil
 function M._get_sidebar(set_current)
   local tab = vim.api.nvim_get_current_tabpage()
   local sidebar = M.sidebars[tab]
@@ -62,7 +62,7 @@ end
 ---Run a Sidebar method by getting the sidebar of current tabpage, with args.
 ---NOP if sidebar not found for this tabpage.
 ---@param method string Must be valid
----@param args table?
+---@param args? table
 ---@return any return_of_method Depends on sidebar `method`
 function M._sidebar_do(method, args)
   local sidebar = M._get_sidebar()
@@ -82,7 +82,7 @@ M.close = M.close_outline
 
 ---Toggle the outline window, and return whether the outline window is open
 ---after this operation.
----@param opts outline.OutlineOpts? Table of options
+---@param opts? outline.OutlineOpts Table of options
 ---@return boolean is_open Whether outline window is now open
 function M.toggle_outline(opts)
   local sidebar = M._get_sidebar()
@@ -116,7 +116,7 @@ end
 
 ---Set position of outline window to match cursor position in code, return
 ---whether the window is just newly opened (previously not open).
----@param opts outline.OutlineOpts? Field `focus_outline` = `false` or `nil` means don't focus on outline window after following cursor. If opts is not provided, focus will be on outline window after following cursor.
+---@param opts? outline.OutlineOpts Field `focus_outline` = `false` or `nil` means don't focus on outline window after following cursor. If opts is not provided, focus will be on outline window after following cursor.
 ---@return boolean ok Whether it was successful. If ok=false, either the outline window is not open or the code window cannot be found.
 function M.follow_cursor(opts)
   return M._sidebar_do('follow_cursor', { opts })
@@ -130,7 +130,7 @@ end
 M.refresh = M.refresh_outline
 
 ---Open the outline window.
----@param opts outline.OutlineOpts? Field focus_outline=false means don't focus on outline window after opening. If opts is not provided, focus will be on outline window after opening.
+---@param opts? outline.OutlineOpts Field focus_outline=false means don't focus on outline window after opening. If opts is not provided, focus will be on outline window after opening.
 function M.open_outline(opts)
   local tab = vim.api.nvim_get_current_tabpage()
   local sidebar = M.sidebars[tab]
@@ -200,8 +200,8 @@ local function _get_breadcrumb(sidebar, opts)
   return table.concat(names, opts.sep)
 end
 
----@param opts outline.BreadcrumbOpts?
----@return string? breadcrumb nil if outline not open
+---@param opts? outline.BreadcrumbOpts
+---@return string|nil breadcrumb nil if outline not open
 function M.get_breadcrumb(opts)
   local sidebar = M._get_sidebar()
 
@@ -219,7 +219,7 @@ function M.get_breadcrumb(opts)
 end
 
 ---@param opts outline.SymbolOpts
----@return string?
+---@return string|nil
 function M.get_symbol(opts)
   local sidebar = M._get_sidebar()
   if not sidebar then
@@ -371,6 +371,7 @@ With bang, keep focus on initial window after opening.',
 end
 
 ---Set up configuration options for outline.
+---@param opts? outline.SetupOpts
 function M.setup(opts)
   local minor = vim.version().minor
 

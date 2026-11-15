@@ -41,7 +41,22 @@ function M.handle_markdown()
   local max_level = 1
   local is_inside_code_block = false
 
+  -- Skip YAML frontmatter
+  local start_line = 1
+  if lines[1] and string.match(lines[1], '^---%s*$') then
+    for i = 2, #lines do
+      if string.match(lines[i], '^---%s*$') or string.match(lines[i], '^%.%.%.%s*$') then
+        start_line = i + 1
+        break
+      end
+    end
+  end
+
   for line, value in ipairs(lines) do
+    if line < start_line then
+      goto nextline
+    end
+
     if string.find(value, '^```') then
       is_inside_code_block = not is_inside_code_block
     end

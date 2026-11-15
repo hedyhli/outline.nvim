@@ -188,8 +188,19 @@ Pass a table to the setup call with your configuration options.
     -- Eg, `topleft 20vsp` to prevent a flash of windows when resizing.
     split_command = nil,
 
-    -- Percentage or integer of columns
+    -- Percentage or integer of columns; serves as the base/minimum width
+    -- for the outline window (and for auto_width calculations)
     width = 25,
+    -- When auto_width.enabled = true, 'width' is the minimum window width.
+    -- When auto_width.enabled = false, 'width' is the exact/default window width.
+    auto_width = {
+      -- Dynamically resize window width to fit content
+      enabled = false,
+      -- Maximum width (columns or percent if relative_width)
+      max_width = 40,
+      -- Include symbol details in width calculation
+      include_symbol_details = false,
+    },
     -- Whether width is relative to the total width of nvim
     -- When relative_width = true, this means take 25% of the total
     -- screen width for outline window.
@@ -1011,6 +1022,24 @@ to achieve it.
 Code snippets in this section are to be placed in `.setup({ <HERE> })` directly
 unless specified otherwise.
 
+### Mouse support
+
+You can add `<LeftRelease>` to your keymap for `goto_location`:
+```lua
+keymaps = {
+  -- ...
+  goto_location = {"<CR>", "<LeftRelease>"},
+  -- ...
+}
+```
+
+This lets you jump to the symbol location on single mouse clicks.
+
+Alternatively, use `peek_location` rather than `goto_location` to prevent the cursor moving to the source window when jumping.
+
+https://github.com/hedyhli/outline.nvim/assets/50042066/07d5416c-b19d-4923-98e7-b0d2a2e0ad12
+
+
 ### Unfold others
 
 (Now a default behaviour, different to symbols-outline.nvim.)
@@ -1159,6 +1188,45 @@ The fetcher function, if provided, is checked first before using `icon_source`
 and `icons` as fallback.
 
 <div align=center><img width="500" alt="outline with plain text icons" src="https://github.com/hedyhli/outline.nvim/assets/50042066/655b534b-da16-41a7-926e-f14475376a04"></div>
+
+### Icons without a Nerd Font
+
+The default icons are Nerd Font glyphs, so without a patched font a few kinds
+render as empty boxes. Replacing the ones you actually run into in the
+`symbols.icons` table is enough, since kinds you leave out keep their defaults:
+
+```lua
+symbol_folding = {
+  markers = { '🞂', '🞃' },
+},
+symbols = {
+  icons = {
+    File = { icon = '🗈', hl = 'Identifier' },
+    Module = { icon = '▣', hl = 'Include' },
+    Namespace = { icon = '{}', hl = 'Include' },
+    Package = { icon = '📦', hl = 'Include' },
+    Property = { icon = '⛬', hl = 'Identifier' },
+    Field = { icon = '⬧', hl = 'Identifier' },
+    Interface = { icon = '⚙', hl = 'Type' },
+    Variable = { icon = 'α', hl = 'Constant' },
+    Constant = { icon = '💎', hl = 'Constant' },
+    Array = { icon = '[]', hl = 'Constant' },
+    Key = { icon = '🗝', hl = 'Type' },
+    Null = { icon = '∅', hl = 'Type' },
+    Component = { icon = '⟨⟩', hl = 'Function' },
+    Fragment = { icon = '❲❳', hl = 'Constant' },
+    TypeAlias = { icon = '🏷', hl = 'Type' },
+    Parameter = { icon = '⟨T⟩', hl = 'Identifier' },
+    StaticMethod = { icon = '🧊', hl = 'Function' },
+  },
+},
+```
+
+The table is the last of the three icon sources, so an `icon_fetcher` function
+is checked before it, and so is lspkind if you have `symbols.icon_source` set
+to `'lspkind'`. Drop that option if you want the table to win.
+
+Thanks to @shmerl for the set.
 
 ### Different icons based on filetype
 
