@@ -516,6 +516,9 @@ possible, so the codepoint is the reliable way to name the icon you want to
 replace. In insert mode `<C-v>u` takes four hex digits and `<C-v>U` eight, e.g.
 `<C-v>UF0214` for the `File` icon.
 
+<details>
+<summary>All 32 default icons, with their codepoints and font source</summary>
+
 | Kind          | Icon | Codepoint                   | Source       |
 | ------------- | ---- | --------------------------- | ------------ |
 | File          | 󰈔    | U+F0214                     | Nerd Font v3 |
@@ -567,6 +570,8 @@ Two further defaults are Nerd Font glyphs: `symbol_folding.markers` is
 are box-drawing characters instead — `bottom = '└'` (U+2514), `middle = '├'`
 (U+251C), `vertical = '│'` (U+2502) and `horizontal = '─'` (U+2500) — and render
 without a Nerd Font.
+
+</details>
 
 ## Providers
 
