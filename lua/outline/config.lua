@@ -43,6 +43,15 @@ M.defaults = {
       include_symbol_details = false,
     },
     relative_width = true,
+    -- Only used when position = 'float'. Ignored otherwise.
+    float = {
+      width = 60,
+      height = 80,
+      relative_width = true,
+      relative_height = true,
+      border = 'rounded',
+      winblend = 0,
+    },
     wrap = false,
     focus_on_open = true,
     auto_close = false,
@@ -201,6 +210,22 @@ function M.get_split_command()
   else
     return 'botright vs'
   end
+end
+
+---Compute nvim_open_win opts for a centered floating outline window.
+function M.get_float_window_opts()
+  local conf = M.o.outline_window.float
+  local width = conf.relative_width and math.ceil(vim.o.columns * (conf.width / 100)) or conf.width
+  local height = conf.relative_height and math.ceil(vim.o.lines * (conf.height / 100)) or conf.height
+  return {
+    relative = 'editor',
+    width = width,
+    height = height,
+    row = math.floor((vim.o.lines - height) / 2),
+    col = math.floor((vim.o.columns - width) / 2),
+    border = conf.border,
+    style = 'minimal',
+  }
 end
 
 local function table_has_content(t)

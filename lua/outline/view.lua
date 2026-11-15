@@ -28,17 +28,27 @@ function View:setup_view(split_command)
   utils.buf_set_option(self.buf, 'buftype', 'nofile')
   utils.buf_set_option(self.buf, 'modifiable', false)
 
-  -- create a split
-  vim.cmd(split_command)
+  local is_float = cfg.o.outline_window.position == 'float'
 
-  -- get current (outline) window and attach our buffer to it
-  self.win = vim.api.nvim_get_current_win()
-  vim.api.nvim_win_set_buf(self.win, self.buf)
+  if is_float then
+    self.win = vim.api.nvim_open_win(self.buf, true, cfg.get_float_window_opts())
+    local winblend = cfg.o.outline_window.float.winblend
+    if winblend > 0 then
+      utils.win_set_option(self.win, 'winblend', winblend)
+    end
+  else
+    -- create a split
+    vim.cmd(split_command)
 
-  -- resize if split_command not specify width like "25vsplit"
-  if split_command:match('%d+') == nil then
-    -- resize to a % of the current window size
-    vim.cmd('vertical resize ' .. cfg.o.outline_window.width)
+    -- get current (outline) window and attach our buffer to it
+    self.win = vim.api.nvim_get_current_win()
+    vim.api.nvim_win_set_buf(self.win, self.buf)
+
+    -- resize if split_command not specify width like "25vsplit"
+    if split_command:match('%d+') == nil then
+      -- resize to a % of the current window size
+      vim.cmd('vertical resize ' .. cfg.o.outline_window.width)
+    end
   end
 
   -- window stuff
