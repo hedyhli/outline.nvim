@@ -66,7 +66,16 @@ function View:setup_view(split_command)
   utils.win_set_option(self.win, 'showbreak', '      ') -- only has effect when wrap=true.
   -- buffer stuff
   local tab = vim.api.nvim_get_current_tabpage()
-  vim.api.nvim_buf_set_name(self.buf, 'OUTLINE_' .. tostring(tab))
+  local name = 'OUTLINE_' .. tostring(tab)
+  -- wipe a leftover buffer with this name (e.g. from a restored session),
+  -- otherwise nvim_buf_set_name fails with E95
+  local fullname = vim.fn.fnamemodify(name, ':p')
+  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+    if buf ~= self.buf and vim.api.nvim_buf_get_name(buf) == fullname then
+      pcall(vim.api.nvim_buf_delete, buf, { force = true })
+    end
+  end
+  vim.api.nvim_buf_set_name(self.buf, name)
   utils.buf_set_option(self.buf, 'modifiable', false)
 
   if cfg.o.outline_window.show_numbers or cfg.o.outline_window.show_relative_numbers then
