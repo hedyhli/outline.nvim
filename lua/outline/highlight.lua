@@ -93,7 +93,7 @@ function M.linenos(bufnr, linenos, hl_mode)
 end
 
 ---Create Outline highlights with default values if they don't already exist
-function M.setup()
+local function setup_highlights()
   local get_hl_by_name
 
   if _G._outline_nvim_has[9] then
@@ -118,27 +118,24 @@ function M.setup()
 
   -- Setup the OutlineCurrent highlight group if it hasn't been done already by
   -- a theme or manually set
-  if vim.fn.hlexists('OutlineCurrent') == 0 then
-    local cline_hl = get_hl_by_name('CursorLine')
-    local string_hl = get_hl_by_name('String')
+  local cline_hl = get_hl_by_name('CursorLine')
+  local string_hl = get_hl_by_name('String')
 
-    vim.api.nvim_set_hl(0, 'OutlineCurrent', {
-      bg = cline_hl.bg,
-      fg = string_hl.fg,
-      ctermbg = cline_hl.ctermbg,
-      ctermfg = string_hl.ctermfg,
-    })
-  end
+  vim.api.nvim_set_hl(0, 'OutlineCurrent', {
+    bg = cline_hl.bg,
+    fg = string_hl.fg,
+    ctermbg = cline_hl.ctermbg,
+    ctermfg = string_hl.ctermfg,
+    default = true,
+  })
 
   -- Only inherit fg for these highlights because we do not want the other
   -- stylings messing up the alignment, nor the background so that cursorline
   -- can look normal when on top of it. This can be customized by setting these
   -- highlights before outline.setup() is called, or using winhl.
   for name, link in pairs({ Guides = 'Comment', FoldMarker = 'Normal' }) do
-    if vim.fn.hlexists('Outline' .. name) == 0 then
-      local h = get_hl_by_name(link)
-      vim.api.nvim_set_hl(0, 'Outline' .. name, { fg = h.fg, ctermfg = h.fg })
-    end
+    local h = get_hl_by_name(link)
+    vim.api.nvim_set_hl(0, 'Outline' .. name, { fg = h.fg, ctermfg = h.fg, default = true })
   end
 
   for name, link in pairs({
@@ -152,10 +149,19 @@ function M.setup()
     KeymapHelpKey = 'Special',
     KeymapHelpDisabled = 'Comment',
   }) do
-    if vim.fn.hlexists('Outline' .. name) == 0 then
-      vim.api.nvim_set_hl(0, 'Outline' .. name, { link = link })
-    end
+    vim.api.nvim_set_hl(0, 'Outline' .. name, { link = link, default = true })
   end
+end
+
+function M.setup()
+  setup_highlights()
+
+  local augroup = vim.api.nvim_create_augroup('outline_highlight', { clear = true })
+  vim.api.nvim_create_autocmd('ColorScheme', {
+    group = augroup,
+    pattern = '*',
+    callback = setup_highlights,
+  })
 end
 
 return M
